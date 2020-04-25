@@ -1,0 +1,36 @@
+{% extends "shop/bas.html" %}
+
+{% load static %}
+
+{% block title %}{% if category %}{{ category.name }}{% else %}Products{% endif %}{% endblock %}
+
+{% block content %}    
+            <div class="list">
+                <h3>категории</h3>
+                <ul>
+                    <li {% if not category %}class="selected"{% endif %}><a href="{% url "shop:product_list" %}">все</a>
+                    </li>
+                    {% for c in categories %}
+                    <li {% if category.slug == c.slug %}class="selected" {% endif %}>
+                        <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div id="main" class="product-list">
+                <h3>{% if category %}{{ category.name }}{% else %}товары{% endif %}</h3>
+                    {% for product in products %}
+                    <div class="item">
+                        <a href="{{ product.get_absolute_url }}"><img src="{% if product.image %}{{ product.image.url }}{%else %}{% static "img/no_image.png" %}{% endif %}"></a>
+                        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a><br>
+                        RUB {{ product.price }}
+                    </div>
+                    <form action="{% url "cart:cart_add" product.id %}" method="post">
+                        
+                        {{ cart_product_form }}
+                        {% csrf_token %}
+                        <input type="submit" value="Add to cart">
+                    </form>  
+                    {% endfor %}   
+            </div>
+{% endblock %}
