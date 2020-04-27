@@ -21,6 +21,17 @@
                     <tbody>
                         {% for item in cart %}
                         {% with product=item.product %}
+
+                            {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                            <li class="{{ message.tags }}">
+                            {{ message|safe }} {{ product.quantity_pr }} шт. {{ product.name }}
+                            <a href="#" class="close">x</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                            {% endif %}
                         <tr>
                             <td>
                                 <a href="{{ product.get_absolute_url }}">
@@ -39,6 +50,7 @@
                             <td><a href="{% url "cart:cart_remove" product.id%}">удалить</a></td>
                             <td class="num">RUB {{ item.price }}</td>
                             <td class="num">RUB {{ item.total_price }}</td>
+                            <td class="num">Q {{ product.quantity_pr }}</td>
                         </tr>
                             {% endwith %}
                             {% endfor %}
@@ -53,5 +65,6 @@
                     <a href="{% url "shop:product_list" %}" class="button light">продолжить покупки</a><br>
                     <a href="{% url "orders:order_create" %}" class="button">оформить заказ</a>
                 </p>
+                
                 
 {% endblock %}

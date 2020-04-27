@@ -3,6 +3,8 @@ from django.views.decorators.http import require_POST
 from shop.models import Product
 from .cart import Cart
 from .forms import CartAddProductForm
+from django.contrib import messages
+from django.http import HttpResponse
 
 @require_POST
 def cart_add(request, product_id):
@@ -11,9 +13,12 @@ def cart_add(request, product_id):
     form = CartAddProductForm(request.POST)
     if form.is_valid():
         cd = form.cleaned_data
-        cart.add(product=product, quantity=cd['quantity'], 
-        update_quantity=cd['update'])
+        if cd['quantity'] <= product.quantity_pr:
+            cart.add(product=product, quantity=cd['quantity'], update_quantity=cd['update'])
+        else:
+            messages.success(request, 'Вы не можете добавить такое количество товара. В наличии только')  
     return redirect('cart:cart_detail')
+     
 
 def cart_remove(request, product_id):
     cart = Cart(request)

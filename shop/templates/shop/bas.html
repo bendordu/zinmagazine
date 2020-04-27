@@ -55,8 +55,8 @@
         <div class="col">
             <div class="btn">
                 <button class="cart">
-                    {% with total_items=cart|length %}
-                    {% if cart|length > 0 %}
+                                {% with total_items=cart|length %}
+                                {% if cart|length > 0 %}
                     <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
                         <a href="{% url "cart:cart_detail" %}">
                                 {{ total_items }}<br>
