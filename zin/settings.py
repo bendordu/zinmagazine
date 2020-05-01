@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'cart.apps.CartConfig',
     'orders.apps.OrdersConfig',
     'blog.apps.BlogConfig',
+    'favourite.apps.FavouriteConfig',
     'social_django',
     
 ]
