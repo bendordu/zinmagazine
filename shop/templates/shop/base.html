@@ -67,6 +67,16 @@
                                 {% endwith %}
                 </button>
             </div>
+            <div class="btn">
+                <button class="cart">
+                    <a href="{% url "favourite:favourite_detail" %}">♥<br>
+                        {% with total_items=favourite|length %}
+                        {% if favourite|length > 0 %}
+                        {{ total_items }}
+                        {% endif %}
+                        {% endwith %}</a>
+                </button>
+            </div>
         </div>
     </div>
 </body>

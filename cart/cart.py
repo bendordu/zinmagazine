@@ -61,6 +61,12 @@ class Cart(object):
             item['quantity_pr'] -= item['quantity']
             yield item
 
+    def value(self):
+        product_ids = self.cart.keys()
+        products = Product.objects.filter(id__in=product_ids)
+
+        return products
+
     def __len__(self):
         """Возвращает общее количество товаров в корзине."""
         return sum(item['quantity'] for item in self.cart.values())

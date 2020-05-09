@@ -27,12 +27,20 @@
                         RUB {{ product.price }}
                         Q{{ product.quantity_pr }}
                     </div>
+                    {% if product in cart.value %}
+                    <button class="cart">
+                        <a href="{% url "cart:cart_detail" %}">Товар добавлен. Перейти в корзину</a>
+                    </button>
+                    {% else %}
                     <form action="{% url "cart:cart_add" product.id %}" method="post">
                         {{ cart_product_form }}
                         {% csrf_token %}
-                        <input type="submit" value="Add to cart">
+                        <input type="submit" value='Добавить в корзину'>
                     </form> 
+                    {% endif %}
                         <h4>{% else %}Товара нет в наличии{% endif %}</h4>
+                        
+                        
                     <form action="{% url "favourite:favourite_add_remove" product.id %}" method="post">
                         {{ favourite_product_form }}
                         {% csrf_token %}
