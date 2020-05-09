@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}zinmagazine.com{% endblock %}</title>
+    <!-- Последняя компиляция и сжатый CSS -->  
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Дополнение к теме -->  
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Последняя компиляция и сжатый JavaScript -->  
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    
+    <link href="{% static "css/base.css" %}" rel="stylesheet">
+</head>
+<body>
+    <div class="header">
+        <div class="col">
+            <div class="btn">
+                <button class=search>
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="drop">
+                <div class="dropdown">
+                    <button class="menu"><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span></button>
+                    <div class="dropdown-content">
+                    <a href="{% url "shop:product_list" %}">магазин</a>
+                    <a href="{% url "blog:post_list" %}">журнал</a>
+                    <a href="#">о нас</a>
+                    </div>
+                </div>
+            </div>    
+        </div>
+        <div class="center">
+            <div>
+                <a href="/" class="logo">ZIN</a>
+            </div>
+            <div class="magazine">
+                <a href="{% url "shop:product_list" %}">MAGAZINE</a>
+            </div>
+            <div class="">
+                {% if request.user.is_authenticated %}
+                <a href="{% url "dashboard" %}">{{ request.user.first_name }}</a>,
+                <a href="{% url "logout" %}">Logout</a>
+                {% else %}
+                <a href="{% url "login" %}">log</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col">
+            <div class="btn">
+                <button class="cart">
+                    {% with total_items=cart|length %}
+                    {% if cart|length > 0 %}
+                    <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
+                        <a href="{% url "cart:cart_detail" %}">
+                                {{ total_items }}<br>
+                                {{ cart.get_total_price }}
+                        </a>
+                                {% else %}
+                    <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
+                                {% endif %}
+                                {% endwith %}
+                </button>
+            </div>
+            <div class="btn">
+                <button class="cart">
+                    <a href="{% url "favourite:favourite_detail" %}">♥<br>
+                        {% with total_items=favourite|length %}
+                        {% if favourite|length > 0 %}
+                        {{ total_items }}
+                        {% endif %}
+                        {% endwith %}</a>
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

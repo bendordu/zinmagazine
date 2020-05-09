@@ -1,0 +1,71 @@
+{% extends "shop/bas.html" %}
+
+{% load static %}
+
+{% block title %}ваша картапокупок{% endblock %}
+
+{% block content %}    
+
+                <h1>ваша корзина покупок</h1>
+                <table class="cart">
+                    <thead>
+                        <tr>
+                            <th>изображение</th>
+                            <th>продукт</th>
+                            <th>количество</th>
+                            <th>...</th>
+                            <th>стоимость товара</th>
+                            <th>сумма</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart %}
+                        {% with product=item.product %}
+
+                            {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                            <li class="{{ message.tags }}">
+                            {{ message|safe }} {{ product.quantity_pr }} шт. {{ product.name }}
+                            <a href="#" class="close">x</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                            {% endif %}
+                        <tr>
+                            <td>
+                                <a href="{{ product.get_absolute_url }}">
+                                    <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+                                </a>
+                            </td>
+                            <td>{{ product.name }}</td>
+                            <td>
+                                <form action="{% url "cart:cart_add" product.id %}" method="post">
+                                {{ item.update_quantity_form.update }}
+                                    <input type="submit" value="-" name="minus">
+                                    {{ item.quantity }}
+                                    <input type="submit" value="+" name="plus">
+                                {% csrf_token %}
+                                </form>
+                            </td>
+                            <td><a href="{% url "cart:cart_remove" product.id%}">удалить</a></td>
+                            <td class="num">RUB {{ item.price }}</td>
+                            <td class="num">RUB {{ item.total_price }}</td>
+                            <td class="num">Q {{ product.quantity_pr }}</td>
+                        </tr>
+                            {% endwith %}
+                            {% endfor %}
+                        <tr class="total">
+                            <td>итог</td>
+                            <td colspan="4"></td>
+                            <td class="num">RUB {{ cart.get_total_price }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="text-right">
+                    <a href="{% url "shop:product_list" %}" class="button light">продолжить покупки</a><br>
+                    <a href="{% url "orders:order_create" %}" class="button">оформить заказ</a>
+                </p>
+                
+                
+{% endblock %}

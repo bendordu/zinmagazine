@@ -33,6 +33,12 @@
                         <input type="submit" value="Add to cart">
                     </form> 
                         <h4>{% else %}Товара нет в наличии{% endif %}</h4>
+                    <form action="{% url "favourite:favourite_add_remove" product.id %}" method="post">
+                        {{ favourite_product_form }}
+                        {% csrf_token %}
+                        <input type="submit" value="♥">
+                    </form> 
                     {% endfor %}   
+                    
             </div>
 {% endblock %}

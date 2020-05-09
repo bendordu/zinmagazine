@@ -1,0 +1,34 @@
+{% extends "shop/bas.html" %}
+
+{% load static %}
+
+{% block title %}izbrrrr{% endblock %}
+
+{% block content %}    
+
+<h2>Izbrannoe</h2>                
+{% for item in favourite %}
+{% with product=item.product %}
+<div class="item">
+    <a href="{{ product.get_absolute_url }}"><img src="{% if product.image %}{{ product.image.url }}{%else %}{% static "img/no_image.png" %}{% endif %}"></a>
+    <a href="{{ product.get_absolute_url }}">{{ product.name }}</a><br>
+    {% if product.quantity_pr > 0 %}
+    RUB {{ product.price }}
+    Q{{ product.quantity_pr }}
+</div>
+<form action="{% url "cart:cart_add" product.id %}" method="post">
+    {{ cart_product_form }}
+    {% csrf_token %}
+    <input type="submit" value="Add to cart">
+</form> 
+    <h4>{% else %}Товара нет в наличии{% endif %}</h4>
+<form action="{% url "favourite:favourite_add_remove" product.id %}" method="post">
+    {{ favourite_product_form }}
+    {% csrf_token %}
+    <input type="submit" value="♥">
+</form> 
+{% endwith %}
+{% endfor %}
+               
+                
+{% endblock %}
