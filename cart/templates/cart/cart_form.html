@@ -1,20 +1,4 @@
-{% extends "shop/bas.html" %}
-
-{% load static %}
-
-{% block title %}{{ product.name }}{% endblock %}
-
-{% block content %}  
-
-            <div class="product-detail">
-                <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
-                <h1>{{ product.name }}</h1>
-                <h2><a href="{{ product.category.get_absolute_url }}">{{product.category }}</a></h2>
-                {% if product.quantity_pr > 0 %}
-                        RUB {{ product.price }}
-                        Q{{ product.quantity_pr }}
-                   
-                    {% if product in cart.value %}
+{% if product in cart.value %}
                     <button class="cart">
                         <a href="{% url "cart:cart_detail" %}">Товар добавлен в корзину</a>
                     </button>
@@ -24,9 +8,9 @@
                         {% csrf_token %}
                         <input type="submit" value='Добавить в корзину'>
                     </form> 
-                    {% endif %} 
-                    <h4>{% else %}Товара нет в наличии{% endif %}</h4>
-                    
+                    {% endif %}
+                        <h4>{% else %}Товара нет в наличии{% endif %}</h4>
+                        
                     {% if product in favourite.color %}    
                     <form class="favourite" action="{% url "favourite:favourite_add_remove" product.id %}" method="post">
                         {{ favourite_product_form }}
@@ -39,10 +23,4 @@
                         {% csrf_token %}
                         <input type="submit" value="♥">
                     </form> 
-                    {% endif %}  
-
-                    {{ product.description|linebreaks }}
-            </div>
-            
-
-{% endblock %}       
+                    {% endif %} 

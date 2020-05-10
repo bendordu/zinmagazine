@@ -33,7 +33,13 @@ class Favourite(object):
 
         for item in favourite.values():
             item['count'] = int(item['count'])
-            yield item    
+            yield item   
+
+    def color(self):
+        product_ids = self.favourite.keys()
+        products = Product.objects.filter(id__in=product_ids)
+
+        return products
 
     def __len__(self):
         return sum(item['count'] for item in self.favourite.values())

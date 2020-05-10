@@ -15,12 +15,6 @@ def favourite_add_remove(request, product_id):
         favourite.add(product=product, add_favourite=cd['add_favourite'])
     return redirect(request.META.get('HTTP_REFERER'))
 
-def cart_remove(request, product_id):
-    favourite = Favourite(request)
-    product = get_object_or_404(Product, id=product_id)
-    favourite.remove(product)
-    return redirect('favourite:favourite_detail')
-
 def favourite_detail(request):
     favourite = Favourite(request)
     return render(request, 'detail.html', {'favourite': favourite})
