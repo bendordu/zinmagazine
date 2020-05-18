@@ -4,45 +4,93 @@
 
 {% block title %}{{ product.name }}{% endblock %}
 
-{% block content %}  
+{% block content %}      						
+	
+<div class="product-detail">
+	<img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+	<h1>{{ product.name }}</h1>
+	<h6><a href="{{ product.category.get_absolute_url }}">{{product.category }}</a></h6>
+	{% if product.quantity_pr > 0 %}
+		RUB {{ product.price }}
+		Q{{ product.quantity_pr }}</br>
+					
+	{% if product in cart.value %}
+	<button class="">
+			<a href="{% url "cart:cart_detail" %}">Товар добавлен в корзину</a>
+	</button>
+	{% else %}
 
-            <div class="product-detail">
-                <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
-                <h1>{{ product.name }}</h1>
-                <h2><a href="{{ product.category.get_absolute_url }}">{{product.category }}</a></h2>
-                {% if product.quantity_pr > 0 %}
-                        RUB {{ product.price }}
-                        Q{{ product.quantity_pr }}
-                   
-                    {% if product in cart.value %}
-                    <button class="cart">
-                        <a href="{% url "cart:cart_detail" %}">Товар добавлен в корзину</a>
-                    </button>
-                    {% else %}
-                    <form action="{% url "cart:cart_add" product.id %}" method="post">
-                        {{ cart_product_form }}
-                        {% csrf_token %}
-                        <input type="submit" value='Добавить в корзину'>
-                    </form> 
-                    {% endif %} 
-                    <h4>{% else %}Товара нет в наличии{% endif %}</h4>
-                    
-                    {% if product in favourite.color %}    
-                    <form class="favourite" action="{% url "favourite:favourite_add_remove" product.id %}" method="post">
-                        {{ favourite_product_form }}
-                        {% csrf_token %}
-                        <input type="submit" value="♥">
-                    </form> 
-                    {% else %}
-                    <form action="{% url "favourite:favourite_add_remove" product.id %}" method="post">
-                        {{ favourite_product_form }}
-                        {% csrf_token %}
-                        <input type="submit" value="♥">
-                    </form> 
-                    {% endif %}  
+	<button class="add" data-id="{{ product.id }}" data-action="{% if product in cart.value %}cart{% endif %}add">
+		Добавить в корзину
+	</button> 
 
-                    {{ product.description|linebreaks }}
-            </div>
-            
+	{% endif %} 
+	<h4>{% else %}Товара нет в наличии{% endif %}</h4>
+
+	{% with total_likes=product.users_like.count users_like=product.users_like.all %}
+
+	<span class="{{ product.id }}">{{ total_likes }}</span>
+	</span><button data-id="{{ product.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like button">
+			{% if request.user not in users_like %}
+					Like
+			{% else %}
+					Unlike
+			{% endif %}
+	</button>
+		
+	{% endwith%}   
+
+	{{ product.description|linebreaks }}
+</div>
+						
 
 {% endblock %}       
+
+{% block domready %}
+$('button.like').click(function(e){
+    e.preventDefault();
+    var product_like = event.target;
+    $.post('{% url "likes:product_like" %}',
+        {
+        id: $(product_like).data('id'),
+        action: $(product_like).data('action')
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {
+                var previous_action = $(product_like).data('action');
+                var pr_id = $(product_like).data('id');
+  
+                $(product_like).data('action', previous_action == 'like' ? 'unlike' : 'like');
+                $(product_like).text(previous_action == 'like' ? 'Unlike' : 'Like');
+                
+                var previous_likes = parseInt($('span.' + pr_id).text());
+                $('span.' + pr_id).text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
+
+                var previous_liked = parseInt($('button.liked a').text());
+                $('button.liked a').text(previous_action == 'like' ? previous_liked + 1 : previous_liked - 1);
+            }
+        });
+    });
+
+$('button.add').click(function(e){
+	e.preventDefault();
+	var product_add = event.target;
+	$.post('{% url "cart:cart_add_product" %}',
+		{
+		id: $(product_add).data('id'),
+		action: $(product_add).data('action'),
+		},
+		function(data){
+			if (data['status'] == 'ok')
+			{
+				$(product_add).text('Товар добавлен в корзину'); 
+				
+				var previous_add = parseInt($('button.cart a').text());
+                $('button.cart a').text(previous_add + 1);
+					
+			}
+		});
+	});
+
+{% endblock %}

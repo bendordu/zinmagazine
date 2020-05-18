@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.core.validators import MinValueValidator
+from django.conf import settings
 
 class Category(models.Model):
     name = models.CharField(max_length=200, db_index=True)
@@ -28,6 +29,9 @@ class Product(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     quantity_pr = models.IntegerField(validators=[MinValueValidator(0)], default=0)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='product_created', on_delete=models.CASCADE)
+    users_like = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='product_liked', blank=True)
+    
 
     class Meta:
         ordering = ('name',)

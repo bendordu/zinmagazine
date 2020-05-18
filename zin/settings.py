@@ -42,8 +42,9 @@ INSTALLED_APPS = [
     'cart.apps.CartConfig',
     'orders.apps.OrdersConfig',
     'blog.apps.BlogConfig',
-    'favourite.apps.FavouriteConfig',
+    'likes.apps.LikesConfig',
     'social_django',
+    'sorl.thumbnail',
     
 ]
 
@@ -71,7 +72,6 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'cart.context_processors.cart',
-                'favourite.context_processors.favourite',
             ],
         },
     },
@@ -134,8 +134,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 CART_SESSION_ID = 'cart'
-
-FAVOURITE_SESSION_ID = 'favourite'
 
 SESSION_COOKIE_AGE = 1209600
 

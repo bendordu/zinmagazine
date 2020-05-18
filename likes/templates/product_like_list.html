@@ -1,0 +1,97 @@
+{% extends "shop/bas.html" %}
+
+{% load static %}
+
+{% block title %}{% endblock %}
+
+{% block content %} 
+
+{% if not products_liked %}
+<span>Пока здесь пусто...</span>
+{% else %}
+<div class="liked_list">
+    {% for product in products_liked %}
+    <div class={{ product.id }}>
+        <a href="{{ product.get_absolute_url }}"><img src="{% if product.image %}{{ product.image.url }}{%else %}{% static "img/no_image.png" %}{% endif %}"></a>
+        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a><br>
+        {% if product.quantity_pr > 0 %}
+        RUB {{ product.price }}
+        Q{{ product.quantity_pr }}<br>
+
+        {% if product in cart.value %}
+        <button class="">
+            <a href="{% url "cart:cart_detail" %}">Товар добавлен в корзину</a>
+        </button>
+        {% else %}
+
+        <button class="add" data-id="{{ product.id }}" data-action="{% if product in cart.value %}cart{% endif %}add">
+            Добавить в корзину
+        </button> 
+
+        {% endif %}
+        <h4>{% else %}Товара нет в наличии{% endif %}</h4> 
+        
+        {% with total_likes=product.users_like.count users_like=product.users_like.all %}
+        <div class="product-like">
+            <button data-id="{{ product.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like">
+                {% if request.user not in users_like %} Like {% else %} Unlike {% endif %}
+            </button>
+        </div> 
+    </div>                
+
+    {% endwith%}
+
+    {% endfor%}
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block domready %}
+
+$('button.like').click(function(e){
+    e.preventDefault();
+    var product_like = event.target;
+    $.post('{% url "likes:product_like" %}',
+        {
+        id: $(product_like).data('id'),
+        action: $(product_like).data('action')
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {   
+                if (parseInt($('button.liked a').text()) > 1){
+                    var pr_id = $(product_like).data('id');
+                    $('div.' + pr_id).replaceWith('');  
+                    
+                    var previous_liked = parseInt($('button.liked a').text());
+                    $('button.liked a').text(previous_liked - 1);
+                }else{
+                    var previous_liked = parseInt($('button.liked a').text());
+                    $('button.liked a').text(previous_liked - 1);
+                    $('div.liked_list').replaceWith('<h2>Теперь здесь пусто...</h2>'); 
+                }
+            }
+        });
+    });
+
+$('button.add').click(function(e){
+    e.preventDefault();
+    var product_add = event.target;
+    $.post('{% url "cart:cart_add_product" %}',
+        {
+        id: $(product_add).data('id'),
+        action: $(product_add).data('action'),
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {
+                $(product_add).replaceWith('<button disabled><a href="{% url "cart:cart_detail" %}">Товар добавлен в корзину</a></button>');  
+                 
+                var previous_add = parseInt($('button.cart a').text());
+                $('button.cart a').text(previous_add + 1);
+            }
+        });
+    });
+
+{% endblock %}

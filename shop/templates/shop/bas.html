@@ -5,24 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}zinmagazine.com{% endblock %}</title>
-    <!-- Последняя компиляция и сжатый CSS -->  
+    <script type="text/javascript" src="{% static "js/jquery-3.5.1.min.js" %}"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
-    <!-- Дополнение к теме -->  
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-
-    <!-- Последняя компиляция и сжатый JavaScript -->  
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <link href="{% static "css/base.css" %}" rel="stylesheet">
 </head>
 <body>
+
+
     <div class="header">
         <div class="col">
             <div class="btn">
                 <button class=search>
                     <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                 </button>
-            </div>    
+            </div>
             <div class="drop">
                 <div class="dropdown">
                     <button class="menu"><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span></button>
@@ -34,6 +30,8 @@
                 </div>
             </div>    
         </div>
+
+
         <div class="center">
             <div>
                 <a href="/" class="logo">ZIN</a>
@@ -41,44 +39,91 @@
             <div class="magazine">
                 <a href="{% url "shop:product_list" %}">MAGAZINE</a>
             </div>
-            <div class="">
+            <div class="uslog">
                 {% if request.user.is_authenticated %}
-                <a href="{% url "dashboard" %}">{{ request.user.first_name }}</a>,
-                <a href="{% url "logout" %}">Logout</a>
-                {% else %}
-                <a href="{% url "login" %}">log</a>
+                <ul class="">
+                    <li {% if section == "dashboard" %} class="selected"{% endif %}>
+                        <a href="{% url "dashboard" %}">My dashboard</a>
+                    </li>
+                    <li {% if section == "images" %}class="selected"{% endif %}>
+                        <a href="#">Images</a>
+                    </li>
+                    <li {% if section == "people" %}class="selected"{% endif %}>
+                        <a href="#">People</a>
+                    </li>
+                </ul>
                 {% endif %}
+                <span class="">
+                    {% if request.user.is_authenticated %}
+                    <a href="{% url "dashboard" %}">{{ request.user.first_name }}</a>,
+                    <a href="{% url "logout" %}">Logout</a>
+                    {% else %}
+                    <a href="{% url "login" %}">Log-in</a>
+                    {% endif %}
+                </span>
             </div>
-            {% block content %} 
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li class="{{ message.tags }}">
+                {{ message|safe }}
+                <a href="#" class="close">x</a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            {% block content %}
             {% endblock %}
+            
         </div>
+
+        
         <div class="col">
             <div class="btn">
                 <button class="cart">
-                                {% with total_items=cart|length %}
-                                {% if cart|length > 0 %}
                     <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
-                        <a href="{% url "cart:cart_detail" %}">
-                                {{ total_items }}<br>
-                                {{ cart.get_total_price }}
-                        </a>
-                                {% else %}
-                    <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
-                                {% endif %}
-                                {% endwith %}
+                    {% with total_items=cart|length %}
+                    <a href="{% url "cart:cart_detail" %}">
+                            {{ total_items }}
+                    </a>
+                    {% endwith %}
                 </button>
             </div>
+
             <div class="btn">
-                <button class="cart">
-                    <a href="{% url "favourite:favourite_detail" %}">♥<br>
-                        {% with total_items=favourite|length %}
-                        {% if favourite|length > 0 %}
-                        {{ total_items }}
-                        {% endif %}
-                        {% endwith %}</a>
+                <button class="liked">
+                    <span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
+                    <a href="{% url "likes:product_like_list" %}">
+                        {{ products_liked.count }}
+                    </a>
                 </button>
             </div>
         </div>
+
+        
     </div>
+
+
+<script type="text/javascript" src="{% static "js/jquery-3.5.1.min.js" %}"></script>
+<script type="text/javascript" src="{% static "js/js.cookie.min.js" %}"></script>
+<script>
+    var csrftoken = Cookies.get('csrftoken');
+    function csrfSafeMethod(method){
+        // Для этих методов токен не будет подставляться в заголовок.
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+    $(document).ready(function(){
+        {% block domready %}{% endblock %}
+    });
+</script>
+
 </body>
 </html>
