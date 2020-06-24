@@ -13,7 +13,7 @@ class Post(models.Model):
     STATUS_CHOICES = (('draft', 'Draft'),('published', 'Published'),)
     title = models.CharField(max_length=250)
     slug = models.SlugField(max_length=250,unique_for_date='publish')
-    author = models.ForeignKey(User,on_delete=models.CASCADE, related_name='blog_posts')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts')
     body = models.TextField()
     publish = models.DateTimeField(default=timezone.now)
     created = models.DateTimeField(auto_now_add=True)
@@ -21,6 +21,8 @@ class Post(models.Model):
     status = models.CharField(max_length=10,choices=STATUS_CHOICES,default='draft')
     objects = models.Manager() 
     published = PublishedManager()
+    image = models.ImageField(upload_to='post/%Y/%m/%d', blank=True)
+    users_like = models.ManyToManyField(User, related_name='post_liked', blank=True)
     
 
     class Meta:
@@ -35,8 +37,8 @@ class Post(models.Model):
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
-    name = models.CharField(max_length=80)
-    email = models.EmailField()
+    author_comment = models.ForeignKey(User, related_name='comment_created', on_delete=models.CASCADE) 
+    image = models.ImageField(upload_to='comment/%Y/%m/%d', blank=True)
     body = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -46,7 +48,7 @@ class Comment(models.Model):
         ordering = ('created',)
 
     def __str__(self):
-        return 'Comment by {} on {}'.format(self.name, self.post)
+        return 'Comment by {} on {}'.format(self.author_comment.first_name, self.post)
 
 
 

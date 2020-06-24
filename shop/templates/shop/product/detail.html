@@ -30,7 +30,7 @@
 	{% with total_likes=product.users_like.count users_like=product.users_like.all %}
 
 	<span class="{{ product.id }}">{{ total_likes }}</span>
-	</span><button data-id="{{ product.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like button">
+	<button data-id="{{ product.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like button">
 			{% if request.user not in users_like %}
 					Like
 			{% else %}
@@ -41,12 +41,46 @@
 	{% endwith%}   
 
 	{{ product.description|linebreaks }}
+
+	{% with comments.count as total_comments %}
+	<span class="count_comments">{{ total_comments }}</span><span> comment{{ total_comments|pluralize }}</span>
+	{% endwith %}
+
+	{% for comment in comments %}
+	<div class="comment">
+		<p class="info">
+			Comment by {{ comment.author.first_name }}
+			{{ comment.created }}
+		</p>
+		<span class="body">{{ comment.body|linebreaks }}</span>
+		{{ comment.image }}
+		
+		{% if comment.author == request.user %}
+		<a href="" data-body="{{ comment.body }}" data-id="{{ product.id }}" data-action="remove" class="remove">удалить</a>
+		<a href="" data-id="{{ product.id }}" data-action="edit" class="edit">редактировать</a>
+		{% endif %}
+	</div>
+
+	{% empty %}
+	<p>There are no comments yet...</p>
+
+	{% endfor %}
+
+	<div class="new_comment"></div>
+
+	<form class="comment" method="post" data-id="{{ product.id }}">
+		<textarea name="body" cols="40" rows="10" required></textarea>
+		<input class="comment" type="file" title="Add image">
+		<input type="submit" value="Add comment">
+	</form>
+
 </div>
 						
 
 {% endblock %}       
 
 {% block domready %}
+
 $('button.like').click(function(e){
     e.preventDefault();
     var product_like = event.target;
@@ -84,7 +118,7 @@ $('button.add').click(function(e){
 		function(data){
 			if (data['status'] == 'ok')
 			{
-				$(product_add).text('Товар добавлен в корзину'); 
+				$(product_add).replaceWith('<button disabled><a href="{% url "cart:cart_detail" %}">Товар добавлен в корзину</a></button>');  
 				
 				var previous_add = parseInt($('button.cart a').text());
                 $('button.cart a').text(previous_add + 1);
@@ -92,5 +126,46 @@ $('button.add').click(function(e){
 			}
 		});
 	});
+
+$('form.comment').on("submit", function(e){
+	e.preventDefault();
+	$.post('{% url "shop:product_add_comment" %}',
+		{
+		id: $(this).data('id'),
+		data: $('form.comment textarea').val(),
+		image: $('form.comment input.comment').val(),
+		},
+		function(data){
+			if (data['status'] == 'ok')
+			{
+				var name = $('a.name').text()
+				var myDate = new Date();
+				var fullDate = myDate.getDate() +" "+ myDate.getMonth() +" " + myDate.getFullYear();
+				$('div.new_comment').replaceWith('<div class="comment"><p class="info">Comment by'+' '+name+' '+fullDate+'</p><p>'+$('form.comment textarea').val()+'</p></div><div class="new_comment"></div>');
+				$('form.comment textarea').val('')
+				$('span.count_comments').text(parseInt($('span.count_comments').text())+1)
+			}
+		});
+	});
+
+$('div.comment').click(function(e){
+	e.preventDefault();
+	var remove = event.target;
+	$.post('{% url "shop:product_add_comment" %}',
+		{
+		id: $(remove).data('id'),
+		action: $(remove).data('action'),
+		body: $(remove).data('body'),
+		},
+		function(data){
+			if (data['status'] == 'ok')
+			{
+				var parent = $(remove).parent('.comment');
+				parent.replaceWith('<p>Ваш комментарий удален</p>');
+				$('span.count_comments').text(parseInt($('span.count_comments').text())-1)	
+			}
+		});
+	});
+
 
 {% endblock %}

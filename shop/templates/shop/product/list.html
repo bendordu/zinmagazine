@@ -44,12 +44,6 @@
             Добавить в корзину
         </button> 
 
-        <!--<form action="{% url "cart:cart_add" product.id %}" method="post" class="add_to_catr">
-            {{ cart_product_form }}
-            {% csrf_token %}
-            <input type="submit" value='Добавить в корзину'>
-        </form> -->
-
         {% endif %}
         <h4>{% else %}Товара нет в наличии{% endif %}</h4>  
     </div>

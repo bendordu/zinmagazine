@@ -133,9 +133,11 @@ MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
-CART_SESSION_ID = 'cart'
 
+
+CART_SESSION_ID = 'cart'
 SESSION_COOKIE_AGE = 1209600
+
 
 
 LOGIN_REDIRECT_URL = 'dashboard'

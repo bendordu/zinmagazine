@@ -24,7 +24,8 @@
     justify-content: center;
 }
 .cart,
-.search{
+.search,
+.liked{
     width: 30%;
     border-radius: 10%;
     border: none;
