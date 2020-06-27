@@ -7,7 +7,9 @@
 {% block content %} 
 
 {% if not products_liked %}
-<span>Пока здесь пусто...</span>
+<span>Пока здесь пусто...</span> 
+Вы можете <a href="{% url "shop:product_list" %}" class="button light">продолжить покупки</a>
+или <a href="{% url "register" %}">зарегистрироваться</a>, чтобы добавлять товары в избранное.
 {% else %}
 <div class="liked_list">
     {% for product in products_liked %}

@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render
+from shop.models import Product
 from django.contrib.auth import authenticate, login
 from .forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm
 from django.contrib.auth.decorators import login_required

@@ -19,5 +19,8 @@ def product_like(request):
     return JsonResponse({'status':'ok'})
 
 def product_like_list(request):
-    products_liked = Product.objects.filter(users_like=request.user)
+    if request.user.is_active:
+        products_liked = Product.objects.filter(users_like=request.user)
+    else:
+        products_liked = None
     return render(request, 'product_like_list.html', {'products_liked': products_liked})

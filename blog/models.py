@@ -23,6 +23,7 @@ class Post(models.Model):
     published = PublishedManager()
     image = models.ImageField(upload_to='post/%Y/%m/%d', blank=True)
     users_like = models.ManyToManyField(User, related_name='post_liked', blank=True)
+    bookmark = models.ManyToManyField(User, related_name='bookmark', blank=True)
     
 
     class Meta:

@@ -25,7 +25,8 @@
 }
 .cart,
 .search,
-.liked{
+.liked,
+.bookmark{
     width: 30%;
     border-radius: 10%;
     border: none;
@@ -40,6 +41,7 @@
     border: none;
     font-family: monospace;
 }
+
 .drop{
     display: inline-flex;
     justify-content: center;
@@ -58,4 +60,10 @@
     display: block;
 }
 .dropdown:hover .dropdown-content {display: block;}
+
+
+
+
+
+
 
