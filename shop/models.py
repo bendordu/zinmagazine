@@ -31,7 +31,6 @@ class Product(models.Model):
     quantity_pr = models.IntegerField(validators=[MinValueValidator(0)], default=0)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='product_created', on_delete=models.CASCADE)
     users_like = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='product_liked', blank=True)
-    
 
     class Meta:
         ordering = ('name',)

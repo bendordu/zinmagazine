@@ -80,16 +80,30 @@
 
         
         <div class="col">
+
+            {% if request.user.is_authenticated %}
+
             <div class="btn">
                 <button class="cart">
                     <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
-                    {% with total_items=cart|length %}
-                    <a href="{% url "cart:cart_detail" %}">
-                            {{ total_items }}
+                    <a href="{% url "cart:cart_detail_user" %}">
+                        {{ cart_user|length }}
                     </a>
-                    {% endwith %}
                 </button>
             </div>
+
+            {% else %}
+
+            <div class="btn">
+                <button class="cart">
+                    <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
+                    <a href="{% url "cart:cart_detail" %}">
+                        {{ cart|length }}
+                    </a>
+                </button>
+            </div>
+
+            {% endif %}
 
             <div class="btn">
                 <button class="liked">

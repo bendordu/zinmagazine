@@ -20,7 +20,6 @@
 </div>
 
 
-
 <div class="product-list">
 
     <h3>{% if category %}{{ category.name }}{% else %}товары{% endif %}</h3>
@@ -34,7 +33,8 @@
         RUB {{ product.price }}
         Q{{ product.quantity_pr }}<br>
 
-        {% if product in cart.value %}
+    
+        {% if product in cart.value or product in cart_user.products %}
         <button class="">
             <a href="{% url "cart:cart_detail" %}">Товар добавлен в корзину</a>
         </button>

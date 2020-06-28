@@ -1,0 +1,182 @@
+{% extends "shop/bas.html" %}
+
+{% load static %}
+
+{% block title %}корзина{% endblock %}
+
+{% block content %} 
+
+{% if cart_user|length > 0 %}
+
+<h1>корзина</h1>
+<div class="cart">
+
+    <table class="cart">
+        <thead>
+            <tr>
+                <th>продукт</th>
+                <th>количество</th>
+                <th>...</th>
+                <th>стоимость товара</th>
+                <th>сумма</th>
+                <th>в наличии</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for item in cart_user %}
+            {% with product=item.product %}
+            <tr class={{ product.id }}>
+                <td>
+                    <a href="{{ product.get_absolute_url }}">
+                        <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}"></br>
+                        {{ product.name }}
+                    </a>
+                </td>
+                <td>
+
+                    <button class="plus" data-id="{{ product.id }}" data-action="plus">
+                        +
+                    </button>
+                    <span id={{ product.id }}>{{ item.quantity }}</span>
+                    <button class="minus" data-id="{{ product.id }}" data-action="minus">
+                        -
+                    </button> 
+
+                </td>
+
+                <td><button class="remove" data-id="{{ product.id }}" data-action="remove">удалить</button></td>
+
+                <td class={{ product.id }}><span class="item_price">{{ item.price }}</span></td>
+                <td class={{ product.id }}><span class="item_total_price">{{ item.total_price }}</span></td>
+                {% if product.quantity_pr > item.quantity %}
+                <td class="num">Q {{ product.quantity_pr }}</td>
+                {% else %}
+                <td class="num"><div class="error_quantity">Q {{ product.quantity_pr }}</div></td>
+                <td <h6>Вы добавили максимально доступное количество товара</h6> </td>
+                {% endif %}
+            </tr>
+                {% endwith %}
+                {% endfor %}
+            <tr class="total">
+                <td>итог</td>
+                <td colspan="4"></td>
+                <td class="total"><span class="total_price">{{ cart_user.get_total_price }}</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p class="text-right">
+        <a href="{% url "orders:order_create" %}" class="button">оформить заказ</a>
+    </p>
+</div>
+
+{% else %}
+
+<h2>Корзина пуста</h2>
+<a href="{% url "shop:product_list" %}" class="button light">продолжить покупки</a>
+
+{% endif %}
+                
+{% endblock %}
+
+
+{% block domready %}
+
+$('button.plus').click(function(e){
+    e.preventDefault();
+    var product_add = event.target;
+    $.post('{% url "cart:cart_add_product" %}',
+        {
+        id: $(product_add).data('id'),
+        action: $(product_add).data('action'),
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            { 
+                var previous_add = parseInt($('button.cart a').text());
+                $('button.cart a').text(previous_add + 1);
+
+                var pr_id = $(product_add).data('id');
+
+                var previous_add_quatity = parseInt($('span#' + pr_id).text());
+                $('span#' + pr_id).text(previous_add_quatity + 1);
+
+                var item_price = parseInt($('td.' + pr_id + ' ' + 'span.item_price').text());
+                var total_price = parseInt($('span.total_price').text());
+                ($('td.' + pr_id + ' ' + 'span.item_total_price').text(item_price +  parseInt($('td.' + pr_id + ' ' + 'span.item_total_price').text())));
+                ($('span.total_price').text(total_price + item_price));
+            }
+        });
+    });
+
+$('button.minus').click(function(e){
+    e.preventDefault();
+    var product_add = event.target;
+    $.post('{% url "cart:cart_add_product" %}',
+        {
+        id: $(product_add).data('id'),
+        action: $(product_add).data('action'),
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {
+                var pr_id = $(product_add).data('id');
+                var previous_add = parseInt($('button.cart a').text());
+                if  (parseInt($('span#' + pr_id).text()) > 1){
+
+                    $('button.cart a').text(previous_add - 1);
+                    $('span#' + pr_id).text(parseInt($('span#' + pr_id).text()) - 1);
+
+                    var item_price = parseInt($('td.' + pr_id + ' ' + 'span.item_price').text());
+                    var total_price = parseInt($('span.total_price').text());
+                    ($('td.' + pr_id + ' ' + 'span.item_total_price').text(parseInt($('td.' + pr_id + ' ' + 'span.item_total_price').text()) - item_price));
+                    ($('span.total_price').text(total_price - item_price));
+                    
+                }else{
+                    if (parseInt($('button.cart a').text()) > 1){
+                        var item_price = parseInt($('td.' + pr_id + ' ' + 'span.item_price').text());
+                        ($('span.total_price').text(parseInt($('span.total_price').text()) - item_price));
+                        $('tr.' + pr_id).replaceWith(''); 
+                        $('button.cart a').text(previous_add - 1);   
+                    }else{
+                        var previous_add = parseInt($('button.cart a').text());
+                        var previous_quantity = parseInt($('span#' + pr_id).text());
+                        $('button.cart a').text(previous_add - previous_quantity);
+                        $('div.cart').replaceWith('<h2>Теперь здесь пусто...</h2><a href="{% url "shop:product_list" %}" class="button light">продолжить покупки</a>'); 
+                    }                 
+                }
+            }
+        });
+    });
+
+$('button.remove').click(function(e){
+    e.preventDefault();
+    var product_remove = event.target;
+    $.post('{% url "cart:cart_add_product" %}',
+        {
+        id: $(product_remove).data('id'),
+        action: $(product_remove).data('action'),
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {
+                if (parseInt($('button.cart a').text()) > 1){
+                    var pr_id = $(product_remove).data('id');
+                    var previous_add = parseInt($('button.cart a').text());
+                    var previous_quantity = parseInt($('span#' + pr_id).text());
+
+                    $('tr.' + pr_id).replaceWith(''); 
+                    $('button.cart a').text(previous_add - previous_quantity);
+                }else{
+                    var pr_id = $(product_remove).data('id');
+                    var previous_add = parseInt($('button.cart a').text());
+                    var previous_quantity = parseInt($('span#' + pr_id).text());
+                    $('button.cart a').text(previous_add - previous_quantity);
+                    $('div.cart').replaceWith('<h2>Теперь здесь пусто...</h2><a href="{% url "shop:product_list" %}" class="button light">продолжить покупки</a>'); 
+                }
+            }
+        });
+    });
+{% endblock %}
