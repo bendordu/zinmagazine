@@ -163,9 +163,12 @@ $('button.remove').click(function(e){
                     var pr_id = $(product_remove).data('id');
                     var previous_add = parseInt($('button.cart a').text());
                     var previous_quantity = parseInt($('span#' + pr_id).text());
+                    var item_total_price = parseInt($('td.' + pr_id + ' ' + 'span.item_total_price').text());
+                    var total_price = parseInt($('span.total_price').text());
 
                     $('tr.' + pr_id).replaceWith(''); 
                     $('button.cart a').text(previous_add - previous_quantity);
+                    ($('span.total_price').text(total_price - item_total_price))
                 }else{
                     var pr_id = $(product_remove).data('id');
                     var previous_add = parseInt($('button.cart a').text());

@@ -22,7 +22,7 @@
 
 <div class="product-list">
 
-    <h3>{% if category %}{{ category.name }}{% else %}товары{% endif %}</h3>
+    <h3>{% if category %}{{ category.name }}{% else %}{% endif %}</h3>
 
     {% for product in products %}
 

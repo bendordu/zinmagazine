@@ -1,0 +1,28 @@
+{% extends "shop/bas.html" %}
+
+{% load static %}
+
+{% block title %}{{ profile.username }}{% endblock %}
+
+{% block content %}      						
+	
+<div class="profile-detail">
+
+	{% load thumbnail %}
+    {% thumbnail profile.photo "200" as im %}
+    <img src="{% if profile.photo %}{{ im.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+    {% endthumbnail %}
+
+    <h1>{{ profile.username }}</h1>
+    <span>{{ profile.user.first_name }}</span>
+    <span>{{ profile.user.last_name }}</span>
+    <p>{{ profile.date_of_birth }}</p>
+    {% for category in profile.category.all %}
+    <a href="{{ category.get_absolute_url }}"><span>{{ category }}</span></a>
+    {% endfor %}
+    <p>{{ profile.about|linebreaks }}</p>
+
+</div>
+						
+
+{% endblock %}       

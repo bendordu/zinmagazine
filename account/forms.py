@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Profile
+from .models import Profile, CategoryProfile
 
 class LoginForm(forms.Form):
     username = forms.CharField()
@@ -27,6 +27,7 @@ class UserEditForm(forms.ModelForm):
         fields = ('first_name', 'last_name', 'email')
 
 class ProfileEditForm(forms.ModelForm):
+    category = forms.ModelMultipleChoiceField(queryset=CategoryProfile.objects.all(), widget=forms.CheckboxSelectMultiple)
     class Meta:
         model = Profile
-        fields = ('date_of_birth', 'photo')
+        fields = ('date_of_birth', 'photo', 'category', 'about')

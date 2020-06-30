@@ -1,0 +1,40 @@
+{% extends "shop/bas.html" %}
+
+{% load static %}
+
+{% block title %}Profiles{% endblock %}
+
+{% block content %}   
+
+<div class="category">
+        <span {% if not category %}class="selected"{% endif %}><a href="{% url "profile_list" %}">все</a></span>
+        {% for c in categories %}
+        <span {% if category.slug == c.slug %}class="selected" {% endif %}>
+            <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
+        </span>
+        {% endfor %}
+</div>
+	
+<div class="profile-list">
+
+    <h3>{% if category %}{{ category.name }}{% else %}все{% endif %}</h3>
+
+    {% for profile in profiles %}
+
+    <a href="{{ profile.get_absolute_url }}"><h1>{{ profile.user.username }}</h1></a> 
+
+    {% load thumbnail %}
+    {% thumbnail profile.photo "50" as im %}
+    <img src="{% if profile.photo %}{{ im.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+    {% endthumbnail %}
+
+    {% for category in profile.category.all %}
+    <a href="{{ category.get_absolute_url }}"><span>{{ category }}</span></a>
+    {% endfor %}
+    
+    {% endfor %}
+
+</div>
+						
+
+{% endblock %} 

@@ -1,6 +1,6 @@
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
-from . import views
+from . import views, profile
 
 urlpatterns = [
     path('login/', auth_views.LoginView.as_view(), name='login'),
@@ -8,6 +8,12 @@ urlpatterns = [
     path('', views.dashboard, name='dashboard'),
     path('register/', views.register, name='register'),
     path('edit/', views.edit, name='edit'),
+
+    path('<int:id>/<slug:slug>/', profile.profile_detail, name='profile_detail'),
+    path('profiles/', profile.profile_list, name='profile_list'),
+    path('<slug:category_slug>/', profile.profile_list, name='profile_list_by_category'),
+
+
     path('social-auth/', include('social_django.urls', namespace='social')),
     path('password_change/',
             auth_views.PasswordChangeView.as_view(),
