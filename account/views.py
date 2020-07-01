@@ -1,6 +1,8 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from shop.models import Product
+from orders.models import Order
+from blog.models import Post
 from django.contrib.auth import authenticate, login
 from .forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm
 from django.contrib.auth.decorators import login_required
@@ -11,7 +13,14 @@ from cart.models import CartUser
 
 @login_required
 def dashboard(request):
-    return render(request,'account/dashboard.html',{'section': 'dashboard'})
+    profile = Profile.objects.get(user=request.user)
+    orders = Order.objects.filter(saler=request.user)
+    posts = Post.objects.filter(author=request.user)
+    products = Product.objects.filter(user=request.user)
+    return render(request,'account/dashboard.html', {'profile': profile,
+                                                    'orders': orders,
+                                                    'posts': posts,
+                                                    'products': products})
 
 def user_login(request):
     if request.method == 'POST':

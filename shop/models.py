@@ -18,8 +18,34 @@ class Category(models.Model):
     def get_absolute_url(self):
         return reverse('shop:product_list_by_category', args=[self.slug])
 
+class TypePr(models.Model):
+    name = models.CharField(max_length=200, db_index=True)
+    slug = models.SlugField(max_length=200, unique=True)
+    
+    class Meta:
+        ordering = ('name',)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('shop:product_list_by_type_pr', args=[self.slug])
+
+class PriceType(models.Model):
+    name = models.CharField(max_length=200, db_index=True)
+    slug = models.SlugField(max_length=200, unique=True)
+    
+    class Meta:
+        ordering = ('name',)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('shop:product_list_by_price_type', args=[self.slug])
+
 class Product(models.Model):
-    category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
+    category = models.ManyToManyField(Category, related_name='products')
     name = models.CharField(max_length=200, db_index=True)
     slug = models.SlugField(max_length=200, db_index=True)
     image = models.ImageField(upload_to='products/%Y/%m/%d', blank=True)
@@ -29,8 +55,12 @@ class Product(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     quantity_pr = models.IntegerField(validators=[MinValueValidator(0)], default=0)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='product_created', on_delete=models.CASCADE)
+    user = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='product_created') 
     users_like = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='product_liked', blank=True)
+    count_order = models.IntegerField(validators=[MinValueValidator(0)], default=0)
+    type_pr = models.ForeignKey(TypePr, on_delete=models.CASCADE, related_name='type_pr', default=1)
+    bye_paper = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='bye_paper', blank=True)
+    price_type = models.ForeignKey(PriceType, on_delete=models.CASCADE, related_name='pice_type', default=1)
 
     class Meta:
         ordering = ('name',)

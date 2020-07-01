@@ -8,15 +8,22 @@
 
 <div class="list">
     <h3>категории</h3>
-    <ul>
-        <li {% if not category %}class="selected"{% endif %}><a href="{% url "shop:product_list" %}">все</a>
-        </li>
+        <span {% if not category or price_type or type_pr %}class="selected"{% endif %}><a href="{% url "shop:product_list" %}">все</a></span>
         {% for c in categories %}
-        <li {% if category.slug == c.slug %}class="selected" {% endif %}>
+        <span {% if category.slug == c.slug %}class="selected" {% endif %}>
             <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
-        </li>
+        </span>
         {% endfor %}
-    </ul>
+        {% for p in price_types %}
+        <span {% if price_type.slug == p.slug %}class="selected" {% endif %}>
+            <a href="{{ p.get_absolute_url }}">{{ p.name }}</a>
+        </span>
+        {% endfor %}
+        {% for t in type_prs %}
+        <span {% if type_pr.slug == t.slug %}class="selected" {% endif %}>
+            <a href="{{ t.get_absolute_url }}">{{ t.name }}</a>
+        </span>
+        {% endfor %}
 </div>
 
 
@@ -31,7 +38,8 @@
         <a href="{{ product.get_absolute_url }}">{{ product.name }}</a><br>
         {% if product.quantity_pr > 0 %}
         RUB {{ product.price }}
-        Q{{ product.quantity_pr }}<br>
+        Q{{ product.quantity_pr }}
+        бумажная{{ product.bye_paper.count }}<br>
 
     
         {% if product in cart.value or product in cart_user.products %}

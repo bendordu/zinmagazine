@@ -1,22 +1,36 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Category, Product, Comment
+from .models import Category, Product, Comment, PriceType, TypePr
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from likes.decorators import ajax_required
 
 
-def product_list(request, category_slug=None):
+def product_list(request, category_slug=None, price_type_slug=None, type_pr_slug=None):
     category = None
+    price_type = None
+    type_pr = None
     categories = Category.objects.all()
     products = Product.objects.filter(available=True)
+    price_types = PriceType.objects.all()
+    type_prs = TypePr.objects.all()
     if category_slug:
         category = get_object_or_404(Category, slug=category_slug)
         products = products.filter(category=category)
+    if price_type_slug:
+        price_type = get_object_or_404(PriceType, slug=price_type_slug)
+        products = products.filter(price_type=price_type)
+    if type_pr_slug:
+        type_pr = get_object_or_404(TypePr, slug=type_pr_slug)
+        products = products.filter(type_pr=type_pr)
     return render(request, 'shop/product/list.html',
                 {'category': category,
                 'categories': categories,
-                'products': products})
+                'products': products,
+                'price_type': price_type,
+                'type_pr': type_pr,
+                'price_types': price_types,
+                'type_prs': type_prs})
 
 
 def product_detail(request, id, slug):

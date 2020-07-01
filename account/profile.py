@@ -1,11 +1,20 @@
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from .models import Profile, CategoryProfile
+from orders.models import Order
+from blog.models import Post
+from shop.models import Product
 
 
 def profile_detail(request, id, slug):
     profile = get_object_or_404(Profile, id=id, slug=slug)
-    return render(request,'profile/profile_detail.html', {'profile': profile})
+    orders = Order.objects.filter(saler=profile.user)
+    posts = Post.objects.filter(author=profile.user)
+    products = Product.objects.filter(user=profile.user)
+    return render(request,'profile/profile_detail.html', {'profile': profile,
+                                                          'orders': orders,
+                                                          'posts': posts,
+                                                          'products': products})
 
 def profile_list(request, category_slug=None):
     category = None

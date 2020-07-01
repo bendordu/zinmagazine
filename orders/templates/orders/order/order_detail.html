@@ -1,0 +1,25 @@
+{% extends "shop/bas.html" %}
+
+{% load static %}
+
+{% block title %}заказы{% endblock %}
+
+{% block content %} 
+
+<div class="orders">
+    <h2>Orders {{ request.user.username }}</h2>
+
+    {% for order in orders %}
+    <h3>{{ order }}</h3>
+    <p>{{ order.created }}</p>
+
+    {% for item in items %}
+    {{ item.product }}
+    {{ item.price }}
+    {{ item.quantity }}
+    {% endfor %}
+
+    {% endfor %}
+</div>
+
+{% endblock %}

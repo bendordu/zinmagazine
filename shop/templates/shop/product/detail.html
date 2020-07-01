@@ -9,12 +9,18 @@
 <div class="product-detail">
 	<img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
 	<h1>{{ product.name }}</h1>
-	<h6><a href="{{ product.category.get_absolute_url }}">{{ product.category }}</a></h6>
+	{% for category in product.category.all %}
+	<h6><a href="{{ category.get_absolute_url }}">{{ category }}</a></h6>
+	{% endfor %}
+	<h6><a href="{{ product.price_type.get_absolute_url }}">{{ product.price_type }}</a></h6>
+	<h6><a href="{{ product.type_pr.get_absolute_url }}">{{ product.type_pr }}</a></h6>
 	{% if product.quantity_pr > 0 %}
 		RUB {{ product.price }}
-		Q{{ product.quantity_pr }}</br>
+		Q{{ product.quantity_pr }}
+		бумажная-{{ product.bye_paper.count }},
+		заказали-{{ product.count_order }}</br>
 					
-	{% if product in cart.value %}
+	{% if product in cart.value or product in cart_user.products %}
 	<button class="">
 			<a href="{% url "cart:cart_detail" %}">Товар добавлен в корзину</a>
 	</button>
