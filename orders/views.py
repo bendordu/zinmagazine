@@ -21,8 +21,7 @@ def order_create(request):
             for item in cart:
                 OrderItem.objects.create(order=order, product=item['product'], price=item['price'], quantity=item['quantity'])
                 p = Product.objects.get(name=item['product'])
-                if not p.type_pr.id == 1:
-                    p.quantity_pr = item['quantity_pr']
+                p.quantity_pr = item['quantity_pr']
                 p.count_order += item['quantity']
                 p.save()
                 if request.user.is_active:

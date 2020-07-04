@@ -23,22 +23,21 @@ def product_list(request, category_slug=None, price_type_slug=None, type_pr_slug
     if type_pr_slug:
         type_pr = get_object_or_404(TypePr, slug=type_pr_slug)
         products = products.filter(type_pr=type_pr)
-    return render(request, 'shop/product/list.html',
-                {'category': category,
-                'categories': categories,
-                'products': products,
-                'price_type': price_type,
-                'type_pr': type_pr,
-                'price_types': price_types,
-                'type_prs': type_prs})
+    return render(request, 'shop/product/list.html',{'category': category,
+                                                    'categories': categories,
+                                                    'products': products,
+                                                    'price_type': price_type,
+                                                    'type_pr': type_pr,
+                                                    'price_types': price_types,
+                                                    'type_prs': type_prs})
 
 
 def product_detail(request, id, slug):
     product = get_object_or_404(Product, id=id, slug=slug, available=True)
     comments = product.comments.filter(active=True)
-    return render(request, 'shop/product/detail.html',
-                            {'product': product,
-                            'comments': comments}) 
+    return render(request, 'shop/product/detail.html', {'product': product,
+                                                        'comments': comments}) 
+                            
 
 @ajax_required
 @login_required
@@ -63,6 +62,20 @@ def product_add_comment(request):
         data = request.POST.get('data')
         comment = Comment(body=data, author = author, product=product, image=image)
         comment.save()
+    return JsonResponse({'status':'ok'})
+
+
+@ajax_required
+@login_required
+@require_POST
+def product_bye_paper(request):
+    product_id = request.POST.get('id')
+    product = Product.objects.get(id=product_id)
+    action = request.POST.get('action')
+    if action == 'bye_paper':
+        product.bye_paper.add(request.user)
+    else:
+        product.bye_paper.remove(request.user)
     return JsonResponse({'status':'ok'})
 
 

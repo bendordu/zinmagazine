@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'likes.apps.LikesConfig',
     'social_django',
     'sorl.thumbnail',
+    'chats.apps.ChatsConfig',
     
 ]
 
@@ -74,7 +75,8 @@ TEMPLATES = [
                 'cart.context_processors.cart',
                 'likes.likes.likes',
                 'blog.bookmarks.bookmark',
-                'cart.context_processors.cart_user'
+                'cart.context_processors.cart_user',
+                'chats.chats.chats',
             ],
         },
     },

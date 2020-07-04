@@ -20,6 +20,7 @@
     <h3>{% if category %}{{ category.name }}{% else %}все{% endif %}</h3>
 
     {% for profile in profiles %}
+    {% if profile.user != request.user %}
 
     <a href="{{ profile.get_absolute_url }}"><h1>{{ profile.user.username }}</h1></a> 
 
@@ -31,7 +32,8 @@
     {% for category in profile.category.all %}
     <a href="{{ category.get_absolute_url }}"><span>{{ category }}</span></a>
     {% endfor %}
-    
+
+    {% endif %}
     {% endfor %}
 
 </div>

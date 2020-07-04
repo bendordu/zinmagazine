@@ -8,13 +8,6 @@
 	
 <div class="profile-detail">
 
-    {% if profile.user == request.user %}
-    <p>Welcome to your profile.
-        You can <a href="{% url "edit" %}">edit your profile</a> or
-        <a href="{% url "password_change" %}">change your password</a>.
-    </p>
-    {% endif %}
-
 	{% load thumbnail %}
     {% thumbnail profile.photo "200" as im %}
     <img src="{% if profile.photo %}{{ im.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
@@ -24,9 +17,28 @@
     <span>{{ profile.user.first_name }}</span>
     <span>{{ profile.user.last_name }}</span>
     <p>{{ profile.date_of_birth }}</p>
+
     {% for category in profile.category.all %}
     <a href="{{ category.get_absolute_url }}"><span>{{ category }}</span></a>
     {% endfor %}
+
+    {% for chat in chatss %}
+    {% if request.user in chat.members.all %}
+    <button class="write_message_ready">
+        <a href="{{ chat.get_absolute_url }}">Написать сообщение</a>
+    </button>
+    {% endif %}
+    {% empty %}
+    <button class="write_message">
+        <a href="#">Написать сообщение</a>
+    </button>
+    <form class="message" hidden="true" method="post" data-name="{{ request.user.username }}-{{ profile.user.username }}" data-member='{{ profile.user.id }}'>
+        <textarea name="body" cols="40" rows="10" required></textarea>
+        <input class="message" type="file" title="Add image">
+        <input type="submit" value="Send">
+    </form>
+    {% endfor %}
+    
     <p>{{ profile.about|linebreaks }}</p>
     <a href="{% url "blog:post_list" %}"><p>статьи</p></a>
     {% for post in posts %}
@@ -45,3 +57,28 @@
 						
 
 {% endblock %}       
+
+{% block domready %}
+
+$('button.write_message').click(function(e){
+    e.preventDefault();
+    $('form.message').removeAttr("hidden");
+    $('form.message').on("submit", function(e){
+        e.preventDefault();
+        $.post('{% url "chats:new_chat" %}',
+            {
+            name: $('form.message').data('name'),
+            data: $('form.message textarea').val(),
+            member: $('form.message').data('member'),
+            },
+            function(data){
+                if (data['status'] == 'ok')
+                {
+                    $('button.write_message').replaceWith('');
+                    $('form.message').replaceWith('Сообщение отправлено');
+                }
+            });
+        });
+    });
+    
+{% endblock %}

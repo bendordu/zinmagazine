@@ -10,15 +10,14 @@
 	<img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
 	<h1>{{ product.name }}</h1>
 	{% for category in product.category.all %}
-	<h6><a href="{{ category.get_absolute_url }}">{{ category }}</a></h6>
+	<span><a href="{{ category.get_absolute_url }}">{{ category }}</a></span>
 	{% endfor %}
-	<h6><a href="{{ product.price_type.get_absolute_url }}">{{ product.price_type }}</a></h6>
-	<h6><a href="{{ product.type_pr.get_absolute_url }}">{{ product.type_pr }}</a></h6>
+	<span><a href="{{ product.type_pr.get_absolute_url }}">{{ product.type_pr }}</a></span></br>
+	{% if product.price_type.id == 1 %}
 	{% if product.quantity_pr > 0 %}
 		RUB {{ product.price }}
 		Q{{ product.quantity_pr }}
-		бумажная-{{ product.bye_paper.count }},
-		заказали-{{ product.count_order }}</br>
+		заказали {{ product.count_order }}</br>
 					
 	{% if product in cart.value or product in cart_user.products %}
 	<button class="">
@@ -33,6 +32,13 @@
 	{% endif %} 
 	<h4>{% else %}Товара нет в наличии{% endif %}</h4>
 
+	{% endif %}
+
+        {% if product.price_type.id == 3 %}
+        от RUB {{ product.price }}
+        <button class="">Скачать</button><br>
+        {% endif %}
+
 	{% with total_likes=product.users_like.count users_like=product.users_like.all %}
 
 	<span class="{{ product.id }}">{{ total_likes }}</span>
@@ -45,6 +51,23 @@
 	</button>
 		
 	{% endwith%}   
+
+	{% if product.type_pr.id == 1 %}
+    <div class="product-bye-paper">
+        <span class='bye_paper{{ product.id }}'>{{ product.bye_paper.count }}</span>
+        <button data-id="{{ product.id }}" data-action="{% if request.user in product.bye_paper.all %}un{% endif %}bye_paper" class="bye_paper">
+            {% if request.user not in product.bye_paper.all %}
+                {% if request.user.is_authenticated %}
+                    bye_paper
+                {% else %}
+                    bye_paper
+                {% endif %}
+            {% else %}
+            unbye_paper
+            {% endif %}
+        </button>
+    </div> 
+    {% endif %}  
 
 	{{ product.description|linebreaks }}
 
@@ -148,7 +171,7 @@ $('form.comment').on("submit", function(e){
 				var myDate = new Date();
 				var fullDate = myDate.getDate() +" "+ myDate.getMonth() +" " + myDate.getFullYear();
 				$('div.new_comment').replaceWith('<div class="comment"><p class="info">Comment by'+' '+name+' '+fullDate+'</p><p>'+$('form.comment textarea').val()+'</p></div><div class="new_comment"></div>');
-				$('form.comment textarea').val('')
+				$('form.comment textarea').val('');
 				$('span.count_comments').text(parseInt($('span.count_comments').text())+1)
 			}
 		});
@@ -173,5 +196,28 @@ $('div.comment').click(function(e){
 		});
 	});
 
+$('button.bye_paper').click(function(e){
+	e.preventDefault();
+	var product_bye_paper = event.target;
+	$.post('{% url "shop:product_bye_paper" %}',
+		{
+		id: $(product_bye_paper).data('id'),
+		action: $(product_bye_paper).data('action')
+		},
+		function(data){
+			if (data['status'] == 'ok')
+			{
+				var previous_action = $(product_bye_paper).data('action');
+				var pr_id = $(product_bye_paper).data('id');
+	
+				$(product_bye_paper).data('action', previous_action == 'bye_paper' ? 'unbye_paper' : 'bye_paper');
+				$(product_bye_paper).text(previous_action == 'bye_paper' ? 'unbye_paper' : 'bye_paper');
+				
+				var previous_bye_paper = parseInt($('span.' + 'bye_paper' + pr_id).text());
+				$('span.' + 'bye_paper' + pr_id).text(previous_action == 'bye_paper' ? previous_bye_paper + 1 : previous_bye_paper - 1);
+			}
+		});
+	});
+	
 
 {% endblock %}

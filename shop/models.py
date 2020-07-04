@@ -48,7 +48,8 @@ class Product(models.Model):
     category = models.ManyToManyField(Category, related_name='products')
     name = models.CharField(max_length=200, db_index=True)
     slug = models.SlugField(max_length=200, db_index=True)
-    image = models.ImageField(upload_to='products/%Y/%m/%d', blank=True)
+    image = models.ImageField(upload_to='products/image/%Y/%m/%d', blank=True)
+    file_product = models.FileField(upload_to='products/file/%Y/%m/%d', blank=True)
     description = models.TextField(blank=True)
     price = models.IntegerField(validators=[MinValueValidator(0)], default=0)
     available = models.BooleanField(default=True)
@@ -61,6 +62,8 @@ class Product(models.Model):
     type_pr = models.ForeignKey(TypePr, on_delete=models.CASCADE, related_name='type_pr', default=1)
     bye_paper = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='bye_paper', blank=True)
     price_type = models.ForeignKey(PriceType, on_delete=models.CASCADE, related_name='pice_type', default=1)
+    donate_sum = models.IntegerField(validators=[MinValueValidator(0)], default=0)
+
 
     class Meta:
         ordering = ('name',)
@@ -87,3 +90,5 @@ class Comment(models.Model):
 
     def __str__(self):
         return 'Comment by {} on {}'.format(self.author.first_name, self.product)
+
+
