@@ -10,6 +10,8 @@ urlpatterns = [
     path('edit/', views.edit, name='edit'),
     path('<int:id>/<slug:slug>/', profile.profile_detail, name='profile_detail'),
     path('profiles/', profile.profile_list, name='profile_list'),
+    path('subscribe/', profile.subscribe, name='subscribe'),
+    path('news/', profile.news, name='news'),
     
     path('social-auth/', include('social_django.urls', namespace='social')),
     path('password_change/', auth_views.PasswordChangeView.as_view(), name='password_change'),

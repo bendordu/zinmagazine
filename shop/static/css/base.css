@@ -27,7 +27,8 @@
 .search,
 .liked,
 .bookmark,
-.chats{
+.chats,
+.news{
     width: 30%;
     border-radius: 10%;
     border: none;

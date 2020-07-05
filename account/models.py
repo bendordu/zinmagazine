@@ -24,6 +24,7 @@ class Profile(models.Model):
     category = models.ManyToManyField(CategoryProfile, related_name='category', blank=True)
     about = models.TextField(blank=True) 
     slug = models.SlugField(max_length=200, db_index=True, default=user)
+    subscribers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='subscribers', blank=True)
     
     class Meta:
         index_together = (('id', 'slug'),)

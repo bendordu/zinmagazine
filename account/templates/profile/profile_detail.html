@@ -18,8 +18,23 @@
     <span>{{ profile.user.last_name }}</span>
     <p>{{ profile.date_of_birth }}</p>
 
+    <span class="{{ profile.id }}">{{ profile.subscribers.count }}</span> 
+    <button class="open_subscribers">▼</button>
+    <div class="subscribers" hidden='true'>
+        {% for subscriber in profile.subscribers.all %}
+        {{ subscriber }}
+        {% endfor  %}
+    </div>
+	<button data-id="{{ profile.id }}" data-action="{% if request.user in profile.subscribers.all %}un{% endif %}subscribe" class="subscribe">
+			{% if request.user not in profile.subscribers.all %}
+					Subscribe
+			{% else %}
+					Unsubscribe
+			{% endif %}
+	</button><br>
+		
     {% for category in profile.category.all %}
-    <a href="{{ category.get_absolute_url }}"><span>{{ category }}</span></a>
+    <a href="{{ category.get_absolute_url }}"><span>{{ category }}</span></a><br>
     {% endfor %}
 
     {% for chat in chatss %}
@@ -47,6 +62,10 @@
     <p>товары</p>
     {% for product in products %}
     <a href="{{ product.get_absolute_url }}"><span>{{ product }}</span></a>
+    {% endfor %}
+    <p>объявления</p>
+    {% for announcement in announcements %}
+    <a href="{{ announcement.get_absolute_url }}"><span>{{ announcement }}</span></a>
     {% endfor %}
     
     {% if profile.user == request.user %}
@@ -80,5 +99,32 @@ $('button.write_message').click(function(e){
             });
         });
     });
-    
+
+$('button.subscribe').click(function(e){
+    e.preventDefault();
+    var subscribe = event.target;
+    $.post('{% url "subscribe" %}',
+        {
+        id: $(subscribe).data('id'),
+        action: $(subscribe).data('action')
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {
+                var previous_action = $(subscribe).data('action');
+                var pr_id = $(subscribe).data('id');
+  
+                $(subscribe).data('action', previous_action == 'subscribe' ? 'unsubscribe' : 'subscribe');
+                $(subscribe).text(previous_action == 'subscribe' ? 'Unsubscribe' : 'Subscribe');
+                
+                var previous_subscribe = parseInt($('span.' + pr_id).text());
+                $('span.' + pr_id).text(previous_action == 'subscribe' ? previous_subscribe + 1 : previous_subscribe - 1);
+            }
+        });
+    });
+
+$('button.open_subscribers').click(function(e){
+    e.preventDefault();
+    $('div.subscribers').removeAttr("hidden");
+    });
 {% endblock %}

@@ -1,0 +1,77 @@
+{% extends "shop/bas.html" %}
+{% load static %}
+{% block title %}{% if category %}{{ category.name }}{% else %}Announcements{% endif %}{% endblock %}
+{% block content %}   
+
+<div class="list">
+    <h3>категории</h3>
+        <span {% if not category %}class="selected"{% endif %}><a href="{% url "announcement:announcement_list" %}">все</a></span>
+        {% for c in categories %}
+        <span {% if category.slug == c.slug %}class="selected" {% endif %}>
+            <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
+        </span>
+        {% endfor %}
+</div>
+
+<div class="announcement-list">
+
+    <h3>{% if category %}{{ category.name }}{% else %}{% endif %}</h3>
+
+    {% for announcement in announcements %}
+
+    <div class="announcement">
+        <a href="{{ announcement.get_absolute_url }}"><img src="{% if announcement.image %}{{ announcement.image.url }}{%else %}{% static "img/no_image.png" %}{% endif %}"></a>
+        <a href="{{ announcement.get_absolute_url }}">{{ announcement.title }}</a><br>
+        <p class="date">Published {{ announcement.created }} by {{ announcement.author_ann }}</p>
+        <p>{{ announcement.body }}</p>
+        <p>{{ announcement.likes.count }} comments</p>
+
+    </div>
+
+    <div class="announcement-like">
+        <span class='{{ announcement.id }}'>{{ announcement.likes.count }}</span>
+        <button data-id="{{ announcement.id }}" data-action="{% if request.user in announcement.likes.all %}un{% endif %}like" class="like">
+            {% if request.user not in announcement.likes.all %}
+                {% if request.user.is_authenticated %}
+                    Like
+                {% else %}
+                    Like
+                {% endif %}
+            {% else %}
+            Unlike
+            {% endif %}
+        </button>
+    </div>              
+
+    {% endfor%}
+
+</div>
+
+{% endblock %}
+
+{% block domready %}
+
+$('button.like').click(function(e){
+    e.preventDefault();
+    var announcement_like = event.target;
+    $.post('{% url "announcement:announcement_like" %}',
+        {
+        id: $(announcement_like).data('id'),
+        action: $(announcement_like).data('action')
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {
+                var previous_action = $(announcement_like).data('action');
+                var pr_id = $(announcement_like).data('id');
+  
+                $(announcement_like).data('action', previous_action == 'like' ? 'unlike' : 'like');
+                $(announcement_like).text(previous_action == 'like' ? 'Unlike' : 'Like');
+                
+                var previous_likes = parseInt($('span.' + pr_id).text());
+                $('span.' + pr_id).text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
+            }
+        });
+    });
+
+{% endblock %}

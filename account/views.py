@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Profile
 from django.contrib import messages
 from cart.models import CartUser
+from announcement.models import Announcement
 
 
 @login_required
@@ -17,10 +18,12 @@ def dashboard(request):
     orders = Order.objects.filter(saler=request.user)
     posts = Post.objects.filter(author=request.user)
     products = Product.objects.filter(user=request.user)
+    announcements = Announcement.objects.filter(author_ann=request.user)
     return render(request,'account/dashboard.html', {'profile': profile,
                                                     'orders': orders,
                                                     'posts': posts,
-                                                    'products': products})
+                                                    'products': products,
+                                                    'announcements': announcements})
 
 def user_login(request):
     if request.method == 'POST':

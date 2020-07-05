@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'social_django',
     'sorl.thumbnail',
     'chats.apps.ChatsConfig',
+    'announcement.apps.AnnouncementConfig',
     
 ]
 
@@ -77,6 +78,8 @@ TEMPLATES = [
                 'blog.bookmarks.bookmark',
                 'cart.context_processors.cart_user',
                 'chats.chats.chats',
+                'chats.chats.chats',
+                'account.subscribers.isubscribe',
             ],
         },
     },

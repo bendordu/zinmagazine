@@ -1,0 +1,144 @@
+{% extends "shop/bas.html" %}
+{% load static %}
+{% block title %}{{ announcement.title }}{% endblock %}
+{% block content %}   
+
+<div class="announcement">
+    <a href="{{ announcement.get_absolute_url }}"><img src="{% if announcement.image %}{{ announcement.image.url }}{%else %}{% static "img/no_image.png" %}{% endif %}"></a>
+    <h2>{{ announcement.title }}</h2>
+    <p class="date">Published {{ announcement.created }} by <a href="{{ profile.get_absolute_url }}">{{ announcement.author_ann }}</p></a>
+    {% for c in announcement.category.all %}
+    <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
+    {% endfor %}
+    <p>{{ announcement.body }}</p>
+</div>
+{% if request.user != announcement.author_ann %}
+{% for chat in chatss %}
+    {% if request.user in chat.members.all %}
+    <button class="write_message_ready">
+        <a href="{{ chat.get_absolute_url }}">Написать сообщение</a>
+    </button>
+    {% endif %}
+{% empty %}
+<button class="write_message">
+    <a href="#">Написать сообщение</a>
+</button>
+<form class="message" hidden="true" method="post" data-name="{{ request.user.username }}-{{ profile.user.username }}" data-member='{{ profile.user.id }}'>
+    <textarea name="body" cols="40" rows="10" required></textarea>
+    <input class="message" type="file" title="Add image">
+    <input type="submit" value="Send">
+</form>
+{% endfor %}
+{% endif %}
+
+<div class="announcement-like">
+    <span class='{{ announcement.id }}'>{{ announcement.likes.count }}</span>
+    <button data-id="{{ announcement.id }}" data-action="{% if request.user in announcement.likes.all %}un{% endif %}like" class="like">
+        {% if request.user not in announcement.likes.all %}
+            {% if request.user.is_authenticated %}
+                Like
+            {% else %}
+                Like
+            {% endif %}
+        {% else %}
+        Unlike
+        {% endif %}
+    </button>
+</div>   
+
+
+<span class="count_comments">{{ comments.count }}</span><span> comment{{ comments.counts|pluralize }}</span>
+
+{% for comment in comments %}
+<div class="comment">
+    <p class="info">
+        Comment by {{ comment.author_comment_ann.first_name }}
+        {{ comment.created }}
+    </p>
+    {{ comment.body|linebreaks }}
+	{{ comment.image }}
+	
+	{% if comment.author_comment_ann == request.user %}
+	<a href="" data-body="{{ comment.id }}" data-id="{{ announcement.id }}" data-action="remove" class="remove">удалить</a>
+	{% endif %}
+</div>
+
+{% empty %}
+<p>There are no comments yet...</p>
+
+{% endfor %}
+
+<div class="new_comment"></div>
+
+
+<form class="comment" method="post" data-id='{{ announcement.id }}'>
+    <textarea name="body" cols="40" rows="10" required=""></textarea>
+    <input type="submit" value="Add comment">
+</form>
+
+{% endblock %}
+
+{% block domready %}
+
+$('button.like').click(function(e){
+    e.preventDefault();
+    var announcement_like = event.target;
+    $.post('{% url "announcement:announcement_like" %}',
+        {
+        id: $(announcement_like).data('id'),
+        action: $(announcement_like).data('action')
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {
+                var previous_action = $(announcement_like).data('action');
+                var pr_id = $(announcement_like).data('id');
+  
+                $(announcement_like).data('action', previous_action == 'like' ? 'unlike' : 'like');
+                $(announcement_like).text(previous_action == 'like' ? 'Unlike' : 'Like');
+                
+                var previous_likes = parseInt($('span.' + pr_id).text());
+                $('span.' + pr_id).text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
+            }
+        });
+    });
+
+$('form.comment').on("submit", function(e){
+    e.preventDefault();
+    $.post('{% url "announcement:announcement_add_comment" %}',
+        {
+        id: $(this).data('id'),
+        data: $('form.comment textarea').val(),
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {
+                var name = $('a.name').text()
+                var myDate = new Date();
+                var fullDate = myDate.getDate() +" "+ myDate.getMonth() +" " + myDate.getFullYear();
+                $('div.new_comment').replaceWith('<div class="comment"><p class="info">Comment by'+' '+name+' '+fullDate+'</p><p>'+$('form.comment textarea').val()+'</p></div><div class="new_comment"></div>');
+                $('form.comment textarea').val('')
+                $('span.count_comments').text(parseInt($('span.count_comments').text())+1)
+            }
+        });
+    });
+
+$('div.comment').click(function(e){
+    e.preventDefault();
+    var remove = event.target;
+    $.post('{% url "announcement:announcement_add_comment" %}',
+        {
+        id: $(remove).data('id'),
+        action: $(remove).data('action'),
+        body: $(remove).data('body'),
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {
+                var parent = $(remove).parent('.comment');
+                parent.replaceWith('<p>Ваш комментарий удален</p>');
+                $('span.count_comments').text(parseInt($('span.count_comments').text())-1)	
+            }
+        });
+    });
+{% endblock %}

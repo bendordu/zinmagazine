@@ -14,8 +14,7 @@ def post_list(request):
 
 def post_detail(request, year, month, day, post):
     post = get_object_or_404(Post, slug=post, status='published',publish__year=year,publish__month=month,publish__day=day)
-    comments = post.comments.filter(active=True)
-    author = (request.user)   
+    comments = post.comments.filter(active=True) 
     return render(request,'blog/post/detail.html',{'post': post,
                                                     'comments': comments})
 

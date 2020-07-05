@@ -1,0 +1,89 @@
+{% extends "shop/bas.html" %}
+
+{% load static %}
+
+{% block title %}news{% endblock %}
+
+{% block content %}  
+
+{% for new in news %}
+
+    <a href="{{ new.get_absolute_url }}"><h2>{{ new }}</h2></a>
+
+    {% for author in new.user.all %}
+    {% for profile in profiles %}
+    {% if profile.user == author %}
+    <a href="{{ profile.get_absolute_url }}">{{ author }}</a>
+    {% endif %}
+    {% endfor %}
+    {% endfor %}
+
+    {% for profile in profiles %}
+    {% if profile.user == new.author_ann %}
+    <a href="{{ profile.get_absolute_url }}">{{ new.author_ann }}</a>
+    {% endif %}
+    {% endfor %}
+
+    <p>
+    {% for category in new.category.all %}
+    <a href="{{ category.get_absolute_url }}">{{ category }}</a>
+    {% endfor %}
+    </p>
+    <p>
+    <a href="{{ new.type_pr.get_absolute_url }}">{{ new.type_pr }}</a>
+    </p>
+    <p>
+    {{ new.body }}
+    {{ new.description }}
+    </p>
+    
+    <div class="product-like">
+        <span class='{{ new.id }}'>{{ new.users_like.count }}</span>
+        {% if new.users_like %}
+        <button data-id="{{ new.id }}" data-action="{% if request.user in new.users_like.all %}un{% endif %}like" class="like">
+            {% if request.user not in new.users_like.all %}
+                {% if request.user.is_authenticated %}
+                    Like
+                {% else %}
+                    Like
+                {% endif %}
+            {% else %}
+            Unlike
+            {% endif %}
+        </button>
+        {% endif %}
+    </div>        
+
+{% endfor %}
+
+{% endblock %}  
+
+{% block domready %}
+
+$('button.like').click(function(e){
+    e.preventDefault();
+    var product_like = event.target;
+    $.post('{% url "likes:product_like" %}',
+        {
+        id: $(product_like).data('id'),
+        action: $(product_like).data('action')
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {
+                var previous_action = $(product_like).data('action');
+                var pr_id = $(product_like).data('id');
+  
+                $(product_like).data('action', previous_action == 'like' ? 'unlike' : 'like');
+                $(product_like).text(previous_action == 'like' ? 'Unlike' : 'Like');
+                
+                var previous_likes = parseInt($('span.' + pr_id).text());
+                $('span.' + pr_id).text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
+
+                var previous_liked = parseInt($('button.liked a').text());
+                $('button.liked a').text(previous_action == 'like' ? previous_liked + 1 : previous_liked - 1);
+            }
+        });
+    });
+
+{% endblock %}

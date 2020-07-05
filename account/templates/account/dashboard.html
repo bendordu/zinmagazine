@@ -24,6 +24,15 @@
     <span>{{ profile.user.first_name }}</span>
     <span>{{ profile.user.last_name }}</span>
     <p>{{ profile.date_of_birth }}</p>
+
+    <span class="{{ profile.id }}">{{ profile.subscribers.count }}</span> 
+    <button class="open_subscribers">▼</button>
+    <div class="subscribers" hidden='true'>
+        {% for subscriber in profile.subscribers.all %}
+        {{ subscriber }}
+        {% endfor  %}
+    </div><br>
+
     {% for category in profile.category.all %}
     <a href="{{ category.get_absolute_url }}"><span>{{ category }}</span></a>
     {% endfor %}
@@ -36,6 +45,10 @@
     {% for product in products %}
     <a href="{{ product.get_absolute_url }}"><span>{{ product }}</span></a>
     {% endfor %}
+    <p>объявления</p>
+    {% for announcement in announcements %}
+    <a href="{{ announcement.get_absolute_url }}"><span>{{ announcement }}</span></a>
+    {% endfor %}
     
     {% if profile.user == request.user %}
     <a href='{% url "orders:order_list" %}'><p>заказы</p></a>
@@ -45,3 +58,12 @@
 						
 
 {% endblock %}  
+
+{% block domready %}
+
+$('button.open_subscribers').click(function(e){
+    e.preventDefault();
+    $('div.subscribers').removeAttr("hidden");
+    });
+
+{% endblock %}

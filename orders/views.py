@@ -40,8 +40,7 @@ def order_create(request):
 
 def order_list(request):
     orders = Order.objects.filter(saler=request.user)
-    for order in orders:
-        items = OrderItem.objects.filter(order=order)
+    items = OrderItem.objects.filter(order__in=orders)
     return render(request, 'orders/order/order_detail.html', {'orders': orders, 'items': items})
 
     
