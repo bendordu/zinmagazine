@@ -79,7 +79,6 @@ TEMPLATES = [
                 'cart.context_processors.cart_user',
                 'chats.chats.chats',
                 'chats.chats.chats',
-                'account.subscribers.isubscribe',
             ],
         },
     },

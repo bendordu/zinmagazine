@@ -19,6 +19,7 @@ def profile_detail(request, id, slug):
     posts = Post.objects.filter(author=profile.user)
     products = Product.objects.filter(user=profile.user)
     announcements = Announcement.objects.filter(author_ann=profile.user)
+    subscribe = Profile.objects.filter(subscribers=profile.id)
     try:
         chatss = Chat.objects.filter(members=profile.user.id).filter(members=request.user.id)
     except Chat.DoesNotExist:
@@ -28,7 +29,8 @@ def profile_detail(request, id, slug):
                                                           'posts': posts,
                                                           'products': products,
                                                           'chatss': chatss,
-                                                          'announcements': announcements})
+                                                          'announcements': announcements,
+                                                          'subscribe': subscribe})
 
 def profile_list(request, category_slug=None):
     category = None

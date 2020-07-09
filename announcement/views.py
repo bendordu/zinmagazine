@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Announcement, Comment, Category
 from account.models import Profile
 from django.http import JsonResponse
@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from likes.decorators import ajax_required
 from chats.models import Chat
+from .forms import AnnouncementCreateForm
+from django.utils.text import slugify
 
 def announcement_list(request, category_slug=None):
     category = None
@@ -30,6 +32,19 @@ def announcement_detail(request, id, slug):
                                                         'comments': comments,
                                                         'profile': profile,
                                                         'chatss': chatss,})
+
+def create_announcement(request):
+    if request.method == 'POST':
+        form = AnnouncementCreateForm(request.POST)
+        if form.is_valid():
+            new_ann = form.save(commit=False)
+            new_ann.author_ann = request.user
+            new_ann.slug = slugify(form.cleaned_data['title'])
+            new_ann.save()
+            return redirect('announcement:announcement_list')
+    else:
+        form = AnnouncementCreateForm
+    return render(request, 'create_announcement.html', {'form': form})
 
 @ajax_required
 @login_required

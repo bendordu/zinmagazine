@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post, Comment
 from shop.models import Product
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -6,6 +6,9 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from likes.decorators import ajax_required
+from .forms import PostCreateForm
+from django.utils import timezone
+from django.utils.text import slugify
 
 def post_list(request):
     posts = Post.published.all()
@@ -24,6 +27,19 @@ def bookmark_list(request):
     else:
         bookmark_list = None
     return render(request, 'blog/bookmark_list.html', {'bookmark_list': bookmark_list})
+
+def create_post(request):
+    if request.method == 'POST':
+        form = PostCreateForm(request.POST)
+        if form.is_valid():
+            new_post = form.save(commit=False)
+            new_post.slug = slugify(form.cleaned_data['title'])
+            new_post.author = request.user
+            new_post.save()
+        return redirect('blog:post_list')
+    else:
+        form = PostCreateForm
+    return render(request, 'blog/create_post.html', {'form': form})
 
 @ajax_required
 @login_required

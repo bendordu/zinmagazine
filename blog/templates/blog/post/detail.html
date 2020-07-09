@@ -1,46 +1,32 @@
 {% extends "shop/bas.html" %}
-
 {% load static %}
-
+{% load tz %}
 {% block title %}{{ post.title }}{% endblock %}
-
 {% block content %}
 
 <h1 class="title">{{ post.title }}</h1>
-<p class="date">Published {{ post.publish }} by {{ post.author.first_name }}</p>
+<p class="date">{{ post.created }} {{ post.author.first_name }}</p>
 {{ post.body|linebreaks }}
 
-{% with total_likes=post.users_like.count users_like=post.users_like.all %}
-
-<span class="{{ post.title }}">{{ total_likes }}</span>
-<button data-title="{{ post.title }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like button">
-		{% if request.user not in users_like %}
+<span class="{{ post.title }}">{{ post.users_like.count }}</span>
+<button data-title="{{ post.title }}" data-action="{% if request.user in post.users_like.all %}un{% endif %}like" class="like button">
+		{% if request.user not in post.users_like.all %}
 				Like
 		{% else %}
 				Unlike
 		{% endif %}
 </button>
-		
-{% endwith%}  
 
-
-{% with total_bookmark=post.bookmark.count bookmark=post.bookmark.all %}
-
-<span class="{{ post.author }}">{{ total_bookmark }}</span>
-<button data-title="{{ post.title }}" data-author='{{ post.author }}' data-action="{% if request.user in bookmark %}un{% endif %}bookmark" class="bookmarkbutton">
-		{% if request.user not in bookmark %}
+<span class="{{ post.author }}">{{ post.bookmark.count }}</span>
+<button data-title="{{ post.title }}" data-author='{{ post.author }}' data-action="{% if request.user in post.bookmark.all %}un{% endif %}bookmark" class="bookmarkbutton">
+		{% if request.user not in post.bookmark.all %}
 			bookmark
 		{% else %}
 			unbookmark
 		{% endif %}
 </button>
-		
-{% endwith%} 
 
-
-{% with comments.count as total_comments %}
-<span class="count_comments">{{ total_comments }}</span><span> comment{{ total_comments|pluralize }}</span>
-{% endwith %}
+<span class="count_comments">{{ comments.count }}</span><span> comment{{ comments.count|pluralize }}</span>
 
 {% for comment in comments %}
 <div class="comment">
@@ -53,7 +39,6 @@
 	
 	{% if comment.author_comment == request.user %}
 	<a href="" data-body="{{ comment.body }}" data-title="{{ post.title }}" data-action="remove" class="remove">удалить</a>
-	<a href="" data-id="{{ product.id }}" data-action="edit" class="edit">редактировать</a>
 	{% endif %}
 </div>
 
@@ -64,15 +49,12 @@
 
 <div class="new_comment"></div>
 
-
 <form class="comment" method="post" data-title='{{ post.title }}'>
     <textarea name="body" cols="40" rows="10" required=""></textarea>
     <input type="submit" value="Add comment">
 </form>
 
-
 {% endblock %}
-
 
 {% block domready %}
 

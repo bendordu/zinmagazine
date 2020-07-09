@@ -1,0 +1,12 @@
+{% extends "shop/bas.html" %}
+{% load static %}
+{% block title %}create announcement{% endblock %}
+{% block content %}  
+
+<form action="." method="post">
+    {{ form }}
+    {% csrf_token %}
+    <input type="submit" value="Create announcement">
+</form>
+
+{% endblock %}   

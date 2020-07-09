@@ -8,51 +8,76 @@
 
 {% for new in news %}
 
-    <a href="{{ new.get_absolute_url }}"><h2>{{ new }}</h2></a>
+<a href="{{ new.get_absolute_url }}"><h2>{{ new }}</h2></a>
 
-    {% for author in new.user.all %}
-    {% for profile in profiles %}
-    {% if profile.user == author %}
-    <a href="{{ profile.get_absolute_url }}">{{ author }}</a>
-    {% endif %}
-    {% endfor %}
-    {% endfor %}
+{% for author in new.user.all %}
+{% for profile in profiles %}
+{% if profile.user == author %}
+<a href="{{ profile.get_absolute_url }}">{{ author }}</a>
+{% endif %}
+{% endfor %}
+{% endfor %}
 
-    {% for profile in profiles %}
-    {% if profile.user == new.author_ann %}
-    <a href="{{ profile.get_absolute_url }}">{{ new.author_ann }}</a>
-    {% endif %}
-    {% endfor %}
+{% for profile in profiles %}
+{% if profile.user == new.author_ann %}
+<a href="{{ profile.get_absolute_url }}">{{ new.author_ann }}</a>
+{% endif %}
+{% endfor %}
 
-    <p>
-    {% for category in new.category.all %}
-    <a href="{{ category.get_absolute_url }}">{{ category }}</a>
-    {% endfor %}
-    </p>
-    <p>
-    <a href="{{ new.type_pr.get_absolute_url }}">{{ new.type_pr }}</a>
-    </p>
-    <p>
-    {{ new.body }}
-    {{ new.description }}
-    </p>
-    
-    <div class="product-like">
-        <span class='{{ new.id }}'>{{ new.users_like.count }}</span>
-        {% if new.users_like %}
-        <button data-id="{{ new.id }}" data-action="{% if request.user in new.users_like.all %}un{% endif %}like" class="like">
-            {% if request.user not in new.users_like.all %}
-                {% if request.user.is_authenticated %}
-                    Like
-                {% else %}
-                    Like
-                {% endif %}
+<p>
+{% for category in new.category.all %}
+<a href="{{ category.get_absolute_url }}">{{ category }}</a>
+{% endfor %}
+</p>
+<p>
+<a href="{{ new.type_pr.get_absolute_url }}">{{ new.type_pr }}</a>
+</p>
+<p>
+{{ new.body }}
+{{ new.description }}
+</p>
+
+{% for product in products %}
+{% if product.users_like == new.users_like %}
+<div class="product-like">
+    <span class='{{ product.id }}'>{{ product.users_like.count }}</span>
+    {% if product.users_like %}
+    <button data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" class="product_like">
+        {% if request.user not in product.users_like.all %}
+            {% if request.user.is_authenticated %}
+                Like
             {% else %}
-            Unlike
+                Like
             {% endif %}
-        </button>
+        {% else %}
+        Unlike
         {% endif %}
-    </div>        
+    </button>
+    {% endif %}
+</div>  
+{% endif %}
+{% endfor %}    
+
+{% for post in posts %}
+{% if post.users_like == new.users_like %}
+<div class="post-like">
+    <span class='{{ post.title }}'>{{ post.users_like.count }}</span>
+    {% if post.users_like %}
+    <button data-title="{{ post.title }}" data-action="{% if request.user in post.users_like.all %}un{% endif %}like" class="like_post">
+        {% if request.user not in post.users_like.all %}
+            {% if request.user.is_authenticated %}
+                Like
+            {% else %}
+                Like
+            {% endif %}
+        {% else %}
+        Unlike
+        {% endif %}
+    </button>
+    {% endif %}
+</div>  
+{% endif %}
+{% endfor %} 
 
 {% endfor %}
 
@@ -60,7 +85,7 @@
 
 {% block domready %}
 
-$('button.like').click(function(e){
+$('button.product_like').click(function(e){
     e.preventDefault();
     var product_like = event.target;
     $.post('{% url "likes:product_like" %}',
@@ -82,6 +107,29 @@ $('button.like').click(function(e){
 
                 var previous_liked = parseInt($('button.liked a').text());
                 $('button.liked a').text(previous_action == 'like' ? previous_liked + 1 : previous_liked - 1);
+            }
+        });
+    });
+
+$('button.like_post').click(function(e){
+    e.preventDefault();
+    var post_like = event.target;
+    $.post('{% url "blog:post_like" %}',
+        {
+        title: $(post_like).data('title'),
+        action: $(post_like).data('action')
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {
+                var previous_action = $(post_like).data('action');
+                var title = $(post_like).data('title');
+    
+                $(post_like).data('action', previous_action == 'like' ? 'unlike' : 'like');
+                $(post_like).text(previous_action == 'like' ? 'Unlike' : 'Like');
+                
+                var previous_likes = parseInt($('span.' + title).text());
+                $('span.' + title).text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
             }
         });
     });

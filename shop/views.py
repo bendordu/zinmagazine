@@ -1,9 +1,11 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Category, Product, Comment, PriceType, TypePr
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from likes.decorators import ajax_required
+from .models import Category, Product, Comment, PriceType, TypePr
+from .forms import ProductCreateForm
+from django.utils.text import slugify
 
 
 def product_list(request, category_slug=None, price_type_slug=None, type_pr_slug=None):
@@ -37,6 +39,19 @@ def product_detail(request, id, slug):
     comments = product.comments.filter(active=True)
     return render(request, 'shop/product/detail.html', {'product': product,
                                                         'comments': comments}) 
+
+def create_product(request):
+    if request.method == 'POST':
+        form = ProductCreateForm(request.POST)
+        if form.is_valid():
+            new_pr = form.save(commit=False)
+            new_pr.slug = slugify(form.cleaned_data['name'])
+            new_pr.save()
+            new_pr.user.add(request.user)
+            return redirect('shop:product_list')
+    else:
+        form = ProductCreateForm
+    return render(request, 'shop/product/create_product.html', {'form': form})
                             
 
 @ajax_required

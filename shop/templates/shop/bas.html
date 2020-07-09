@@ -42,7 +42,7 @@
             <div class="uslog">
                 <p class="">
                     {% if request.user.is_authenticated %}
-                    <a class="name" href="{% url "dashboard" %}">{{ request.user.first_name }}</a>,
+                    <a class="name" href="{% url "dashboard" %}">{{ request.user.username }}</a>,
                     <a href="{% url "logout" %}">Logout</a>
                     {% else %}
                     <a href="{% url "login" %}">Log-in</a>

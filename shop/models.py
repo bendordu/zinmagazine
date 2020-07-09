@@ -92,3 +92,6 @@ class Comment(models.Model):
         return 'Comment by {} on {}'.format(self.author.first_name, self.product)
 
 
+
+
+

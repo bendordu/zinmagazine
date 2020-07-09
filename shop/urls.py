@@ -9,6 +9,7 @@ urlpatterns = [
     path('comment/', views.product_add_comment, name='product_add_comment'),
     path('<int:id>/<slug:slug>/', views.product_detail, name='product_detail'),
     path('product_bye_paper/', views.product_bye_paper, name='product_bye_paper'),
+    path('create_product/', views.create_product, name='create_product'),
     path('type_pr/<slug:type_pr_slug>/', views.product_list, name='product_list_by_type_pr'),
     path('price_type/<slug:price_type_slug>/', views.product_list, name='product_list_by_price_type'),
     path('<slug:category_slug>/', views.product_list, name='product_list_by_category'),

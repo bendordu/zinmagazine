@@ -11,7 +11,7 @@
     {% if profile.user == request.user %}
     <p>Welcome to your profile.
         You can <a href="{% url "edit" %}">edit your profile</a> or
-        <a href="{% url "password_change" %}">change your password</a>.
+        <a href="{% url "password_change" %}">change your password</a>. Удалить
     </p>
     {% endif %}
 
@@ -36,16 +36,23 @@
     {% for category in profile.category.all %}
     <a href="{{ category.get_absolute_url }}"><span>{{ category }}</span></a>
     {% endfor %}
+
     <p>{{ profile.about|linebreaks }}</p>
-    <a href="{% url "blog:post_list" %}"><p>статьи</p></a>
+
+    <p>статьи</p>
+    <button class="createpost"><a href="{% url "blog:create_post" %}">+</a></button>
     {% for post in posts %}
     <a href="{{ post.get_absolute_url }}"><span>{{ post }}</span></a>
     {% endfor %}
+
     <p>товары</p>
+    <button class="createproduct"><a href="{% url "shop:create_product" %}">+</a></button>
     {% for product in products %}
     <a href="{{ product.get_absolute_url }}"><span>{{ product }}</span></a>
     {% endfor %}
+
     <p>объявления</p>
+    <button class="createannouncement"><a href="{% url "announcement:create_announcement" %}">+</a></button>
     {% for announcement in announcements %}
     <a href="{{ announcement.get_absolute_url }}"><span>{{ announcement }}</span></a>
     {% endfor %}

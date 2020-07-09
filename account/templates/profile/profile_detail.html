@@ -1,9 +1,6 @@
 {% extends "shop/bas.html" %}
-
 {% load static %}
-
-{% block title %}{{ profile.username }}{% endblock %}
-
+{% block title %}{{ profile.user.username }}{% endblock %}
 {% block content %}      						
 	
 <div class="profile-detail">
@@ -18,7 +15,13 @@
     <span>{{ profile.user.last_name }}</span>
     <p>{{ profile.date_of_birth }}</p>
 
-    <span class="{{ profile.id }}">{{ profile.subscribers.count }}</span> 
+    подписки <span>{{ subscribe.count }}</span><button class="open_subscribe">▼</button>
+    <div class="subscribe" hidden='true'>
+        {% for subscribe in subscribe.all %}
+        {{ subscribe.user }}
+        {% endfor  %}
+    </div><br>
+    подписчики <span class="{{ profile.id }}">{{ profile.subscribers.count }}</span>
     <button class="open_subscribers">▼</button>
     <div class="subscribers" hidden='true'>
         {% for subscriber in profile.subscribers.all %}
@@ -55,14 +58,17 @@
     {% endfor %}
     
     <p>{{ profile.about|linebreaks }}</p>
-    <a href="{% url "blog:post_list" %}"><p>статьи</p></a>
+
+    <p>статьи</p>
     {% for post in posts %}
     <a href="{{ post.get_absolute_url }}"><span>{{ post }}</span></a>
     {% endfor %}
+
     <p>товары</p>
     {% for product in products %}
     <a href="{{ product.get_absolute_url }}"><span>{{ product }}</span></a>
     {% endfor %}
+
     <p>объявления</p>
     {% for announcement in announcements %}
     <a href="{{ announcement.get_absolute_url }}"><span>{{ announcement }}</span></a>
@@ -127,4 +133,8 @@ $('button.open_subscribers').click(function(e){
     e.preventDefault();
     $('div.subscribers').removeAttr("hidden");
     });
+$('button.open_subscribe').click(function(e){
+    e.preventDefault();
+    $('div.subscribe').removeAttr("hidden");
+    });    
 {% endblock %}
