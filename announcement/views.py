@@ -13,12 +13,14 @@ def announcement_list(request, category_slug=None):
     category = None
     categories = Category.objects.all()
     announcements = Announcement.objects.filter(active=True)
+    profiles = Profile.objects.all()
     if category_slug:
         category = get_object_or_404(Category, slug=category_slug)
         announcements = Announcement.objects.filter(category=category)
     return render(request, 'announcement_list.html', {'category': category,
                                                     'categories': categories,
-                                                    'announcements': announcements})
+                                                    'announcements': announcements,
+                                                    'profiles': profiles})
 
 def announcement_detail(request, id, slug):
     announcement = Announcement.objects.get(id=id, slug=slug)

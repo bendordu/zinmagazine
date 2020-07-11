@@ -8,7 +8,17 @@
 <h2>
     <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
 </h2>
-<p class="date">Published {{ post.publish }} by {{ post.author }}</p>
+<p class="date">{{ post.publish }} 
+    {% for profile in profiles %}
+    {% if profile.user == post.author %}
+    {% if post.author != request.user %}
+    <a href="{{ profile.get_absolute_url }}">{{ post.author }}</p></a>
+	{% else %}
+	<a href="{% url "dashboard" %}">{{ post.author }}</p></a>
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+</p>
 <p>{{ post.body }}</p>
 
 <span class="{{ post.title }}">{{ post.users_like.count }} ♥</span>

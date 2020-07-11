@@ -6,7 +6,12 @@
 <div class="announcement">
     <a href="{{ announcement.get_absolute_url }}"><img src="{% if announcement.image %}{{ announcement.image.url }}{%else %}{% static "img/no_image.png" %}{% endif %}"></a>
     <h2>{{ announcement.title }}</h2>
-    <p class="date">Published {{ announcement.created }} by <a href="{{ profile.get_absolute_url }}">{{ announcement.author_ann }}</p></a>
+    <p class="date">{{ announcement.created }}
+        {% if announcement.author_ann != request.user %}
+        <a href="{{ profile.get_absolute_url }}">{{ announcement.author_ann }}</p></a>
+        {% else %}
+        <a href="{% url "dashboard" %}">{{ announcement.author_ann }}</p></a>
+        {% endif %}
     {% for c in announcement.category.all %}
     <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
     {% endfor %}

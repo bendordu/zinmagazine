@@ -5,6 +5,6 @@ app_name = 'likes'
 
 urlpatterns = [
     path('likes/', views.product_like, name='product_like'),   
-    path('product_like_list/', views.product_like_list, name='product_like_list'), 
+    path('like_list/', views.like_list, name='like_list'), 
 ]
 

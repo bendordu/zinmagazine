@@ -3,6 +3,15 @@
 {% block title %}{% if category %}{{ category.name }}{% else %}Products{% endif %}{% endblock %}
 {% block content %}   
 
+<div class="search_product">
+    <form action="." method="post">
+        {{ form }}
+        {% csrf_token %}
+        <input type="submit" value="Search product">
+    </form>
+</div>
+
+
 <div class="list">
     <h3>категории</h3>
         <span {% if not category or price_type or type_pr %}class="selected"{% endif %}><a href="{% url "shop:product_list" %}">все</a></span>

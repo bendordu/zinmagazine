@@ -1,0 +1,115 @@
+{% extends "shop/bas.html" %}
+{% load static %}
+{% block title %}{{ proect.name }}{% endblock %}
+{% block content %}      	
+
+	
+<div class="proect-detail">
+	<img src="{% if proect.image %}{{ proect.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+	<h1>{{ proect.name }}</h1>
+    <p>{{ proect.description }}</p>
+    <p>{{ proect.major }}</p>
+
+    <div class="search_user">
+        <form action="." method="post" class="user_search">
+            {{ form }}
+            {% csrf_token %}
+            <input type="submit" value="Search">
+        </form>
+    </div>
+
+    {% for s in search.all %}
+        <span class="find_user">{{ s }}</span>
+        <button class="add_minor" data-user="{{ s }}" data-id="{{ proect.id }}">+</button>
+    {% endfor %}
+    
+    {% for minor in proect.minors.all %}
+    <p>{{ minor.user }}</p>
+    <p>{{ minor.user.category }}</p>
+    {% empty %}
+    пока нет других участников
+    {% endfor %}
+
+    {% for message_text in messages_text %}
+    <div class="message">
+
+        <p class="info">
+            <span>{{ message_text.author }} {{ message_text.pub_date }}</span>
+        </p>
+            <span class="body">{{ message_text.message }}</span>
+
+            {% if message_text.author == request.user %}
+                <a href="" data-body="{{ message_text.id }}" data-name="{{ proect.chat.name }}" data-action="remove" class="remove">удалить</a>
+                <a href="" data-name="{{ proect.chat.name }}" data-action="edit" class="edit">редактировать</a>
+            {% endif %}
+    </div>
+    {% endfor %}
+
+    <div class="new_message"></div>
+    
+    <form class="message" method="post" data-name="{{ proect.chat.name }}">
+        <textarea name="body" cols="40" rows="10" required></textarea>
+        <input class="message" type="file" title="Add image">
+        <input type="submit" value="Send">
+    </form>
+
+
+</div>
+						
+
+{% endblock %}
+
+{% block domready %}
+
+$('form.message').on("submit", function(e){
+	e.preventDefault();
+	$.post('{% url "chats:message_add" %}',
+		{
+		name: $(this).data('name'),
+		data: $('form.message textarea').val(),
+		},
+		function(data){
+			if (data['status'] == 'ok')
+			{
+				var name = $('a.name').text();
+				var myDate = new Date();
+				var fullDate = myDate.getDate() +" "+ myDate.getMonth() +" " + myDate.getFullYear();
+				$('div.new_message').replaceWith('<div class="message"><p class="info">'+name+' '+fullDate+'</p><p>'+$('form.message textarea').val()+'</p></div><div class="new_message"></div>');
+				$('form.message textarea').val('')
+			}
+		});
+    });
+
+$('div.message').click(function(e){
+    e.preventDefault();
+    var remove = event.target;
+    $.post('{% url "chats:message_add" %}',
+        {
+        name: $(remove).data('name'),
+        action: $(remove).data('action'),
+        body: $(remove).data('body'),
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {
+                var parent = $(remove).parent('.message');
+                parent.replaceWith('<p>Ваше сообщение удалено</p>');
+            }
+        });
+    });
+
+$('button.add_minor').click(function(e){
+    e.preventDefault();
+    $.post('{% url "proect:minor_add" %}',
+        {
+        user: $(this).data('user'),
+        id: $(this).data('id'),
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {
+            }
+        });
+    });
+    
+{% endblock %}

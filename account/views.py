@@ -10,6 +10,7 @@ from .models import Profile
 from django.contrib import messages
 from cart.models import CartUser
 from announcement.models import Announcement
+from proect.models import Proect
 
 
 @login_required
@@ -19,11 +20,15 @@ def dashboard(request):
     posts = Post.objects.filter(author=request.user)
     products = Product.objects.filter(user=request.user)
     announcements = Announcement.objects.filter(author_ann=request.user)
+    subscribe = Profile.objects.filter(subscribers=profile.id)
+    proects = Proect.objects.filter(major=profile.id)
     return render(request,'account/dashboard.html', {'profile': profile,
                                                     'orders': orders,
                                                     'posts': posts,
                                                     'products': products,
-                                                    'announcements': announcements})
+                                                    'announcements': announcements,
+                                                    'subscribe': subscribe,
+                                                    'proects': proects})
 
 def user_login(request):
     if request.method == 'POST':

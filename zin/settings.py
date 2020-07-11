@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'sorl.thumbnail',
     'chats.apps.ChatsConfig',
     'announcement.apps.AnnouncementConfig',
+    'proect.apps.ProectConfig',
     
 ]
 

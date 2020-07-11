@@ -5,24 +5,26 @@
 {% block content %}
 
 <h1 class="title">{{ post.title }}</h1>
-<p class="date">{{ post.created }} {{ post.author.first_name }}</p>
+<p class="date">{{ post.publish }} 
+	{% if post.author != request.user %}
+	<a href="{{ profile.get_absolute_url }}">{{ post.author }}</a>
+	{% else %}
+	<a href="{% url "dashboard" %}">{{ post.author }}</p></a>
+	{% endif %}
+</p>
 {{ post.body|linebreaks }}
 
 <span class="{{ post.title }}">{{ post.users_like.count }}</span>
 <button data-title="{{ post.title }}" data-action="{% if request.user in post.users_like.all %}un{% endif %}like" class="like button">
 		{% if request.user not in post.users_like.all %}
-				Like
-		{% else %}
-				Unlike
+			Like {% else %} Unlike
 		{% endif %}
 </button>
 
 <span class="{{ post.author }}">{{ post.bookmark.count }}</span>
 <button data-title="{{ post.title }}" data-author='{{ post.author }}' data-action="{% if request.user in post.bookmark.all %}un{% endif %}bookmark" class="bookmarkbutton">
 		{% if request.user not in post.bookmark.all %}
-			bookmark
-		{% else %}
-			unbookmark
+			bookmark {% else %} unbookmark
 		{% endif %}
 </button>
 

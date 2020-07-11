@@ -7,19 +7,23 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from likes.decorators import ajax_required
 from .forms import PostCreateForm
-from django.utils import timezone
 from django.utils.text import slugify
+from account.models import Profile
 
 def post_list(request):
     posts = Post.published.all()
-    return render(request, 'blog/blog.html', {'posts': posts})
+    profiles = Profile.objects.all()
+    return render(request, 'blog/blog.html', {'posts': posts,
+                                              'profiles': profiles})
     
 
 def post_detail(request, year, month, day, post):
     post = get_object_or_404(Post, slug=post, status='published',publish__year=year,publish__month=month,publish__day=day)
     comments = post.comments.filter(active=True) 
+    profile = Profile.objects.get(user=post.author)
     return render(request,'blog/post/detail.html',{'post': post,
-                                                    'comments': comments})
+                                                    'comments': comments,
+                                                    'profile': profile})
 
 def bookmark_list(request):
     if request.user.is_active:

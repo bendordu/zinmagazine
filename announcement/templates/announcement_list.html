@@ -22,9 +22,19 @@
     <div class="announcement">
         <a href="{{ announcement.get_absolute_url }}"><img src="{% if announcement.image %}{{ announcement.image.url }}{%else %}{% static "img/no_image.png" %}{% endif %}"></a>
         <a href="{{ announcement.get_absolute_url }}">{{ announcement.title }}</a><br>
-        <p class="date">Published {{ announcement.created }} by {{ announcement.author_ann }}</p>
+        <p class="date">{{ announcement.created }} 
+            {% for profile in profiles %}
+            {% if profile.user == announcement.author_ann %}
+            {% if announcement.author_ann != request.user %}
+            <a href="{{ profile.get_absolute_url }}">{{ announcement.author_ann }}</a>
+            {% else %}
+            <a href="{% url "dashboard" %}">{{ announcement.author_ann }}</a>
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+        </p>
         <p>{{ announcement.body }}</p>
-        <p>{{ announcement.likes.count }} comments</p>
+        <span>{{ announcement.likes.count }} comments</span>
 
     </div>
 

@@ -25,7 +25,14 @@
     <span>{{ profile.user.last_name }}</span>
     <p>{{ profile.date_of_birth }}</p>
 
-    <span class="{{ profile.id }}">{{ profile.subscribers.count }}</span> 
+    подписки <span>{{ subscribe.count }}</span>
+    <button class="open_subscribe">▼</button>
+    <div class="subscribe" hidden='true'>
+        {% for subscribe in subscribe.all %}
+        {{ subscribe.user }}
+        {% endfor  %}
+    </div><br>
+    подписчики <span class="{{ profile.id }}">{{ profile.subscribers.count }}</span> 
     <button class="open_subscribers">▼</button>
     <div class="subscribers" hidden='true'>
         {% for subscriber in profile.subscribers.all %}
@@ -57,9 +64,13 @@
     <a href="{{ announcement.get_absolute_url }}"><span>{{ announcement }}</span></a>
     {% endfor %}
     
-    {% if profile.user == request.user %}
     <a href='{% url "orders:order_list" %}'><p>заказы</p></a>
-    {% endif %}
+
+    <p>проекты</p>
+    <button class="createproect"><a href="{% url "proect:create_proect" %}">+</a></button>
+    {% for proect in proects %}
+    <a href='{{ proect.get_absolute_url }}'>{{ proect }}</a>
+    {% endfor %}
 
 </div>
 						
@@ -71,6 +82,10 @@
 $('button.open_subscribers').click(function(e){
     e.preventDefault();
     $('div.subscribers').removeAttr("hidden");
+    });
+$('button.open_subscribe').click(function(e){
+    e.preventDefault();
+    $('div.subscribe').removeAttr("hidden");
     });
 
 {% endblock %}

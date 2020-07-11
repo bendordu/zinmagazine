@@ -1,0 +1,190 @@
+{% extends "shop/bas.html" %}
+{% load static %}
+{% block title %}likes{% endblock %}
+{% block content %} 
+
+<a href="#" class="products">products</a>
+<a href="#" class="posts">posts</a>
+<a href="#" class="announcements">announcements</a>
+
+{% if not products_liked %}
+
+<span>Пока здесь пусто...</span> 
+Вы можете <a href="{% url "shop:product_list" %}" class="button light">продолжить покупки</a>
+или <a href="{% url "register" %}">зарегистрироваться</a>, чтобы добавлять товары в избранное.
+
+{% else %}
+
+<div class="products_liked">
+    {% for product in products_liked %}
+    <div class="item">
+        <a href="{{ product.get_absolute_url }}"><img src="{% if product.image %}{{ product.image.url }}{%else %}{% static "img/no_image.png" %}{% endif %}"></a>
+        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a><br>
+
+        {% if product.price_type.id == 1 %}
+            {% if product.quantity_pr > 0 %}
+
+                RUB {{ product.price }}
+                Q{{ product.quantity_pr }}<br>
+
+                {% if product in cart.value or product in cart_user.products %}
+                    <button class="">
+                        <a href="{% url "cart:cart_detail" %}">Товар добавлен в корзину</a>
+                    </button>
+
+                    {% else %}
+
+                    <button class="add" data-id="{{ product.id }}" data-action="{% if product in cart.value %}cart{% endif %}add">
+                        Добавить в корзину
+                    </button> 
+
+                {% endif %}
+            <h4>{% else %}Товара нет в наличии{% endif %}</h4> 
+        {% endif %}
+
+        {% if product.price_type.id == 3 %}
+            от RUB {{ product.price }}<br>
+            <button class="">Скачать</button>
+        {% endif %}
+
+    </div>
+    
+    <div class="{{ product.id }}">
+        <span class={{ product.id }}>{{ product.users_like.count }}</span>
+        <button data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" class="like">
+            {% if request.user not in product.users_like.all %}
+                Like {% else %} Unlike
+            {% endif %}
+        </button>
+    </div>       
+    {% endfor%}
+</div>
+
+{% endif %}
+
+<div class="posts_liked">
+    {% for post in post_liked %}
+        <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+        <p class="date">{{ post.publish }} 
+        {% for profile in profiles %}
+        {% if profile.user == post.author %}
+        {% if post.author != request.user %}
+            <a href="{{ profile.get_absolute_url }}">{{ post.author }}</a>
+        {% else %}
+            <a href="{% url "dashboard" %}">{{ post.author }}</a>
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+        </p>
+        <p>{{ post.body }}</p>
+    
+        <span class="{{ post.title }}">{{ post.users_like.count }} ♥</span>
+        <span class="{{ post.title }}">{{ post.comments.count }} comment{{ post.comments.count|pluralize }}</span>
+        <span class="{{ post.title }}">{{ post.bookmark.count }}
+        <svg class="bi bi-bookmark" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M8 12l5 3V3a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12l5-3zm-4 1.234l4-2.4 4 2.4V3a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10.234z"></path>
+        </svg>
+        </span>
+    {% endfor %}
+</div>
+
+<div class="ann_liked">
+    {% for announcement in ann_liked %}
+        <div class="{{ announcement.id }}">
+            <a href="{{ announcement.get_absolute_url }}"><img src="{% if announcement.image %}{{ announcement.image.url }}{%else %}{% static "img/no_image.png" %}{% endif %}"></a>
+            <a href="{{ announcement.get_absolute_url }}">{{ announcement.title }}</a><br>
+            <p class="date">{{ announcement.created }} 
+                {% for profile in profiles %}
+                    {% if profile.user == announcement.author_ann %}
+                        {% if announcement.author_ann != request.user %}
+                            <a href="{{ profile.get_absolute_url }}">{{ announcement.author_ann }}</a>
+                        {% else %}
+                            <a href="{% url "dashboard" %}">{{ announcement.author_ann }}</a>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </p>
+            <p>{{ announcement.body }}</p>
+            <span>{{ announcement.likes.count }} comments</span>
+        
+
+            <div class="announcement-like">
+                <span class='{{ announcement.id }}'>{{ announcement.likes.count }}</span>
+                <button data-id="{{ announcement.id }}" data-action="{% if request.user in announcement.likes.all %}un{% endif %}like" class="annlike">
+                    {% if request.user not in announcement.likes.all %}
+                        Like {% else %} Unlike
+                    {% endif %}
+                </button>
+            </div>
+        </div>              
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+{% block domready %}
+
+$('button.like').click(function(e){
+    e.preventDefault();
+    var product_like = event.target;
+    $.post('{% url "likes:product_like" %}',
+        {
+        id: $(product_like).data('id'),
+        action: $(product_like).data('action')
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {   
+                if (parseInt($('button.liked a').text()) > 1){
+                    var pr_id = $(product_like).data('id');
+                    $('div.' + pr_id).replaceWith('');  
+                    
+                    var previous_liked = parseInt($('button.liked a').text());
+                    $('button.liked a').text(previous_liked - 1);
+                }else{
+                    var previous_liked = parseInt($('button.liked a').text());
+                    $('button.liked a').text(previous_liked - 1);
+                    $('div.liked_list').replaceWith('<h2>Теперь здесь пусто...</h2>'); 
+                }
+            }
+        });
+    });
+
+$('button.add').click(function(e){
+    e.preventDefault();
+    var product_add = event.target;
+    $.post('{% url "cart:cart_add_product" %}',
+        {
+        id: $(product_add).data('id'),
+        action: $(product_add).data('action'),
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {
+                $(product_add).replaceWith('<button disabled><a href="{% url "cart:cart_detail" %}">Товар добавлен в корзину</a></button>');  
+                 
+                var previous_add = parseInt($('button.cart a').text());
+                $('button.cart a').text(previous_add + 1);
+            }
+        });
+    });
+
+$('button.annlike').click(function(e){
+    e.preventDefault();
+    let announcement_like = event.target;
+    $.post('{% url "announcement:announcement_like" %}',
+        {
+        id: $(announcement_like).data('id'),
+        action: $(announcement_like).data('action')
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {
+                let previous_likes = parseInt($('span.' + pr_id).text());
+                let pr_id = $(announcement_like).data('id');
+                $('div.' + pr_id).replaceWith('');  
+            }
+        });
+    });
+
+{% endblock %}
