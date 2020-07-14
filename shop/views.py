@@ -7,6 +7,7 @@ from .models import Category, Product, Comment, PriceType, TypePr
 from .forms import ProductCreateForm, SearchForm
 from django.utils.text import slugify
 from django.db.models import Q
+from django.contrib.auth.models import User
 
 
 def product_list(request, category_slug=None, price_type_slug=None, type_pr_slug=None):
@@ -17,12 +18,14 @@ def product_list(request, category_slug=None, price_type_slug=None, type_pr_slug
     products = Product.objects.filter(available=True)
     price_types = PriceType.objects.all()
     type_prs = TypePr.objects.all()
-    form = SearchForm()
     if request.method == 'POST':
-        form = SearchForm(request.POST)
-        if form.is_valid():
-            search = form.cleaned_data['search']
-            products = products.filter(Q(name__icontains=search)|Q(description__icontains=search))
+        search = request.POST.get('s')
+        products = products.filter(Q(name__icontains=search)|Q(description__icontains=search))
+        try:
+            user = User.objects.get(username=search)
+            products = Product.objects.filter(user=user, available=True)
+        except:
+            pass
     if category_slug:
         category = get_object_or_404(Category, slug=category_slug)
         products = products.filter(category=category)
@@ -38,8 +41,7 @@ def product_list(request, category_slug=None, price_type_slug=None, type_pr_slug
                                                     'price_type': price_type,
                                                     'type_pr': type_pr,
                                                     'price_types': price_types,
-                                                    'type_prs': type_prs,
-                                                    'form': form})
+                                                    'type_prs': type_prs})
 
 
 def product_detail(request, id, slug):
@@ -100,6 +102,24 @@ def product_bye_paper(request):
     else:
         product.bye_paper.remove(request.user)
     return JsonResponse({'status':'ok'})
+
+@ajax_required
+@require_POST
+def product_s(request):
+    search = request.POST.get('s')
+    prs = Product.objects.filter(available=True)
+    authors = []
+    for p in prs:
+        for u in p.user.all():
+            if search.lower() in u.username:
+                if u.username not in authors:
+                    authors += [u.username]
+    products_ = Product.objects.filter(Q(name__icontains=search)|Q(description__icontains=search)).values('name')
+    products = []
+    for p in products_:
+        product = p['name']
+        products += [product]
+    return JsonResponse({'status':'ok', 'products': products, 'authors': authors})
     
 
 def base(request):

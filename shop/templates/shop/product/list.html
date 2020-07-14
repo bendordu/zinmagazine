@@ -3,14 +3,13 @@
 {% block title %}{% if category %}{{ category.name }}{% else %}Products{% endif %}{% endblock %}
 {% block content %}   
 
-<div class="search_product">
-    <form action="." method="post">
-        {{ form }}
-        {% csrf_token %}
-        <input type="submit" value="Search product">
-    </form>
-</div>
 
+<form class="s" method="post">
+    <textarea name="s" cols="10" rows="1" required></textarea>
+    {% csrf_token %}
+    <input type="submit" value="&#128270;">
+</form>
+<div class="find"></div>
 
 <div class="list">
     <h3>категории</h3>
@@ -41,7 +40,7 @@
 
     <div class="item">
         <a href="{{ product.get_absolute_url }}"><img src="{% if product.image %}{{ product.image.url }}{%else %}{% static "img/no_image.png" %}{% endif %}"></a>
-        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a><br>
+        <a href="{{ product.get_absolute_url }}" class="product_name">{{ product.name }}</a><br>
 
         {% if product.price_type.id == 1 %}
         {% if product.quantity_pr > 0 %}
@@ -70,11 +69,10 @@
 
     </div>
 
-    {% with total_likes=product.users_like.count users_like=product.users_like.all %}
     <div class="product-like">
-        <span class={{ product.id }}>{{ total_likes }}</span>
-        <button data-id="{{ product.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like">
-            {% if request.user not in users_like %}
+        <span class={{ product.id }}>{{ product.users_like.count }}</span>
+        <button data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" class="like">
+            {% if request.user not in product.users_like.all %}
                 {% if request.user.is_authenticated %}
                     Like
                 {% else %}
@@ -84,17 +82,12 @@
             Unlike
             {% endif %}
         </button>
-    </div>                  
-
-    {% endwith%}        
+    </div>              
 
     {% endfor%}
 
 </div>
-
 {% endblock %}
-
-
 
 
 {% block domready %}
@@ -141,6 +134,42 @@ $('button.add').click(function(e){
                 var previous_add = parseInt($('button.cart a').text());
                 $('button.cart a').text(previous_add + 1);
             }
+        });
+    });
+
+$('form.s').on('input', (function() {
+    if ($('form.s textarea').val().length >= 1) {
+        $.post('{% url "shop:product_s" %}',
+            {
+                s: $('form.s textarea').val(),
+            },
+            function(data){
+                if (data['status'] == 'ok')
+                {
+                    $('div.find').html('');
+                    for (let value of data['products']) 
+                    {
+                        $('div.find').append('<a href="#" class="f">'+value+'</a><br>');
+                    }
+                    for (let value of data['authors']) 
+                    {
+                        $('div.find').append('<a href="#" class="f">'+value+'</a><br>');
+                    }
+                    $('a.f').click(function(){
+                        $('form.s textarea').val($(this).text());
+                        $('form.s').trigger("submit");
+                        });
+                }
+            });
+        }
+    else { $('div.find').text(''); }
+    }));
+
+
+$('form.s').on("submit", function(){
+    $.post('{% url "shop:product_list" %}',
+        {
+        s: $('form.s textarea').val(),
         });
     });
 

@@ -19,14 +19,12 @@ def proect_detail(request, id, slug):
             message.is_readed = True
             message.save()
     search = None
-    form = SearchForm()
     if request.method == 'POST':
-        form = SearchForm(request.POST)
-        if form.is_valid():
-            search = User.objects.filter(username__iexact=form.cleaned_data['search'])
+        search = request.POST.get('search')
+        user = User.objects.get(username=search)
+        minor = Minor.objects.get(user=user) 
     return render(request, 'proect_detail.html', {'proect': proect,
                                                   'messages_text': messages_text,
-                                                  'form': form,
                                                   'search': search}) 
 
 def create_proect(request):
@@ -47,7 +45,6 @@ def create_proect(request):
 
 
 @ajax_required
-@login_required
 @require_POST
 def minor_add(request):
     user = User.objects.get(username=request.POST.get('user'))
@@ -56,4 +53,23 @@ def minor_add(request):
     proect = get_object_or_404(Proect, id=proect_id)
     proect.minors.add(minor.id)
     return JsonResponse({'status':'ok'})
+
+@ajax_required
+@require_POST
+def minor_search(request):
+    search = request.POST.get('search')
+    proect_id = request.POST.get('id')
+    proect = get_object_or_404(Proect, id=proect_id)
+    minorss = proect.minors.all()
+    minors = []
+    for minor in minorss:
+        minors += [minor.user.username]
+    try:
+        userss = User.objects.filter(username__icontains=search).exclude(username=proect.major).exclude(username__in=minors)
+        users = []
+        for u in userss:
+            users += [u.username]
+    except:
+        pass
+    return JsonResponse({'status':'ok', 'users': users})
     

@@ -3,32 +3,24 @@
 {% block title %}{{ proect.name }}{% endblock %}
 {% block content %}      	
 
+<form class="s" method="post" data-id="{{ proect.id }}">
+    <textarea name="s" cols="10" rows="1" required></textarea>
+    {% csrf_token %}
+</form>
+<div class="find"></div>
 	
 <div class="proect-detail">
 	<img src="{% if proect.image %}{{ proect.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
 	<h1>{{ proect.name }}</h1>
     <p>{{ proect.description }}</p>
-    <p>{{ proect.major }}</p>
+    главный: <p>{{ proect.major }}</p>
 
-    <div class="search_user">
-        <form action="." method="post" class="user_search">
-            {{ form }}
-            {% csrf_token %}
-            <input type="submit" value="Search">
-        </form>
-    </div>
-
-    {% for s in search.all %}
-        <span class="find_user">{{ s }}</span>
-        <button class="add_minor" data-user="{{ s }}" data-id="{{ proect.id }}">+</button>
-    {% endfor %}
     
-    {% for minor in proect.minors.all %}
+    участники: {% for minor in proect.minors.all %}
     <p>{{ minor.user }}</p>
     <p>{{ minor.user.category }}</p>
-    {% empty %}
-    пока нет других участников
     {% endfor %}
+    <p class="minor"></p>
 
     {% for message_text in messages_text %}
     <div class="message">
@@ -98,18 +90,40 @@ $('div.message').click(function(e){
         });
     });
 
-$('button.add_minor').click(function(e){
-    e.preventDefault();
-    $.post('{% url "proect:minor_add" %}',
-        {
-        user: $(this).data('user'),
-        id: $(this).data('id'),
-        },
-        function(data){
-            if (data['status'] == 'ok')
+$('form.s').on('input', (function() {
+    if ($('form.s textarea').val().length >= 1) {
+        $.post('{% url "proect:minor_search" %}',
             {
-            }
-        });
-    });
+                search: $('form.s textarea').val(),
+                id: $(this).data('id'),
+            },
+            function(data){
+                if (data['status'] == 'ok')
+                {
+                    $('div.find').html('');
+                    for (let value of data['users']) 
+                    {
+                        $('div.find').append('<a href="#" class="f">'+value+'</a> <button class="add_minor" data-user="'+value+'" data-id="{{ proect.id }}">+</button><br>');
+                    }
+                    $('button.add_minor').click(function(){
+                        let minor = $(this).data('user');
+                        $.post('{% url "proect:minor_add" %}',
+                            {
+                            user: $(this).data('user'),
+                            id: $(this).data('id'),
+                            },
+                            function(data){
+                                if (data['status'] == 'ok')
+                                {
+                                    $('p.minor').append('<a href="#">'+minor+'</a>');
+                                }
+                            
+                        });
+                    });
+                }
+            });
+        }
+    else { $('div.find').text(''); }
+    }));
     
 {% endblock %}
