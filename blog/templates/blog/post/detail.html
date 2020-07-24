@@ -4,58 +4,59 @@
 {% block title %}{{ post.title }}{% endblock %}
 {% block content %}
 
-<h1 class="title">{{ post.title }}</h1>
-<p class="date">{{ post.publish }} 
-	{% if post.author != request.user %}
-	<a href="{{ profile.get_absolute_url }}">{{ post.author }}</a>
-	{% else %}
-	<a href="{% url "dashboard" %}">{{ post.author }}</p></a>
-	{% endif %}
-</p>
-{{ post.body|linebreaks }}
-
-<span class="{{ post.title }}">{{ post.users_like.count }}</span>
-<button data-title="{{ post.title }}" data-action="{% if request.user in post.users_like.all %}un{% endif %}like" class="like button">
-		{% if request.user not in post.users_like.all %}
-			Like {% else %} Unlike
+<div class="post_detail">
+	<h1 class="title">{{ post.title }}</h1>
+	<p class="date">{{ post.publish }} 
+		{% if post.author != request.user %}
+		<a href="{{ profile.get_absolute_url }}">{{ post.author }}</a>
+		{% else %}
+		<a href="{% url "dashboard" %}">{{ post.author }}</p></a>
 		{% endif %}
-</button>
+	</p>
+	{{ post.body|linebreaks }}
 
-<span class="{{ post.author }}">{{ post.bookmark.count }}</span>
-<button data-title="{{ post.title }}" data-author='{{ post.author }}' data-action="{% if request.user in post.bookmark.all %}un{% endif %}bookmark" class="bookmarkbutton">
-		{% if request.user not in post.bookmark.all %}
-			bookmark {% else %} unbookmark
+	<span class="{{ post.title }}">{{ post.users_like.count }}</span>
+	<button data-title="{{ post.title }}" data-action="{% if request.user in post.users_like.all %}un{% endif %}like" class="like button">
+			{% if request.user not in post.users_like.all %}
+				Like {% else %} Unlike
+			{% endif %}
+	</button>
+
+	<span class="{{ post.author }}">{{ post.bookmark.count }}</span>
+	<button data-title="{{ post.title }}" data-author='{{ post.author }}' data-action="{% if request.user in post.bookmark.all %}un{% endif %}bookmark" class="bookmarkbutton">
+			{% if request.user not in post.bookmark.all %}
+				bookmark {% else %} unbookmark
+			{% endif %}
+	</button>
+
+	<span class="count_comments">{{ comments.count }}</span><span> comment{{ comments.count|pluralize }}</span>
+
+	{% for comment in comments %}
+	<div class="comment">
+		<p class="info">
+			Comment by {{ comment.author_comment.first_name }}
+			{{ comment.created }}
+		</p>
+		{{ comment.body|linebreaks }}
+		{{ comment.image }}
+		
+		{% if comment.author_comment == request.user %}
+		<a href="" data-body="{{ comment.body }}" data-title="{{ post.title }}" data-action="remove" class="remove">удалить</a>
 		{% endif %}
-</button>
+	</div>
 
-<span class="count_comments">{{ comments.count }}</span><span> comment{{ comments.count|pluralize }}</span>
+	{% empty %}
+	<p>There are no comments yet...</p>
 
-{% for comment in comments %}
-<div class="comment">
-    <p class="info">
-        Comment by {{ comment.author_comment.first_name }}
-        {{ comment.created }}
-    </p>
-    {{ comment.body|linebreaks }}
-	{{ comment.image }}
-	
-	{% if comment.author_comment == request.user %}
-	<a href="" data-body="{{ comment.body }}" data-title="{{ post.title }}" data-action="remove" class="remove">удалить</a>
-	{% endif %}
+	{% endfor %}
+
+	<div class="new_comment"></div>
+
+	<form class="comment" method="post" data-title='{{ post.title }}'>
+		<textarea name="body" cols="40" rows="10" required=""></textarea>
+		<input type="submit" value="Add comment">
+	</form>
 </div>
-
-{% empty %}
-<p>There are no comments yet...</p>
-
-{% endfor %}
-
-<div class="new_comment"></div>
-
-<form class="comment" method="post" data-title='{{ post.title }}'>
-    <textarea name="body" cols="40" rows="10" required=""></textarea>
-    <input type="submit" value="Add comment">
-</form>
-
 {% endblock %}
 
 {% block domready %}

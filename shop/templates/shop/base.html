@@ -5,66 +5,75 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}zinmagazine.com{% endblock %}</title>
-
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
+    <script type="text/javascript" src="{% static "js/jquery-3.5.1.min.js" %}"></script>
     <link href="{% static "css/base.css" %}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="header">
-        <div class="col">
-            <div class="btn">
-                <button class=search>
-                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                </button>
-            </div>
-            <div class="drop">
-                <div class="dropdown">
-                    <button class="menu"><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span></button>
-                    <div class="dropdown-content">
-                    <a href="{% url "shop:product_list" %}">магазин</a>
-                    <a href="{% url "blog:post_list" %}">журнал</a>
-                    <a href="#">о нас</a>
-                    </div>
-                </div>
-            </div>    
+    <div class="navbar">
+        <div class="navbar_zinzinzin">
+            <span>ZINZINZINZINZINZINZINZINZINZINZINZINZINZINZINZINZINZINZINZINZINZINZI</span>
         </div>
-        <div class="center">
-            <div>
-                <a href="/" class="logo">ZIN</a>
+        <div class="navbar_frame">
+            <div class="navbar_frame_menu">
+                <a class="navbar_frame_menu_shop" href="{% url "shop:product_list" %}">магазин</a>
+                <a class="navbar_frame_menu_magazine" href="{% url "blog:post_list" %}">журнал</a>
+                <a class="navbar_frame_menu_authors" href="{% url "profile_list" %}">авторы</a>
+                <a class="navbar_frame_menu_announcements" href="{% url "announcement:announcement_list" %}">объявления</a>
             </div>
-            <div class="magazine">
-                <a href="{% url "shop:product_list" %}">MAGAZINE</a>
-            </div>
-            <div class="">
+            <div class="navbar_frame_log">
                 {% if request.user.is_authenticated %}
-                <a href="{% url "dashboard" %}">{{ request.user.first_name }}</a>,
-                <a href="{% url "logout" %}">Logout</a>
+                    <div class="navbar_frame_log_in">
+                        <a href="{% url "dashboard" %}">{{ request.user.username }}</a>
+                        <div class="navbar_frame_log_out">
+                            <a href="{% url "logout" %}">выйти</a>
+                        </div>
+                    </div>
                 {% else %}
-                <a href="{% url "login" %}">log</a>
+                    <a class="navbar_frame_log_in" href="{% url "login" %}">Вход</a>
                 {% endif %}
             </div>
-        </div>
-        <div class="col">
-            <div class="btn">
-                <button class="cart">
-                    {% with total_items=cart|length %}
-                    {% if cart|length > 0 %}
-                    <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
-                        <a href="{% url "cart:cart_detail" %}">
-                                {{ total_items }}<br>
-                                {{ cart.get_total_price }}
-                        </a>
-                                {% else %}
-                    <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
-                                {% endif %}
-                                {% endwith %}
-                </button>
+            <div class="navbar_frame_btns">
+                {% if request.user.is_authenticated %}
+                    <a href="{% url "cart:cart_detail_user" %}">
+                        <svg class="navbar_frame_btns_cart" viewBox="0 0 576 512"><path d="M528.12 301.319l47.273-208C578.806 78.301 567.391 64 551.99 64H159.208l-9.166-44.81C147.758 8.021 137.93 0 126.529 0H24C10.745 0 0 10.745 0 24v16c0 13.255 10.745 24 24 24h69.883l70.248 343.435C147.325 417.1 136 435.222 136 456c0 30.928 25.072 56 56 56s56-25.072 56-56c0-15.674-6.447-29.835-16.824-40h209.647C430.447 426.165 424 440.326 424 456c0 30.928 25.072 56 56 56s56-25.072 56-56c0-22.172-12.888-41.332-31.579-50.405l5.517-24.276c3.413-15.018-8.002-29.319-23.403-29.319H218.117l-6.545-32h293.145c11.206 0 20.92-7.754 23.403-18.681z"/></svg>
+                        {% if cart_user|length > 0 %}
+                            <span>{{ cart_user|length }}</span>
+                        {% endif %}
+                    </a>
+                {% else %}
+                    <a href="{% url "cart:cart_detail" %}">    
+                        <svg class="navbar_frame_btns_cart" viewBox="0 0 576 512"><path d="M528.12 301.319l47.273-208C578.806 78.301 567.391 64 551.99 64H159.208l-9.166-44.81C147.758 8.021 137.93 0 126.529 0H24C10.745 0 0 10.745 0 24v16c0 13.255 10.745 24 24 24h69.883l70.248 343.435C147.325 417.1 136 435.222 136 456c0 30.928 25.072 56 56 56s56-25.072 56-56c0-15.674-6.447-29.835-16.824-40h209.647C430.447 426.165 424 440.326 424 456c0 30.928 25.072 56 56 56s56-25.072 56-56c0-22.172-12.888-41.332-31.579-50.405l5.517-24.276c3.413-15.018-8.002-29.319-23.403-29.319H218.117l-6.545-32h293.145c11.206 0 20.92-7.754 23.403-18.681z"/></svg>
+                        {% if cart|length > 0 %}
+                            <span>{{ cart|length }}</span>
+                        {% endif %}
+                    </a>
+                {% endif %}
+                <a href="{% url "likes:like_list" %}">
+                    <svg class="navbar_frame_btns_likes" viewBox="0 0 512 512"><path d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+                    {% if likes|length > 0 %}
+                        <span>{{ likes|length }}</span>
+                    {% endif %}
+                </a>
+                <a href="{% url "chats:chat_list" %}">
+                    <svg class="navbar_frame_btns_chats" viewBox="0 0 512 512"><path d="M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V400c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5 0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z"/></svg>
+                    {% if chats|length > 0 %}
+                        <span>{{ chats|length }}</span>
+                    {% endif %}
+                </a>
+                <a href="{% url "blog:bookmark_list" %}">
+                    <svg class="navbar_frame_btns_bookmarks" viewBox="0 0 384 512"><path d="M0 512V48C0 21.49 21.49 0 48 0h288c26.51 0 48 21.49 48 48v464L192 400 0 512z"/></svg>
+                    {% if bookmark|length > 0 %}
+                        <span>{{ bookmark|length }}</span>
+                    {% endif %}
+                </a>
+                <a href="{% url "news" %}">
+                    <svg class="navbar_frame_btns_news" viewBox="0 0 640 512"><path d="M48 0C21.53 0 0 21.53 0 48v64c0 8.84 7.16 16 16 16h80V48C96 21.53 74.47 0 48 0zm208 412.57V352h288V96c0-52.94-43.06-96-96-96H111.59C121.74 13.41 128 29.92 128 48v368c0 38.87 34.65 69.65 74.75 63.12C234.22 474 256 444.46 256 412.57zM288 384v32c0 52.93-43.06 96-96 96h336c61.86 0 112-50.14 112-112 0-8.84-7.16-16-16-16H288z"/></svg>
+                </a>
             </div>
         </div>
-
-        
     </div>
+    
 
     <script src="{% static "js/jquery-3.5.1.min.js" %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>

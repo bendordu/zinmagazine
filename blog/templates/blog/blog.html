@@ -1,34 +1,40 @@
 {% extends "shop/bas.html" %}
 {% load static %}
-{% block title %}My Blog{% endblock %}
+{% block title %}articles{% endblock %}
 
 {% block content %} 
 
-{% for post in posts %}
-<h2>
-    <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
-</h2>
-<p class="date">{{ post.publish }} 
-    {% for profile in profiles %}
-    {% if profile.user == post.author %}
-    {% if post.author != request.user %}
-    <a href="{{ profile.get_absolute_url }}">{{ post.author }}</p></a>
-	{% else %}
-	<a href="{% url "dashboard" %}">{{ post.author }}</p></a>
-    {% endif %}
-    {% endif %}
-    {% endfor %}
-</p>
-<p>{{ post.body }}</p>
+<div class="posts_list">
+    <div class="posts_list_posts">
+        {% for post in posts %}
+            <div class="posts_list_posts_post">
+                <a class="title" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                <div class="info">
+                    <span>{{ post.publish }}</span>
+                    {% for profile in profiles %}
+                        {% if profile.user == post.author %}
+                            {% if post.author != request.user %}
+                                <a class="author" href="{{ profile.get_absolute_url }}">{{ post.author }}</a>
+                            {% else %}
+                                <a class="author" href="{% url "dashboard" %}">{{ post.author }}</a>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <p class="body">{{ post.body }}</p>
 
-<span class="{{ post.title }}">{{ post.users_like.count }} ♥</span>
-<span class="{{ post.title }}">{{ post.comments.count }} comment{{ post.comments.count|pluralize }}</span>
-<span class="{{ post.title }}">{{ post.bookmark.count }}
-    <svg class="bi bi-bookmark" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-        <path fill-rule="evenodd" d="M8 12l5 3V3a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12l5-3zm-4 1.234l4-2.4 4 2.4V3a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10.234z"></path>
-    </svg>
-</span>
-
-{% endfor %}
+                <div class="details">
+                    <span class="{{ post.title }}">{{ post.users_like.count }} ♥</span>
+                    <span class="{{ post.title }}">{{ post.comments.count }} comment{{ post.comments.count|pluralize }}</span>
+                    <span class="{{ post.title }}">{{ post.bookmark.count }}
+                        <svg class="bi bi-bookmark" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M8 12l5 3V3a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12l5-3zm-4 1.234l4-2.4 4 2.4V3a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10.234z"></path>
+                        </svg>
+                    </span>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 
 {% endblock %}

@@ -3,17 +3,16 @@
 {% block title %}{{ profile.user.username }}{% endblock %}
 {% block content %}      						
 	
-<div class="profile-detail">
+<div class="profile_detail">
 
-	{% load thumbnail %}
-    {% thumbnail profile.photo "200" as im %}
-    <img src="{% if profile.photo %}{{ im.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
-    {% endthumbnail %}
+    <div class="profile_detail_photo">
+        <img src="{% if profile.photo %}{{ profile.photo.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+    </div>
 
-    <h1>{{ profile.username }}</h1>
+    <span>{{ profile.username }}</span>
     <span>{{ profile.user.first_name }}</span>
     <span>{{ profile.user.last_name }}</span>
-    <p>{{ profile.date_of_birth }}</p>
+    <span>{{ profile.date_of_birth }}</span>
 
     подписки <span>{{ subscribe.count }}</span><button class="open_subscribe">▼</button>
     <div class="subscribe" hidden='true'>

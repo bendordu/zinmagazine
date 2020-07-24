@@ -3,58 +3,56 @@
 {% block title %}{% if category %}{{ category.name }}{% else %}Announcements{% endif %}{% endblock %}
 {% block content %}   
 
-<div class="list">
-    <h3>категории</h3>
+<div class="announsements">
+    <div class="announsements_categories">
         <span {% if not category %}class="selected"{% endif %}><a href="{% url "announcement:announcement_list" %}">все</a></span>
         {% for c in categories %}
-        <span {% if category.slug == c.slug %}class="selected" {% endif %}>
-            <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
-        </span>
+            <span {% if category.slug == c.slug %}class="selected" {% endif %}>
+                <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
+            </span>
         {% endfor %}
-</div>
-
-<div class="announcement-list">
-
-    <h3>{% if category %}{{ category.name }}{% else %}{% endif %}</h3>
-
-    {% for announcement in announcements %}
-
-    <div class="announcement">
-        <a href="{{ announcement.get_absolute_url }}"><img src="{% if announcement.image %}{{ announcement.image.url }}{%else %}{% static "img/no_image.png" %}{% endif %}"></a>
-        <a href="{{ announcement.get_absolute_url }}">{{ announcement.title }}</a><br>
-        <p class="date">{{ announcement.created }} 
-            {% for profile in profiles %}
-            {% if profile.user == announcement.author_ann %}
-            {% if announcement.author_ann != request.user %}
-            <a href="{{ profile.get_absolute_url }}">{{ announcement.author_ann }}</a>
-            {% else %}
-            <a href="{% url "dashboard" %}">{{ announcement.author_ann }}</a>
-            {% endif %}
-            {% endif %}
-            {% endfor %}
-        </p>
-        <p>{{ announcement.body }}</p>
-        <span>{{ announcement.likes.count }} comments</span>
-
     </div>
 
-    <div class="announcement-like">
-        <span class='{{ announcement.id }}'>{{ announcement.likes.count }}</span>
-        <button data-id="{{ announcement.id }}" data-action="{% if request.user in announcement.likes.all %}un{% endif %}like" class="like">
-            {% if request.user not in announcement.likes.all %}
-                {% if request.user.is_authenticated %}
-                    Like
-                {% else %}
-                    Like
+    <div class="announcements_list">
+
+        {% for announcement in announcements %}
+
+        <div class="announcements_list_announcement">
+            <a href="{{ announcement.get_absolute_url }}"><img src="{% if announcement.image %}{{ announcement.image.url }}{%else %}{% static "img/no_image.png" %}{% endif %}"></a>
+            <a href="{{ announcement.get_absolute_url }}">{{ announcement.title }}</a><br>
+            
+            <span>{{ announcement.created }} </span>
+            {% for profile in profiles %}
+                {% if profile.user == announcement.author_ann %}
+                    {% if announcement.author_ann != request.user %}
+                        <a href="{{ profile.get_absolute_url }}">{{ announcement.author_ann }}</a>
+                    {% else %}
+                        <a href="{% url "dashboard" %}">{{ announcement.author_ann }}</a>
+                    {% endif %}
                 {% endif %}
-            {% else %}
-            Unlike
-            {% endif %}
-        </button>
-    </div>              
+            {% endfor %}
+            <p>{{ announcement.body }}</p>
+            <span>{{ announcement.likes.count }} comments</span>
 
-    {% endfor%}
+            <div class="announcement-like">
+                <span class='{{ announcement.id }}'>{{ announcement.likes.count }}</span>
+                <button data-id="{{ announcement.id }}" data-action="{% if request.user in announcement.likes.all %}un{% endif %}like" class="like">
+                    {% if request.user not in announcement.likes.all %}
+                        {% if request.user.is_authenticated %}
+                            Like
+                        {% else %}
+                            Like
+                        {% endif %}
+                    {% else %}
+                    Unlike
+                    {% endif %}
+                </button>
+            </div>  
+        </div>            
 
+        {% endfor%}
+
+    </div>
 </div>
 
 {% endblock %}

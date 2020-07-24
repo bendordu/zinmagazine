@@ -20,7 +20,14 @@
     <p>{{ minor.user }}</p>
     <p>{{ minor.user.category }}</p>
     {% endfor %}
-    <p class="minor"></p>
+    <p class="minor"></p> 
+
+    расписание:
+    {% if proect.timetable %}
+        {{ proect.timetable }}
+    {% else %}
+    <textarea></textarea>
+    {% endif %}
 
     {% for message_text in messages_text %}
     <div class="message">
@@ -40,7 +47,7 @@
     <div class="new_message"></div>
     
     <form class="message" method="post" data-name="{{ proect.chat.name }}">
-        <textarea name="body" cols="40" rows="10" required></textarea>
+        <textarea name="body" cols="20" rows="5" required></textarea>
         <input class="message" type="file" title="Add image">
         <input type="submit" value="Send">
     </form>
@@ -115,7 +122,7 @@ $('form.s').on('input', (function() {
                             function(data){
                                 if (data['status'] == 'ok')
                                 {
-                                    $('p.minor').append('<a href="#">'+minor+'</a>');
+                                    $('p.minor').append('<p>'+minor+'</p>');
                                 }
                             
                         });
@@ -125,5 +132,5 @@ $('form.s').on('input', (function() {
         }
     else { $('div.find').text(''); }
     }));
-    
+
 {% endblock %}

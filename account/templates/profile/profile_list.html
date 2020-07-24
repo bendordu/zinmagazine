@@ -1,42 +1,39 @@
 {% extends "shop/bas.html" %}
-
 {% load static %}
-
 {% block title %}Profiles{% endblock %}
-
 {% block content %}   
 
-<div class="category">
-        <span {% if not category %}class="selected"{% endif %}><a href="{% url "profile_list" %}">все</a></span>
+<div class="profiles">
+    <div class="categories">
+        <span {% if not category %} class="selected" {% endif %}><a href="{% url "profile_list" %}">все</a></span>
         {% for c in categories %}
-        <span {% if category.slug == c.slug %}class="selected" {% endif %}>
-            <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
-        </span>
+            <span {% if category.slug == c.slug %} class="selected" {% endif %}>
+                <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
+            </span>
         {% endfor %}
-</div>
-	
-<div class="profile-list">
+    </div>
+        
+    <div class="profiles_list">
+        
+        {% for profile in profiles %}
+            
+            {% if profile.user != request.user %}
+                <div class="profiles_list_profile">
+                    
+                    <div class="photo">
+                        <img src="{% if profile.photo %}{{ profile.photo.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+                    </div>
 
-    <h3>{% if category %}{{ category.name }}{% else %}все{% endif %}</h3>
+                    <a class="name" href="{{ profile.get_absolute_url }}">{{ profile.user.username }}</a><br> 
 
-    {% for profile in profiles %}
-    {% if profile.user != request.user %}
-
-    <a href="{{ profile.get_absolute_url }}"><h1>{{ profile.user.username }}</h1></a> 
-
-    {% load thumbnail %}
-    {% thumbnail profile.photo "50" as im %}
-    <img src="{% if profile.photo %}{{ im.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
-    {% endthumbnail %}
-
-    {% for category in profile.category.all %}
-    <a href="{{ category.get_absolute_url }}"><span>{{ category }}</span></a>
-    {% endfor %}
-
-    {% endif %}
-    {% endfor %}
-
-</div>
-						
+                    {% for category in profile.category.all %}
+                    <a class="category" href="{{ category.get_absolute_url }}">{{ category }}</a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+        {% endfor %}
+        
+</div>					
 
 {% endblock %} 

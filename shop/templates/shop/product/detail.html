@@ -3,79 +3,89 @@
 {% block title %}{{ product.name }}{% endblock %}
 {% block content %}      						
 	
-<div class="product-detail">
-	<img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
-	<h1>{{ product.name }}</h1>
-	{% for category in product.category.all %}
-	<span><a href="{{ category.get_absolute_url }}">{{ category }}</a></span>
-	{% endfor %}
-	<span><a href="{{ product.type_pr.get_absolute_url }}">{{ product.type_pr }}</a></span></br>
-	{% if product.price_type.id == 1 %}
-	{% if product.quantity_pr > 0 %}
-		RUB {{ product.price }}
-		Q{{ product.quantity_pr }}
-		заказали {{ product.count_order }}</br>
-					
-	{% if product in cart.value or product in cart_user.products %}
-	<button class="">
-			<a href="{% url "cart:cart_detail" %}">Товар добавлен в корзину</a>
-	</button>
-	{% else %}
+<div class="product">
+	<div class="product_detail">
 
-	<button class="add" data-id="{{ product.id }}" data-action="{% if product in cart.value %}cart{% endif %}add">
-		Добавить в корзину
-	</button> 
+		<img class="product_detail_photo" src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
 
-	{% endif %} 
-	<h4>{% else %}Товара нет в наличии{% endif %}</h4>
+		<div class="product_detail_name">
+			<span class="name">{{ product.name }}</span>
+			<div class="category">
+			{% for category in product.category.all %}
+				<a href="{{ category.get_absolute_url }}">{{ category }}</a>
+			{% endfor %}
+				<a class="category" href="{{ product.type_pr.get_absolute_url }}">{{ product.type_pr }}</a>
+			</div>
+			<div class="product_detail_info">
 
-	{% endif %}
-
-        {% if product.price_type.id == 3 %}
-        от RUB {{ product.price }}
-        <button class="">Скачать</button><br>
-        {% endif %}
-
-	{% with total_likes=product.users_like.count users_like=product.users_like.all %}
-
-	<span class="{{ product.id }}">{{ total_likes }}</span>
-	<button data-id="{{ product.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like button">
-			{% if request.user not in users_like %}
-					Like
-			{% else %}
-					Unlike
-			{% endif %}
-	</button>
+				{% if product.price_type.id == 1 %}
+					{% if product.quantity_pr > 0 %}
+	
+						RUB {{ product.price }}
+						Q{{ product.quantity_pr }}
+						заказали {{ product.count_order }}</br>
+							
+						{% if product in cart.value or product in cart_user.products %}
+							<button class="">
+									<a href="{% url "cart:cart_detail" %}">Товар добавлен в корзину</a>
+							</button>
+						{% else %}
+	
+							<button class="add" data-id="{{ product.id }}" data-action="{% if product in cart.value %}cart{% endif %}add">
+								Добавить в корзину
+							</button> 
+	
+						{% endif %} 
+					{% else %}
+	
+						<span>Товара нет в наличии</span>
+						
+					{% endif %}
+				{% endif %}
+	
+				{% if product.price_type.id == 3 %}
+					от RUB {{ product.price }}
+					<button>Скачать</button><br>
+				{% endif %}
+	
+				<div class="products_list_items_item_info_like">
+					{% if request.user not in product.users_like.all %}
+						<svg class="products_list_items_item_info_like_btn" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like"  d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+					{% else %}
+						<svg class="products_list_items_item_info_like_btn_selected" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+					{% endif %}
+					[<span class="{{ product.id }}">{{ product.users_like.count }}</span>]
+				</div>
+	
+				{% if product.type_pr.id == 1 %}
+				<div class="product-bye-paper">
+					<span class='bye_paper{{ product.id }}'>{{ product.bye_paper.count }}</span>
+					<button data-id="{{ product.id }}" data-action="{% if request.user in product.bye_paper.all %}un{% endif %}bye_paper" class="bye_paper">
+						{% if request.user not in product.bye_paper.all %}
+							{% if request.user.is_authenticated %}
+								bye_paper
+							{% else %}
+								bye_paper
+							{% endif %}
+						{% else %}
+							unbye_paper
+						{% endif %}
+					</button>
+				</div> 
+				{% endif %}  
+			</div>
+		</div>
+		<span class="product_detail_descr">[{{ product.description|linebreaks }}]</span>
 		
-	{% endwith%}   
+	</div>
+	
 
-	{% if product.type_pr.id == 1 %}
-    <div class="product-bye-paper">
-        <span class='bye_paper{{ product.id }}'>{{ product.bye_paper.count }}</span>
-        <button data-id="{{ product.id }}" data-action="{% if request.user in product.bye_paper.all %}un{% endif %}bye_paper" class="bye_paper">
-            {% if request.user not in product.bye_paper.all %}
-                {% if request.user.is_authenticated %}
-                    bye_paper
-                {% else %}
-                    bye_paper
-                {% endif %}
-            {% else %}
-            unbye_paper
-            {% endif %}
-        </button>
-    </div> 
-    {% endif %}  
-
-	{{ product.description|linebreaks }}
-
-	{% with comments.count as total_comments %}
-	<span class="count_comments">{{ total_comments }}</span><span> comment{{ total_comments|pluralize }}</span>
-	{% endwith %}
+	<span class="count_comments">{{ comments.count }}</span><span> comment{{ comments.count|pluralize }}</span>
 
 	{% for comment in comments %}
 	<div class="comment">
 		<p class="info">
-			Comment by {{ comment.author.first_name }}
+			Comment by {{ comment.author.username }}
 			{{ comment.created }}
 		</p>
 		<span class="body">{{ comment.body|linebreaks }}</span>
@@ -86,7 +96,7 @@
 		<a href="" data-id="{{ product.id }}" data-action="edit" class="edit">редактировать</a>
 		{% endif %}
 	</div>
-
+	
 	{% empty %}
 	<p>There are no comments yet...</p>
 
@@ -107,7 +117,7 @@
 
 {% block domready %}
 
-$('button.like').click(function(e){
+$('div.products_list_items_item_info_like path').click(function(e){
     e.preventDefault();
     var product_like = event.target;
     $.post('{% url "likes:product_like" %}',
@@ -122,13 +132,13 @@ $('button.like').click(function(e){
                 var pr_id = $(product_like).data('id');
   
                 $(product_like).data('action', previous_action == 'like' ? 'unlike' : 'like');
-                $(product_like).text(previous_action == 'like' ? 'Unlike' : 'Like');
+                $(product_like).text(previous_action == 'like' ? $(product_like).css("fill", "#9d2c2c") : $(product_like).css("fill", "#dcdcdc"));
                 
                 var previous_likes = parseInt($('span.' + pr_id).text());
                 $('span.' + pr_id).text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
 
-                var previous_liked = parseInt($('button.liked a').text());
-                $('button.liked a').text(previous_action == 'like' ? previous_liked + 1 : previous_liked - 1);
+                var previous_liked = parseInt($('a.navbar_frame_btns_likes span').text());
+                $('a.navbar_frame_btns_likes span').text(previous_action == 'like' ? previous_liked + 1 : previous_liked - 1);
             }
         });
     });

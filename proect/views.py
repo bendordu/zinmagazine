@@ -72,4 +72,6 @@ def minor_search(request):
     except:
         pass
     return JsonResponse({'status':'ok', 'users': users})
+
+    
     
