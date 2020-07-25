@@ -4,10 +4,10 @@
 {% block content %}   
 
 <div class="products_list">
-
+ 
     <div class="products_list_search">
         <form class="products_list_search_form" method="post">
-            <textarea name="s" placeholder="Поиск товара..." required></textarea>
+            <textarea name="s" rows="1" placeholder="Поиск товара..." required></textarea>
             {% csrf_token %}
             <button type="submit" value="&#128270;"></button>
         </form>

@@ -67,144 +67,31 @@
                     <a class="navbar_frame_log_in" href="{% url "login" %}">Вход</a>
                 {% endif %}
             </div>
-            <div class="navbar_frame_menu">
-                <a class="navbar_frame_menu_shop" href="{% url "shop:product_list" %}">магазин</a>
-                <a class="navbar_frame_menu_magazine" href="{% url "blog:post_list" %}">журнал</a>
-                <a class="navbar_frame_menu_authors" href="{% url "profile_list" %}">авторы</a>
-                <a class="navbar_frame_menu_announcements" href="{% url "announcement:announcement_list" %}">объявления</a>
-            </div>
+        </div>
+        <div class="navbar_menu">
+            <a class="navbar_menu_shop" href="{% url "shop:product_list" %}">магазин</a>
+            <a class="navbar_menu_magazine" href="{% url "blog:post_list" %}">журнал</a>
+            <a class="navbar_menu_authors" href="{% url "profile_list" %}">авторы</a>
+            <a class="navbar_menu_announcements" href="{% url "announcement:announcement_list" %}">объявления</a>
         </div>
     </div>
-<!--
-    <div class="header">
-        <div class="col">
-            <div class="btn">
-                <button class=search>
-                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                </button>
-            </div>
-            <div class="drop">
-                <div class="dropdown">
-                    <button class="menu"><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span></button>
-                    <div class="dropdown-content">
-                    <a href="{% url "shop:product_list" %}">магазин</a>
-                    <a href="{% url "blog:post_list" %}">журнал</a>
-                    <a href="{% url "profile_list" %}">люди</a>
-                    <a href="{% url "announcement:announcement_list" %}">объявления</a>
-                    </div>
-                </div>
-            </div>    
-        </div>
+    <div class="content">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li class="{{ message.tags }}">
+            {{ message|safe }}
+            <a href="#" class="close">x</a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %} 
 
-
-        <div class="center">
-            <div>
-                <a href="/" class="logo">ZIN</a>
-            </div>
-            <div class="magazine">
-                <a href="{% url "shop:product_list" %}">MAGAZINE</a>
-            </div>
-            <div class="uslog">
-                <p class="">
-                    {% if request.user.is_authenticated %}
-                    <a class="name" href="{% url "dashboard" %}">{{ request.user.username }}</a>,
-                    <a href="{% url "logout" %}">Logout</a>
-                    {% else %}
-                    <a href="{% url "login" %}">Log-in</a>
-                    {% endif %}
-                </p>
-            </div>-->
-            {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                <li class="{{ message.tags }}">
-                {{ message|safe }}
-                <a href="#" class="close">x</a>
-                </li>
-                {% endfor %}
-            </ul>
-            {% endif %} 
-
-            {% block content %}
-            {% endblock %}
-        
-            
-        <!--</div>
-
-        
-        <div class="col">
-
-            {% if request.user.is_authenticated %}
-
-            <div class="btn">
-                <button class="cart">
-                    <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
-                    <a href="{% url "cart:cart_detail_user" %}">
-                        {{ cart_user|length }}
-                    </a>
-                </button>
-            </div>
-
-            {% else %}
-
-            <div class="btn">
-                <button class="cart">
-                    <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
-                    <a href="{% url "cart:cart_detail" %}">
-                        {{ cart|length }}
-                    </a>
-                </button>
-            </div>
-
-            {% endif %}
-
-            <div class="btn">
-                <button class="liked">
-                    <span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
-                    <a href="{% url "likes:like_list" %}">
-                        {{ likes|length }}
-                    </a>
-                </button>
-            </div>
-
-            <div class="btn">
-                <button class="bookmark">
-                    <svg class="bi bi-bookmark" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M8 12l5 3V3a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12l5-3zm-4 1.234l4-2.4 4 2.4V3a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10.234z"></path>
-                    </svg>
-                    <a href="{% url "blog:bookmark_list" %}">
-                        {{ bookmark|length }}
-                    </a>
-                </button>
-            </div>
-
-            <div class="btn">
-                <button class="chats">
-                    <svg class="bi bi-envelope" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M14 3H2a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zM2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2z"/>
-                        <path d="M.05 3.555C.017 3.698 0 3.847 0 4v.697l5.803 3.546L0 11.801V12c0 .306.069.596.192.856l6.57-4.027L8 9.586l1.239-.757 6.57 4.027c.122-.26.191-.55.191-.856v-.2l-5.803-3.557L16 4.697V4c0-.153-.017-.302-.05-.445L8 8.414.05 3.555z"/>
-                    </svg>
-                    <a href="{% url "chats:chat_list" %}">
-                        {{ chats|length }}
-                    </a>
-                </button>
-            </div>
-
-            <div class="btn">
-                <button class="news">
-                    <a href="{% url "news" %}">
-                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-people" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.995-.944v-.002.002zM7.022 13h7.956a.274.274 0 0 0 .014-.002l.008-.002c-.002-.264-.167-1.03-.76-1.72C13.688 10.629 12.718 10 11 10c-1.717 0-2.687.63-3.24 1.276-.593.69-.759 1.457-.76 1.72a1.05 1.05 0 0 0 .022.004zm7.973.056v-.002.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10c-1.668.02-2.615.64-3.16 1.276C1.163 11.97 1 12.739 1 13h3c0-1.045.323-2.086.92-3zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
-                        </svg>
-                    </a>
-                </button>
-            </div>
-
-        </div>
-
-        
-    </div>-->
-
+        {% block content %}
+        {% endblock %}
+    </div>
+    <div class="footer">
+    </div>
 
 <script type="text/javascript" src="{% static "js/jquery-3.5.1.min.js" %}"></script>
 <script type="text/javascript" src="{% static "js/js.cookie.min.js" %}"></script>

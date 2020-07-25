@@ -11,15 +11,49 @@
 </head>
 <body>
     <div class="navbar">
-        <div class="navbar_zinzinzin">
-            <span>ZINZINZINZINZINZINZINZINZINZINZINZINZINZINZINZINZINZINZINZINZINZINZI</span>
-        </div>
         <div class="navbar_frame">
-            <div class="navbar_frame_menu">
-                <a class="navbar_frame_menu_shop" href="{% url "shop:product_list" %}">магазин</a>
-                <a class="navbar_frame_menu_magazine" href="{% url "blog:post_list" %}">журнал</a>
-                <a class="navbar_frame_menu_authors" href="{% url "profile_list" %}">авторы</a>
-                <a class="navbar_frame_menu_announcements" href="{% url "announcement:announcement_list" %}">объявления</a>
+            <div class="navbar_frame_zinzinzin">
+                <svg viewBox="0 0 171 152">
+                    <path d="M30.2604 26.464V34H0.164375V28.048L17.1084 7.936H0.596375V0.399998H29.5404V6.352L12.5964 26.464H30.2604ZM34.4225 0.399998H43.9265V34H34.4225V0.399998ZM82.6561 0.399998V34H74.8321L60.0001 16.096V34H50.6881V0.399998H58.5121L73.3441 18.304V0.399998H82.6561ZM117.776 26.464V34H87.68V28.048L104.624 7.936H88.112V0.399998H117.056V6.352L100.112 26.464H117.776ZM121.938 0.399998H131.442V34H121.938V0.399998ZM170.172 0.399998V34H162.348L147.516 16.096V34H138.204V0.399998H146.028L160.86 18.304V0.399998H170.172ZM30.2604 85.464V93H0.164375V87.048L17.1084 66.936H0.596375V59.4H29.5404V65.352L12.5964 85.464H30.2604ZM34.4225 59.4H43.9265V93H34.4225V59.4ZM82.6561 59.4V93H74.8321L60.0001 75.096V93H50.6881V59.4H58.5121L73.3441 77.304V59.4H82.6561ZM117.776 85.464V93H87.68V87.048L104.624 66.936H88.112V59.4H117.056V65.352L100.112 85.464H117.776ZM121.938 59.4H131.442V93H121.938V59.4ZM170.172 59.4V93H162.348L147.516 75.096V93H138.204V59.4H146.028L160.86 77.304V59.4H170.172ZM30.2604 144.464V152H0.164375V146.048L17.1084 125.936H0.596375V118.4H29.5404V124.352L12.5964 144.464H30.2604ZM34.4225 118.4H43.9265V152H34.4225V118.4ZM82.6561 118.4V152H74.8321L60.0001 134.096V152H50.6881V118.4H58.5121L73.3441 136.304V118.4H82.6561ZM117.776 144.464V152H87.68V146.048L104.624 125.936H88.112V118.4H117.056V124.352L100.112 144.464H117.776ZM121.938 118.4H131.442V152H121.938V118.4ZM170.172 118.4V152H162.348L147.516 134.096V152H138.204V118.4H146.028L160.86 136.304V118.4H170.172Z" fill="black"/>
+                </svg>  
+            </div>
+            <div class="navbar_frame_btns">
+                {% if request.user.is_authenticated %}
+                    <a class="navbar_frame_btns_cart" href="{% url "cart:cart_detail_user" %}">
+                        корзина
+                        {% if cart_user|length > 0 %}
+                            [<span>{{ cart_user|length }}</span>]
+                        {% endif %}
+                    </a>
+                {% else %}
+                    <a class="navbar_frame_btns_cart" href="{% url "cart:cart_detail" %}">    
+                        корзина
+                        {% if cart|length > 0 %}
+                            [<span>{{ cart|length }}</span>]
+                        {% endif %}
+                    </a>
+                {% endif %}
+                <a class="navbar_frame_btns_likes" href="{% url "likes:like_list" %}">
+                    лайки
+                    {% if likes|length > 0 %}
+                        [<span>{{ likes|length }}</span>]
+                    {% endif %}
+                </a>
+                <a class="navbar_frame_btns_chats" href="{% url "chats:chat_list" %}">
+                    сообщения
+                    {% if chats|length > 0 %}
+                        [<span>{{ chats|length }}</span>]
+                    {% endif %}
+                </a>
+                <a class="navbar_frame_btns_bookmarks" href="{% url "blog:bookmark_list" %}">
+                    закладки
+                    {% if bookmark|length > 0 %}
+                        [<span>{{ bookmark|length }}</span>]
+                    {% endif %}
+                </a>
+                <a class="navbar_frame_btns_news" href="{% url "news" %}">
+                    новости
+                </a>
             </div>
             <div class="navbar_frame_log">
                 {% if request.user.is_authenticated %}
@@ -33,44 +67,12 @@
                     <a class="navbar_frame_log_in" href="{% url "login" %}">Вход</a>
                 {% endif %}
             </div>
-            <div class="navbar_frame_btns">
-                {% if request.user.is_authenticated %}
-                    <a href="{% url "cart:cart_detail_user" %}">
-                        <svg class="navbar_frame_btns_cart" viewBox="0 0 576 512"><path d="M528.12 301.319l47.273-208C578.806 78.301 567.391 64 551.99 64H159.208l-9.166-44.81C147.758 8.021 137.93 0 126.529 0H24C10.745 0 0 10.745 0 24v16c0 13.255 10.745 24 24 24h69.883l70.248 343.435C147.325 417.1 136 435.222 136 456c0 30.928 25.072 56 56 56s56-25.072 56-56c0-15.674-6.447-29.835-16.824-40h209.647C430.447 426.165 424 440.326 424 456c0 30.928 25.072 56 56 56s56-25.072 56-56c0-22.172-12.888-41.332-31.579-50.405l5.517-24.276c3.413-15.018-8.002-29.319-23.403-29.319H218.117l-6.545-32h293.145c11.206 0 20.92-7.754 23.403-18.681z"/></svg>
-                        {% if cart_user|length > 0 %}
-                            <span>{{ cart_user|length }}</span>
-                        {% endif %}
-                    </a>
-                {% else %}
-                    <a href="{% url "cart:cart_detail" %}">    
-                        <svg class="navbar_frame_btns_cart" viewBox="0 0 576 512"><path d="M528.12 301.319l47.273-208C578.806 78.301 567.391 64 551.99 64H159.208l-9.166-44.81C147.758 8.021 137.93 0 126.529 0H24C10.745 0 0 10.745 0 24v16c0 13.255 10.745 24 24 24h69.883l70.248 343.435C147.325 417.1 136 435.222 136 456c0 30.928 25.072 56 56 56s56-25.072 56-56c0-15.674-6.447-29.835-16.824-40h209.647C430.447 426.165 424 440.326 424 456c0 30.928 25.072 56 56 56s56-25.072 56-56c0-22.172-12.888-41.332-31.579-50.405l5.517-24.276c3.413-15.018-8.002-29.319-23.403-29.319H218.117l-6.545-32h293.145c11.206 0 20.92-7.754 23.403-18.681z"/></svg>
-                        {% if cart|length > 0 %}
-                            <span>{{ cart|length }}</span>
-                        {% endif %}
-                    </a>
-                {% endif %}
-                <a href="{% url "likes:like_list" %}">
-                    <svg class="navbar_frame_btns_likes" viewBox="0 0 512 512"><path d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
-                    {% if likes|length > 0 %}
-                        <span>{{ likes|length }}</span>
-                    {% endif %}
-                </a>
-                <a href="{% url "chats:chat_list" %}">
-                    <svg class="navbar_frame_btns_chats" viewBox="0 0 512 512"><path d="M502.3 190.8c3.9-3.1 9.7-.2 9.7 4.7V400c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V195.6c0-5 5.7-7.8 9.7-4.7 22.4 17.4 52.1 39.5 154.1 113.6 21.1 15.4 56.7 47.8 92.2 47.6 35.7.3 72-32.8 92.3-47.6 102-74.1 131.6-96.3 154-113.7zM256 320c23.2.4 56.6-29.2 73.4-41.4 132.7-96.3 142.8-104.7 173.4-128.7 5.8-4.5 9.2-11.5 9.2-18.9v-19c0-26.5-21.5-48-48-48H48C21.5 64 0 85.5 0 112v19c0 7.4 3.4 14.3 9.2 18.9 30.6 23.9 40.7 32.4 173.4 128.7 16.8 12.2 50.2 41.8 73.4 41.4z"/></svg>
-                    {% if chats|length > 0 %}
-                        <span>{{ chats|length }}</span>
-                    {% endif %}
-                </a>
-                <a href="{% url "blog:bookmark_list" %}">
-                    <svg class="navbar_frame_btns_bookmarks" viewBox="0 0 384 512"><path d="M0 512V48C0 21.49 21.49 0 48 0h288c26.51 0 48 21.49 48 48v464L192 400 0 512z"/></svg>
-                    {% if bookmark|length > 0 %}
-                        <span>{{ bookmark|length }}</span>
-                    {% endif %}
-                </a>
-                <a href="{% url "news" %}">
-                    <svg class="navbar_frame_btns_news" viewBox="0 0 640 512"><path d="M48 0C21.53 0 0 21.53 0 48v64c0 8.84 7.16 16 16 16h80V48C96 21.53 74.47 0 48 0zm208 412.57V352h288V96c0-52.94-43.06-96-96-96H111.59C121.74 13.41 128 29.92 128 48v368c0 38.87 34.65 69.65 74.75 63.12C234.22 474 256 444.46 256 412.57zM288 384v32c0 52.93-43.06 96-96 96h336c61.86 0 112-50.14 112-112 0-8.84-7.16-16-16-16H288z"/></svg>
-                </a>
-            </div>
+        </div>
+        <div class="navbar_menu">
+            <a class="navbar_menu_shop" href="{% url "shop:product_list" %}">магазин</a>
+            <a class="navbar_menu_magazine" href="{% url "blog:post_list" %}">журнал</a>
+            <a class="navbar_menu_authors" href="{% url "profile_list" %}">авторы</a>
+            <a class="navbar_menu_announcements" href="{% url "announcement:announcement_list" %}">объявления</a>
         </div>
     </div>
     
