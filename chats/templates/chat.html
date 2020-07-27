@@ -8,22 +8,24 @@
     {% for message_text in messages_text %}
     <div class="message">
 
-        <p class="info">
+        <div class="info">
             <span>{{ message_text.author }} {{ message_text.pub_date }}</span>
-        </p>
-            <span class="body">{{ message_text.message }}</span>
+        </div>
+        {% if message_text.author == request.user %}
+        <div class="change">
+            <a href="" data-body="{{ message_text.id }}" data-name="{{ chat.name }}" data-action="remove" class="remove">удалить</a>
+            <a href="" data-name="{{ chat.name }}" data-action="edit" class="edit">редактировать</a>
+        </div>
+        {% endif %}
+        <span class="body">{{ message_text.message }}</span>
 
-            {% if message_text.author == request.user %}
-                <a href="" data-body="{{ message_text.id }}" data-name="{{ chat.name }}" data-action="remove" class="remove">удалить</a>
-                <a href="" data-name="{{ chat.name }}" data-action="edit" class="edit">редактировать</a>
-            {% endif %}
     </div>
     {% endfor %}
 
     <div class="new_message"></div>
     
     <form class="message" method="post" data-name="{{ chat.name }}">
-        <textarea name="body" cols="40" rows="10" required></textarea>
+        <textarea name="body" cols="40" rows="2" required></textarea>
         <input class="message" type="file" title="Add image">
         <input type="submit" value="Send">
     </form>
@@ -47,7 +49,7 @@ $('form.message').on("submit", function(e){
 				var name = $('a.name').text();
 				var myDate = new Date();
 				var fullDate = myDate.getDate() +" "+ myDate.getMonth() +" " + myDate.getFullYear();
-				$('div.new_message').replaceWith('<div class="message"><p class="info">'+name+' '+fullDate+'</p><p>'+$('form.message textarea').val()+'</p></div><div class="new_message"></div>');
+				$('div.new_message').replaceWith('<div class="message"><div class="info">'+name+' '+fullDate+'</div><div>'+$('form.message textarea').val()+'</div></div><div class="new_message"></div>');
 				$('form.message textarea').val('')
 			}
 		});

@@ -23,6 +23,8 @@
                         корзина
                         {% if cart_user|length > 0 %}
                             [<span>{{ cart_user|length }}</span>]
+                        {% else %}
+                            <span hidden>{{ cart_user|length }}</span>
                         {% endif %}
                     </a>
                 {% else %}
@@ -30,6 +32,8 @@
                         корзина
                         {% if cart|length > 0 %}
                             [<span>{{ cart|length }}</span>]
+                        {% else %}
+                            <span hidden>{{ cart|length }}</span>
                         {% endif %}
                     </a>
                 {% endif %}
@@ -37,6 +41,8 @@
                     лайки
                     {% if likes|length > 0 %}
                         [<span>{{ likes|length }}</span>]
+                    {% else %}
+                        <span hidden>{{ likes|length }}</span>
                     {% endif %}
                 </a>
                 <a class="navbar_frame_btns_chats" href="{% url "chats:chat_list" %}">

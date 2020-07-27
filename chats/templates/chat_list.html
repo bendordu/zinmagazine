@@ -1,20 +1,18 @@
 {% extends "shop/bas.html" %}
-
 {% load static %}
-
 {% block title %}Диалоги{% endblock %}
-
 {% block content %}   
 
-<div class="chat-list">
+<div class="chats">
 
     {% for chat in chat_list.all %}
 
-    <div class="chat">
-        <a href="{{ chat.get_absolute_url }}">{{ chat }}</a><br>
+    <div class="chats_chat">
+        <a href="{{ chat.get_absolute_url }}">{{ chat }}</a>
     </div>
 
     {% endfor %}
+    
 </div>
 
 {% endblock %} 

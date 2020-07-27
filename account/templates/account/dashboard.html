@@ -1,12 +1,9 @@
 {% extends "shop/bas.html" %}
-
-{% block title %}Dashboard{% endblock %}
-
+{% block title %}{{ request.user.username }}{% endblock %}
 {% load static %}
-
 {% block content %}      						
 	
-<div class="profile-detail">
+<div class="dashboard">
 
     {% if profile.user == request.user %}
     <p>Welcome to your profile.
@@ -15,10 +12,7 @@
     </p>
     {% endif %}
 
-	{% load thumbnail %}
-    {% thumbnail profile.photo "200" as im %}
-    <img src="{% if profile.photo %}{{ im.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
-    {% endthumbnail %}
+    <img src="{% if profile.photo %}{{ profile.photo.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
 
     <h1>{{ profile.username }}</h1>
     <span>{{ profile.user.first_name }}</span>
@@ -83,6 +77,7 @@ $('button.open_subscribers').click(function(e){
     e.preventDefault();
     $('div.subscribers').removeAttr("hidden");
     });
+
 $('button.open_subscribe').click(function(e){
     e.preventDefault();
     $('div.subscribe').removeAttr("hidden");

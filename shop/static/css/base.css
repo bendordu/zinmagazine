@@ -7,6 +7,13 @@
     margin: 30px 0px 0px 50px;
     min-width: 170px;
 }
+/*.navbar_frame_zinzinzin svg {
+    -webkit-filter: drop-shadow( 0px 3px 2px rgb(255, 0, 0) );
+}
+.navbar_frame_zinzinzin svg path {
+    fill: rgb(193, 193, 193);
+    stroke: #000000;
+}*/
 .navbar_menu {
     display: flex;
     justify-content: space-between;
@@ -105,6 +112,7 @@
     font-size: 23px;
     color: black;
     writing-mode: vertical-rl;
+    text-decoration: none;
 }
 .navbar_frame_log_in a {
     text-decoration: none;
@@ -133,24 +141,55 @@
     margin: 20px 50px 0px 50px;
 }
 
-
+                /*search*/
 .products_list_search {
     grid-column-start: 10;
     grid-column-end: 13;
     margin-bottom: 20px;
-    width: 200px;
+    width: 150px;
 }
 .products_list_search_form {
     display: flex;
+    border-bottom: #000000 solid 1px;
 }
 .products_list_search_form textarea {
     resize: none;
     border: none;
-    border-bottom: #000000 solid;
     outline: none;
 }
+.products_list_search_form textarea::placeholder {
+    font-family: Montserrat;
+    color: #000;
+}
+.products_list_search_form textarea:-ms-input-placeholder {
+    font-family: Montserrat;
+    color: #000;
+}
+.products_list_search_form textarea::-ms-input-placeholder {
+    font-family: Montserrat;
+    color: #000;
+}
+.products_list_search_form textarea::-webkit-input-placeholder {
+    font-family: Montserrat;
+    color: #000;
+}
+.products_list_search_form textarea:-moz-placeholder {
+    font-family: Montserrat;
+    color: #000;
+}
+.products_list_search_form textarea::-moz-placeholder {
+    font-family: Montserrat;
+    color: #000;
+}
 .products_list_search_form button {
-    background-color: #000000;
+    background-color: white;
+    border: none;
+    cursor: pointer;
+    justify-self: right;
+}
+.products_list_search_form button svg {
+    fill: black;
+    width: 10px;
 }
 .products_list_find:empty {
     display: none;
@@ -164,7 +203,7 @@
     z-index: 1;
 }
 
-
+                   /*categories*/
 .products_list_categories {
     grid-column-start: 1;
     grid-column-end: 3;
@@ -189,14 +228,15 @@
     text-decoration: underline;
 }
 
-
+              /*products*/
 .products_list_items {
     grid-column-start: 3;
     grid-column-end: 13;
     align-items: center;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat( auto-fit, minmax(200px, 1fr) );
     gap: 20px;
+    margin: 0px 0px 0px 20px;
 }
 .products_list_items_item {
     display: flex; 
@@ -205,56 +245,72 @@
 .products_list_items_item_photo {
     display: flex;
     justify-content: center;
-    align-items: flex-end;
 }
 .products_list_items_item_photo img {
-    min-width: 150px;
-    max-width: 170px;
-    padding-bottom: 3px;
-    border-bottom: gainsboro solid;
+    width: 200px;
+    /*padding-bottom: 3px;
+    border-bottom: gainsboro solid;*/
 }
 .products_list_items_item_photo img:hover {
-    padding: 1px;
-    border: gainsboro solid;
+    /*padding: 1px;
+    border: gainsboro solid;*/
+    box-shadow: 0 0 3px black;
 }
-.products_list_items_item_name_info {
+.products_list_items_item_info {
     align-self: center;
-    text-align: center;
+    /*text-align: center;*/
     text-decoration: none;
     font-family: Montserrat;
     font-size: 13px;
     color: #7E7E7E;
     margin: 5px;
+    width: 200px;
 }
-.products_list_items_item_name_info a {
+.products_list_items_item_info .name {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.products_list_items_item_info a {
     text-decoration: none;
     font-family: Montserrat;
     font-weight: 600;
-    font-size: 15px;
     color: #242424;
 }
-.products_list_items_item_name_info a:hover {
+.products_list_items_item_info a:hover {
     text-decoration: underline;
 }
-.products_list_items_item_name_info button {
-    border: none;
-    border-radius: 4px;
-    font-family: Montserrat;
-    font-size: 13px;
-    color: #242424;
-    cursor: pointer;
+.products_list_items_item_info .info {
+    display: flex;
+    justify-content: space-between;
 }
-.products_list_items_item_name_info button a {
-    text-decoration: none;
+.products_list_items_item_info .info button {
+    border: none;
     font-family: Montserrat;
-    font-size: 10px;
-    color: #242424;
+    color: #000000;
+    cursor: pointer;
+    background-color: rgb(236, 236, 236);
+    border-radius: 4px;
+    margin-top: 5px;
+}
+.products_list_items_item_info .info button:hover {
+    box-shadow: 0px 0px 3px;
+}
+.products_list_items_item_info_name {
+    text-align: start;
+}
+.products_list_items_item_info_like {
+    display: inline-flex;
+    justify-self: flex-end;
 }
 .products_list_items_item_info_like_btn,
 .products_list_items_item_info_like_btn_selected {
     cursor: pointer;
-    width: 15px;
-    height: 15px;
+    width: 17px;
+}
+.products_list_items_item_info_like_btn:hover,
+.products_list_items_item_info_like_btn_selected:hover {
+    fill: rgb(214, 138, 138);
 }
 .products_list_items_item_info_like_btn {
     fill: #dcdcdc;
@@ -264,32 +320,27 @@
 }
 
 /*---------------product-detail----------------*/
-.product {
-    margin: 100px;
-}
 .product_detail {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    grid-gap: 20px;
+    display: flex;
+    margin: 50px;
 }
 .product_detail_photo {
-    grid-column-start: 1;
-    grid-column-end: 3;
-    width: 200px;
+    width: 300px;
 }
 .product_detail_name {
-    grid-column-start: 3;
-    grid-column-end: 6;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     font-family: Montserrat;
-    margin-left: 50px;
+    margin: 50px 0px 0px 50px;
 }
 .product_detail_name .name {
     display: inline-flex;
     font-size: 25px;
     font-weight: 600;
+}
+.product_detail_name .name:hover {
+    text-decoration: underline;
 }
 .product_detail_name .category a{
     display: inline-flex;
@@ -302,11 +353,17 @@
     font-size: 15px;
 }
 .product_detail_descr {
-    grid-column-start: 7;
-    grid-column-end: 12;
     font-size: 15px;
     font-family: Montserrat;
+    margin-top: 30px;
+    justify-self: flex-end;
 }
+.product_detail_comment {
+    font-size: 15px;
+    font-family: Montserrat;
+    margin: 30px 0px 0px 50px;
+}
+
 
 /*---------------posts-list----------------*/
 .posts_list {
@@ -317,20 +374,21 @@
     margin-left: 50px;
 }
 .posts_list_posts {
-    grid-column-start: 4;
+    grid-column-start: 3;
     grid-column-end: 12;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+    grid-gap: 20px;
     font-family: Montserrat;
-}
-.posts_list_posts_post {
-    margin-top: 20px;
 }
 .posts_list_posts_post .title {
     text-decoration: none;
     color: black;
     font-size: 20px;
     font-weight: 600;
+}
+.posts_list_posts_post .title:hover {
+    text-decoration: underline;
 }
 .posts_list_posts_post .info {
     text-decoration: none;
@@ -359,9 +417,9 @@
     grid-template-columns: repeat(12, 1fr);
     grid-gap: 20px;
     font-family: Montserrat;
-    margin-top: 100px;
-    margin-left: 50px;
+    margin: 50px 0px 0px 50px;
 }
+
 .profiles .categories {
     grid-column-start: 1;
     grid-column-end: 3;
@@ -369,17 +427,28 @@
     flex-direction: column;
 }
 .profiles .categories a {
+    display: inline-flex;
     text-decoration: none;
     color: rgb(137, 137, 137);
+    font-size: 15px;
+    margin-top: 4px;
 }
+.profiles .categories a:hover {
+    text-decoration: underline;
+}
+
 .profiles_list {
     grid-column-start: 3;
     grid-column-end: 12;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat( auto-fit, minmax(150px, 1fr) );
 }
 .profiles_list_profile .photo {
     height: 100px;
+}
+.profiles_list_profile .photo img:hover {
+    padding: 1px;
+    border: gainsboro 1px solid;
 }
 .profiles_list_profile .photo img{
     height: 100%;
@@ -389,6 +458,9 @@
     color: black;
     font-size: 15px;
     font-weight: 600;
+}
+.profiles_list_profile .name:hover {
+    text-decoration: underline;
 }
 .profiles_list_profile .category {
     color: gray;
@@ -408,29 +480,136 @@
     width: 100%;
 }
 
+/*---------------dashboard----------------*/
+.dashboard {
+    font-family: Montserrat;
+    margin: 50px 0px 0px 50px;
+}
+.dashboard img{
+    width: 150px;
+}
+
 /*---------------announsm----------------*/
 .announsements {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     grid-gap: 20px;
     font-family: Montserrat;
-    margin-top: 100px;
-    margin-left: 50px;
+    margin: 50px 0px 0px 50px;
 }
+
 .announsements_categories {
     grid-column-start: 1;
     grid-column-end: 3;
     display: flex;
     flex-direction: column;
 }
-.announsements_categories a{
+.announsements_categories a {
+    display: inline-flex;
     text-decoration: none;
     color: rgb(137, 137, 137);
+    font-size: 15px;
+    margin-top: 4px;
 }
+.announsements_categories a:hover {
+    text-decoration: underline;
+}
+
 .announcements_list {
     grid-column-start: 3;
     grid-column-end: 12;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
 }
-.announcements_list_announcement
+
+
+/*-------------------cart------------------------------------*/
+.cart {
+    margin: 50px 0px 0px 50px;
+    font-family: Montserrat;
+}
+.cart a {
+    color: #000;
+}
+.cart img {
+    width: 150px;
+}
+.cart_table_name a {
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    color: #000;
+    margin: 100px;
+}
+.cart_table_name a:hover {
+    text-decoration: underline;
+}
+
+/*----------------------------------bookmark-list---------------------*/
+.bookmarks {
+    margin: 50px 0px 0px 50px;
+    font-family: Montserrat;
+}
+.bookmarks_list {
+    display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(300px, 1fr) );
+    grid-gap: 20px;
+}
+.bookmarks_list a {
+    text-decoration: none;
+    color: #000;
+    font-weight: 600;
+}
+.bookmarks_list a:hover {
+    text-decoration: underline;
+}
+
+/*----------------------------------news---------------------*/
+.news {
+    margin: 50px 0px 0px 50px;
+    font-family: Montserrat;
+    grid-template-columns: repeat( auto-fit, minmax(300px, 1fr) );
+}
+
+/*----------------------------------chats---------------------*/
+.chats {
+    display: flex;
+    flex-direction: column;
+    margin: 50px 0px 0px 50px;
+    font-family: Montserrat;
+}
+.chats_chat {
+    margin-top: 5px;
+}
+.chats_chat a {
+    text-decoration: none;
+    color: rgb(132, 132, 132);
+}
+.chats_chat a:hover {
+    text-decoration: underline;
+}
+/*----------------------------------chat-detail---------------------*/
+.messages {
+    margin: 50px 0px 0px 50px;
+    font-family: Montserrat;
+}
+.message {
+    margin-top: 20px;
+}
+.message .info {
+    font-size: 12px;
+    color: gray;
+}
+.message .change a {
+    font-size: 12px;
+    color: gray;
+}
+
+/*----------------------------------likes---------------------*/
+.likes {
+    margin: 50px 0px 0px 50px;
+    font-family: Montserrat;
+}
+.likes img {
+    width: 150px;
+}

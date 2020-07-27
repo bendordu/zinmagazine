@@ -9,7 +9,8 @@
         <form class="products_list_search_form" method="post">
             <textarea name="s" rows="1" placeholder="Поиск товара..." required></textarea>
             {% csrf_token %}
-            <button type="submit" value="&#128270;"></button>
+            <button type="submit"><svg viewBox="0 0 512 512"><path d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg>
+            </button>
         </form>
         <div class="products_list_find"></div>
     </div>
@@ -43,24 +44,42 @@
             <div class="products_list_items_item_photo">
                 <a href="{{ product.get_absolute_url }}">
                     {% if product.image %}
-                    <img src="{{ product.image.url }}">
-                    {% else %}<img src="{% static "img/no_image.png" %}">{% endif %}
+                        <img src="{{ product.image.url }}">
+                    {% else %}
+                        <img src="{% static "img/no_image.png" %}">
+                    {% endif %}
                 </a>
             </div>
-            <div class="products_list_items_item_name_info">
+            <div class="products_list_items_item_info">
 
-                <a class="products_list_items_item_info_name" href="{{ product.get_absolute_url }}" class="product_name">{{ product.name }}</a><br>
+                <div class="name">
 
-                <div class="products_list_items_item_info_sale">
+                    <a class="products_list_items_item_info_name" href="{{ product.get_absolute_url }}" class="product_name">{{ product.name }}</a>
+
+                    <div class="products_list_items_item_info_like">
+                        [<span class={{ product.id }}>{{ product.users_like.count }}</span>]
+                        {% if request.user not in product.users_like.all %}
+                            {% if request.user.is_authenticated %}
+                                <svg class="products_list_items_item_info_like_btn" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like"  d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+                            {% else %}
+                                <svg class="products_list_items_item_info_like_btn" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+                            {% endif %}
+                        {% else %}
+                            <svg class="products_list_items_item_info_like_btn_selected" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+                <div class="info">
                     {% if product.price_type.id == 1 %}
                     {% if product.quantity_pr > 0 %}
 
                     RUB {{ product.price }}
-                    Q{{ product.quantity_pr }}<br>
+                    Q{{ product.quantity_pr }}
                 
                     {% if product in cart.value or product in cart_user.products %}
-                        <span>Товар добавлен</span>
-                        <a class="added_to_cart" href="{% url "cart:cart_detail" %}">
+                        <a href="{% url "cart:cart_detail" %}">
                             <button>перейти в корзину</button>
                         </a>
                     {% else %}
@@ -70,28 +89,14 @@
                     </button> 
 
                     {% endif %}
-                    <span>{% else %}Товара нет в наличии{% endif %}</span> 
+                    {% else %}<span>Товара нет в наличии</span> {% endif %}
                     {% endif %}
 
                     {% if product.price_type.id == 3 %}
-                    от RUB {{ product.price }}<br>
-                    <button>скачать</button>
-                    {% endif %}
+                    <span>от RUB {{ product.price }}</span>
+                    <a href=""><button>скачать</button></a>
+                    {% endif %}                    
                 </div>
-
-                <div class="products_list_items_item_info_like">
-                    {% if request.user not in product.users_like.all %}
-                        {% if request.user.is_authenticated %}
-                            <svg class="products_list_items_item_info_like_btn" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like"  d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
-                        {% else %}
-                            <svg class="products_list_items_item_info_like_btn" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
-                        {% endif %}
-                    {% else %}
-                        <svg class="products_list_items_item_info_like_btn_selected" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
-                    {% endif %}
-                    [<span class={{ product.id }}>{{ product.users_like.count }}</span>]
-                </div>
-
             </div>
         </div>
               
@@ -126,6 +131,7 @@ $('div.products_list_items_item_info_like path').click(function(e){
 
                 var previous_liked = parseInt($('a.navbar_frame_btns_likes span').text());
                 $('a.navbar_frame_btns_likes span').text(previous_action == 'like' ? previous_liked + 1 : previous_liked - 1);
+                $('a.navbar_frame_btns_likes span').removeAttr('hidden');
             }
         });
     });
@@ -141,10 +147,11 @@ $('button.add').click(function(e){
         function(data){
             if (data['status'] == 'ok')
             {
-                $(product_add).replaceWith('<button disabled><a href="{% url "cart:cart_detail" %}">Товар добавлен в корзину</a></button>');  
+                $(product_add).replaceWith('<a href="{% url "cart:cart_detail" %}"><button disabled>Товар добавлен в корзину</button></a>');  
                  
                 var previous_add = parseInt($('a.navbar_frame_btns_cart span').text());
                 $('a.navbar_frame_btns_cart span').text(previous_add + 1);
+                $('a.navbar_frame_btns_cart span').removeAttr('hidden');
             }
         });
     });

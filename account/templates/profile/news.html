@@ -1,86 +1,84 @@
 {% extends "shop/bas.html" %}
-
 {% load static %}
-
 {% block title %}news{% endblock %}
-
 {% block content %}  
 
-{% for new in news %}
+<div class="news">
+    {% for new in news %}
+    <div class="news_new">
+        <a href="{{ new.get_absolute_url }}"><h2>{{ new }}</h2></a>
 
-<a href="{{ new.get_absolute_url }}"><h2>{{ new }}</h2></a>
-
-{% for author in new.user.all %}
-{% for profile in profiles %}
-{% if profile.user == author %}
-<a href="{{ profile.get_absolute_url }}">{{ author }}</a>
-{% endif %}
-{% endfor %}
-{% endfor %}
-
-{% for profile in profiles %}
-{% if profile.user == new.author_ann %}
-<a href="{{ profile.get_absolute_url }}">{{ new.author_ann }}</a>
-{% endif %}
-{% endfor %}
-
-<p>
-{% for category in new.category.all %}
-<a href="{{ category.get_absolute_url }}">{{ category }}</a>
-{% endfor %}
-</p>
-<p>
-<a href="{{ new.type_pr.get_absolute_url }}">{{ new.type_pr }}</a>
-</p>
-<p>
-{{ new.body }}
-{{ new.description }}
-</p>
-
-{% for product in products %}
-{% if product.users_like == new.users_like %}
-<div class="product-like">
-    <span class='{{ product.id }}'>{{ product.users_like.count }}</span>
-    {% if product.users_like %}
-    <button data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" class="product_like">
-        {% if request.user not in product.users_like.all %}
-            {% if request.user.is_authenticated %}
-                Like
-            {% else %}
-                Like
-            {% endif %}
-        {% else %}
-        Unlike
+        {% for author in new.user.all %}
+        {% for profile in profiles %}
+        {% if profile.user == author %}
+        <a href="{{ profile.get_absolute_url }}">{{ author }}</a>
         {% endif %}
-    </button>
-    {% endif %}
-</div>  
-{% endif %}
-{% endfor %}    
+        {% endfor %}
+        {% endfor %}
 
-{% for post in posts %}
-{% if post.users_like == new.users_like %}
-<div class="post-like">
-    <span class='{{ post.title }}'>{{ post.users_like.count }}</span>
-    {% if post.users_like %}
-    <button data-title="{{ post.title }}" data-action="{% if request.user in post.users_like.all %}un{% endif %}like" class="like_post">
-        {% if request.user not in post.users_like.all %}
-            {% if request.user.is_authenticated %}
-                Like
-            {% else %}
-                Like
-            {% endif %}
-        {% else %}
-        Unlike
+        {% for profile in profiles %}
+        {% if profile.user == new.author_ann %}
+        <a href="{{ profile.get_absolute_url }}">{{ new.author_ann }}</a>
         {% endif %}
-    </button>
-    {% endif %}
-</div>  
-{% endif %}
-{% endfor %} 
+        {% endfor %}
 
-{% endfor %}
+        <p>
+        {% for category in new.category.all %}
+        <a href="{{ category.get_absolute_url }}">{{ category }}</a>
+        {% endfor %}
+        </p>
+        <p>
+        <a href="{{ new.type_pr.get_absolute_url }}">{{ new.type_pr }}</a>
+        </p>
+        <p>
+        {{ new.body }}
+        {{ new.description }}
+        </p>
 
+        {% for product in products %}
+        {% if product.users_like == new.users_like %}
+        <div class="product-like">
+            <span class='{{ product.id }}'>{{ product.users_like.count }}</span>
+            {% if product.users_like %}
+            <button data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" class="product_like">
+                {% if request.user not in product.users_like.all %}
+                    {% if request.user.is_authenticated %}
+                        Like
+                    {% else %}
+                        Like
+                    {% endif %}
+                {% else %}
+                Unlike
+                {% endif %}
+            </button>
+            {% endif %}
+        </div>  
+        {% endif %}
+        {% endfor %}    
+
+        {% for post in posts %}
+        {% if post.users_like == new.users_like %}
+        <div class="post-like">
+            <span class='{{ post.title }}'>{{ post.users_like.count }}</span>
+            {% if post.users_like %}
+            <button data-title="{{ post.title }}" data-action="{% if request.user in post.users_like.all %}un{% endif %}like" class="like_post">
+                {% if request.user not in post.users_like.all %}
+                    {% if request.user.is_authenticated %}
+                        Like
+                    {% else %}
+                        Like
+                    {% endif %}
+                {% else %}
+                Unlike
+                {% endif %}
+            </button>
+            {% endif %}
+        </div>  
+        {% endif %}
+        {% endfor %} 
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}  
 
 {% block domready %}

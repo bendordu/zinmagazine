@@ -3,83 +3,82 @@
 {% block title %}{{ product.name }}{% endblock %}
 {% block content %}      						
 	
-<div class="product">
-	<div class="product_detail">
 
-		<img class="product_detail_photo" src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+<div class="product_detail">
 
-		<div class="product_detail_name">
-			<span class="name">{{ product.name }}</span>
-			<div class="category">
-			{% for category in product.category.all %}
-				<a href="{{ category.get_absolute_url }}">{{ category }}</a>
-			{% endfor %}
-				<a class="category" href="{{ product.type_pr.get_absolute_url }}">{{ product.type_pr }}</a>
-			</div>
-			<div class="product_detail_info">
+	<img class="product_detail_photo" src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
 
-				{% if product.price_type.id == 1 %}
-					{% if product.quantity_pr > 0 %}
-	
-						RUB {{ product.price }}
-						Q{{ product.quantity_pr }}
-						заказали {{ product.count_order }}</br>
-							
-						{% if product in cart.value or product in cart_user.products %}
-							<button class="">
-									<a href="{% url "cart:cart_detail" %}">Товар добавлен в корзину</a>
-							</button>
-						{% else %}
-	
-							<button class="add" data-id="{{ product.id }}" data-action="{% if product in cart.value %}cart{% endif %}add">
-								Добавить в корзину
-							</button> 
-	
-						{% endif %} 
-					{% else %}
-	
-						<span>Товара нет в наличии</span>
+	<div class="product_detail_name">
+		<span class="name">{{ product.name }}</span>
+		<div class="category">
+		{% for category in product.category.all %}
+			<a href="{{ category.get_absolute_url }}">{{ category }}</a>
+		{% endfor %}
+			<a class="category" href="{{ product.type_pr.get_absolute_url }}">{{ product.type_pr }}</a>
+		</div>
+		<div class="product_detail_info">
+
+			{% if product.price_type.id == 1 %}
+				{% if product.quantity_pr > 0 %}
+
+					RUB {{ product.price }}
+					Q{{ product.quantity_pr }}
+					заказали {{ product.count_order }}</br>
 						
-					{% endif %}
-				{% endif %}
-	
-				{% if product.price_type.id == 3 %}
-					от RUB {{ product.price }}
-					<button>Скачать</button><br>
-				{% endif %}
-	
-				<div class="products_list_items_item_info_like">
-					{% if request.user not in product.users_like.all %}
-						<svg class="products_list_items_item_info_like_btn" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like"  d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+					{% if product in cart.value or product in cart_user.products %}
+						<button class="">
+								<a href="{% url "cart:cart_detail" %}">Товар добавлен в корзину</a>
+						</button>
 					{% else %}
-						<svg class="products_list_items_item_info_like_btn_selected" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
-					{% endif %}
-					[<span class="{{ product.id }}">{{ product.users_like.count }}</span>]
-				</div>
-	
-				{% if product.type_pr.id == 1 %}
-				<div class="product-bye-paper">
-					<span class='bye_paper{{ product.id }}'>{{ product.bye_paper.count }}</span>
-					<button data-id="{{ product.id }}" data-action="{% if request.user in product.bye_paper.all %}un{% endif %}bye_paper" class="bye_paper">
-						{% if request.user not in product.bye_paper.all %}
-							{% if request.user.is_authenticated %}
-								bye_paper
-							{% else %}
-								bye_paper
-							{% endif %}
-						{% else %}
-							unbye_paper
-						{% endif %}
-					</button>
-				</div> 
-				{% endif %}  
+
+						<button class="add" data-id="{{ product.id }}" data-action="{% if product in cart.value %}cart{% endif %}add">
+							Добавить в корзину
+						</button> 
+
+					{% endif %} 
+				{% else %}
+
+					<span>Товара нет в наличии</span>
+					
+				{% endif %}
+			{% endif %}
+
+			{% if product.price_type.id == 3 %}
+				от RUB {{ product.price }}
+				<button>Скачать</button><br>
+			{% endif %}
+
+			<div class="products_list_items_item_info_like">
+				{% if request.user not in product.users_like.all %}
+					<svg class="products_list_items_item_info_like_btn" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like"  d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+				{% else %}
+					<svg class="products_list_items_item_info_like_btn_selected" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+				{% endif %}
+				[<span class="{{ product.id }}">{{ product.users_like.count }}</span>]
 			</div>
+
+			{% if product.type_pr.id == 1 %}
+			<div class="product-bye-paper">
+				<span class='bye_paper{{ product.id }}'>{{ product.bye_paper.count }}</span>
+				<button data-id="{{ product.id }}" data-action="{% if request.user in product.bye_paper.all %}un{% endif %}bye_paper" class="bye_paper">
+					{% if request.user not in product.bye_paper.all %}
+						{% if request.user.is_authenticated %}
+							bye_paper
+						{% else %}
+							bye_paper
+						{% endif %}
+					{% else %}
+						unbye_paper
+					{% endif %}
+				</button>
+			</div> 
+			{% endif %}  
 		</div>
 		<span class="product_detail_descr">[{{ product.description|linebreaks }}]</span>
-		
 	</div>
+</div>
 	
-
+<div class="product_detail_comment">
 	<span class="count_comments">{{ comments.count }}</span><span> comment{{ comments.count|pluralize }}</span>
 
 	{% for comment in comments %}
@@ -109,8 +108,9 @@
 		<input class="comment" type="file" title="Add image">
 		<input type="submit" value="Add comment">
 	</form>
-
 </div>
+
+
 						
 
 {% endblock %}       
