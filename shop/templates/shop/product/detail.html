@@ -3,113 +3,150 @@
 {% block title %}{{ product.name }}{% endblock %}
 {% block content %}      						
 	
+<div class="product_d">
+	<div class="product_detail">
 
-<div class="product_detail">
-
-	<img class="product_detail_photo" src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
-
-	<div class="product_detail_name">
-		<span class="name">{{ product.name }}</span>
-		<div class="category">
-		{% for category in product.category.all %}
-			<a href="{{ category.get_absolute_url }}">{{ category }}</a>
-		{% endfor %}
-			<a class="category" href="{{ product.type_pr.get_absolute_url }}">{{ product.type_pr }}</a>
+		<div class="product_detail_photo">
+			<img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
 		</div>
-		<div class="product_detail_info">
 
-			{% if product.price_type.id == 1 %}
-				{% if product.quantity_pr > 0 %}
+		<div class="product_detail_name">
+			<div class="top">
+				<span class="name">{{ product.name }}</span>
+				<div class="category">
+					{% for category in product.category.all %}
+						<a href="{{ category.get_absolute_url }}">{{ category }}</a>
+					{% endfor %}
+						<a class="category" href="{{ product.type_pr.get_absolute_url }}">{{ product.type_pr }}</a>
+				</div>
+			</div>
+			<div class="product_detail_info">
 
-					RUB {{ product.price }}
-					Q{{ product.quantity_pr }}
-					заказали {{ product.count_order }}</br>
-						
-					{% if product in cart.value or product in cart_user.products %}
-						<button class="">
-								<a href="{% url "cart:cart_detail" %}">Товар добавлен в корзину</a>
-						</button>
+				{% if product.price_type.id == 1 %}
+					{% if product.quantity_pr > 0 %}
+
+						{{ product.price }} RUB
+						Q{{ product.quantity_pr }}
+						заказали {{ product.count_order }}
+							
+						{% if product in cart.value or product in cart_user.products %}
+						<a class="added_to_cart" href="{% url "cart:cart_detail" %}">
+							<button>
+									перейти в корзину
+							</button>
+						</a>
+						{% else %}
+
+							<button class="add" data-id="{{ product.id }}" data-action="{% if product in cart.value %}cart{% endif %}add">
+								в корзину
+							</button> 
+
+						{% endif %} 
 					{% else %}
 
-						<button class="add" data-id="{{ product.id }}" data-action="{% if product in cart.value %}cart{% endif %}add">
-							Добавить в корзину
-						</button> 
-
-					{% endif %} 
-				{% else %}
-
-					<span>Товара нет в наличии</span>
-					
+						<span>Товара нет в наличии</span>
+						
+					{% endif %}
 				{% endif %}
-			{% endif %}
 
-			{% if product.price_type.id == 3 %}
-				от RUB {{ product.price }}
-				<button>Скачать</button><br>
-			{% endif %}
-
-			<div class="products_list_items_item_info_like">
-				{% if request.user not in product.users_like.all %}
-					<svg class="products_list_items_item_info_like_btn" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like"  d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
-				{% else %}
-					<svg class="products_list_items_item_info_like_btn_selected" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+				{% if product.price_type.id == 3 %}
+					от  {{ product.price }} RUB
+					<a href="#"><button>Скачать</button></a>
 				{% endif %}
-				[<span class="{{ product.id }}">{{ product.users_like.count }}</span>]
+
 			</div>
 
-			{% if product.type_pr.id == 1 %}
-			<div class="product-bye-paper">
-				<span class='bye_paper{{ product.id }}'>{{ product.bye_paper.count }}</span>
-				<button data-id="{{ product.id }}" data-action="{% if request.user in product.bye_paper.all %}un{% endif %}bye_paper" class="bye_paper">
-					{% if request.user not in product.bye_paper.all %}
-						{% if request.user.is_authenticated %}
-							bye_paper
-						{% else %}
-							bye_paper
-						{% endif %}
+			<div class="product_detail_name_btns">
+
+				<div class="products_detail_name_like">
+
+					[<span class="{{ product.id }}">{{ product.users_like.count }}</span>]
+
+					{% if request.user not in product.users_like.all %}
+						<svg class="products_detail_name_like_btn" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like"  d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
 					{% else %}
-						unbye_paper
+						<svg class="products_detail_name_like_btn_selected" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
 					{% endif %}
-				</button>
-			</div> 
-			{% endif %}  
+					
+				</div>
+				
+				{% if product.type_pr.id == 1 %}
+				<div class="product_bye">
+					<span>
+						[<span class='bye_paper{{ product.id }}'>
+							{{ product.bye_paper.count }}
+						</span>]
+						человек хотят купить бумажную версию.
+						{% if request.user not in product.bye_paper.all %}
+						<span class="paper_want">А вы?</span>
+						{% else %}
+						<span class="paper_want">Мы оповестим, если появится бумажная версия.</span>
+						{% endif %} 
+					</span>
+					
+					<div class="product_bye_paper">
+						<button data-id="{{ product.id }}" data-action="{% if request.user in product.bye_paper.all %}un{% endif %}bye_paper" class="bye_paper">
+							{% if request.user not in product.bye_paper.all %}
+								{% if request.user.is_authenticated %}
+									хочу!
+								{% else %}
+									хочу!
+								{% endif %}
+							{% else %}
+								x
+							{% endif %}
+						</button>
+					</div> 
+				{% endif %} 
+				</div>
+
+			</div>
 		</div>
-		<span class="product_detail_descr">[{{ product.description|linebreaks }}]</span>
-	</div>
-</div>
-	
-<div class="product_detail_comment">
-	<span class="count_comments">{{ comments.count }}</span><span> comment{{ comments.count|pluralize }}</span>
-
-	{% for comment in comments %}
-	<div class="comment">
-		<p class="info">
-			Comment by {{ comment.author.username }}
-			{{ comment.created }}
-		</p>
-		<span class="body">{{ comment.body|linebreaks }}</span>
-		{{ comment.image }}
 		
-		{% if comment.author == request.user %}
-		<a href="" data-body="{{ comment.body }}" data-id="{{ product.id }}" data-action="remove" class="remove">удалить</a>
-		<a href="" data-id="{{ product.id }}" data-action="edit" class="edit">редактировать</a>
-		{% endif %}
 	</div>
-	
-	{% empty %}
-	<p>There are no comments yet...</p>
 
-	{% endfor %}
+	<div class="product_detail_descr">
+		<span class="descr">Описание</span>
+		<span class="body">[{{ product.description|linebreaks }}]</span>
+	</div>	
 
-	<div class="new_comment"></div>
+	<div class="product_detail_comment">
+		<span class="count"><span class="count_comments">{{ comments.count }}</span> comment{{ comments.count|pluralize }}</span>
 
-	<form class="comment" method="post" data-id="{{ product.id }}">
-		<textarea name="body" cols="40" rows="10" required></textarea>
-		<input class="comment" type="file" title="Add image">
-		<input type="submit" value="Add comment">
-	</form>
+		{% for comment in comments %}
+		<div class="comment_info">
+
+			<div class="menu">
+				<span class="info">
+					{{ comment.author.username }} {{ comment.created }}
+				</span>
+				{% if comment.author == request.user %}
+				<a href="" data-body="{{ comment.body }}" data-id="{{ product.id }}" data-action="remove" class="remove">удалить</a>
+				<a href="" data-id="{{ product.id }}" data-action="edit" class="edit">редактировать</a>
+				{% endif %}
+			</div>
+
+			<p class="body">{{ comment.body }}</p>
+			{{ comment.image }}
+			
+		</div>
+		
+		{% empty %}
+		<p>There are no comments yet...</p>
+
+		{% endfor %}
+
+		<div class="product_detail_comment_form"> 
+			<div class="new_comment"></div>
+
+			<form class="comment" method="post" data-id="{{ product.id }}">
+				<textarea placeholder="Напишите комментарий здесь..." rows="3" required></textarea>
+				<button type="submit">отправить</button>
+			</form>
+		</div>
+	</div>
+
 </div>
-
 
 						
 
@@ -117,7 +154,7 @@
 
 {% block domready %}
 
-$('div.products_list_items_item_info_like path').click(function(e){
+$('div.products_detail_name_like path').click(function(e){
     e.preventDefault();
     var product_like = event.target;
     $.post('{% url "likes:product_like" %}',
@@ -218,7 +255,8 @@ $('button.bye_paper').click(function(e){
 				var pr_id = $(product_bye_paper).data('id');
 	
 				$(product_bye_paper).data('action', previous_action == 'bye_paper' ? 'unbye_paper' : 'bye_paper');
-				$(product_bye_paper).text(previous_action == 'bye_paper' ? 'unbye_paper' : 'bye_paper');
+				$(product_bye_paper).text(previous_action == 'bye_paper' ? 'x' : 'хочу!');
+				$('span.paper_want').text(previous_action == 'bye_paper' ? 'Мы оповестим, если появится бумажная версия.' : 'А вы?');
 				
 				var previous_bye_paper = parseInt($('span.' + 'bye_paper' + pr_id).text());
 				$('span.' + 'bye_paper' + pr_id).text(previous_action == 'bye_paper' ? previous_bye_paper + 1 : previous_bye_paper - 1);

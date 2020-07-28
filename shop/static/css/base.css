@@ -30,9 +30,6 @@
 .navbar_menu a:hover {
     text-decoration: underline;
 }
-@media screen and (max-width: 1120px) {
-
-}
 .navbar_frame_btns {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -248,17 +245,12 @@
 }
 .products_list_items_item_photo img {
     width: 200px;
-    /*padding-bottom: 3px;
-    border-bottom: gainsboro solid;*/
 }
 .products_list_items_item_photo img:hover {
-    /*padding: 1px;
-    border: gainsboro solid;*/
     box-shadow: 0 0 3px black;
 }
 .products_list_items_item_info {
     align-self: center;
-    /*text-align: center;*/
     text-decoration: none;
     font-family: Montserrat;
     font-size: 13px;
@@ -283,6 +275,7 @@
 .products_list_items_item_info .info {
     display: flex;
     justify-content: space-between;
+    margin-top: 5px;
 }
 .products_list_items_item_info .info button {
     border: none;
@@ -292,6 +285,7 @@
     background-color: rgb(236, 236, 236);
     border-radius: 4px;
     margin-top: 5px;
+    padding: 5px;
 }
 .products_list_items_item_info .info button:hover {
     box-shadow: 0px 0px 3px;
@@ -321,49 +315,212 @@
 
 /*---------------product-detail----------------*/
 .product_detail {
-    display: flex;
-    margin: 50px;
+    display: inline-flex;
+    margin: 30px 0px 0px 50px;
+    border: gainsboro solid;
+    width: 587px
 }
 .product_detail_photo {
-    width: 300px;
+    display: inline-flex;
+    align-self: center;
+    width: 280px;
+}
+.product_detail_photo img {
+    width: 100%;
+}
+.product_detail_photo:hover {
+    box-shadow: 0 0 3px black;
 }
 .product_detail_name {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: space-between;
     font-family: Montserrat;
-    margin: 50px 0px 0px 50px;
+    width: 200px;
+    margin: 50px 0px 30px 50px;
+    border-left: solid gainsboro;
+    padding: 0px 30px 0px 25px;
 }
 .product_detail_name .name {
-    display: inline-flex;
     font-size: 25px;
     font-weight: 600;
 }
 .product_detail_name .name:hover {
     text-decoration: underline;
 }
+.product_detail_name .category {
+    margin-bottom: 20px;
+}
 .product_detail_name .category a{
-    display: inline-flex;
     font-size: 12px;
     color: rgb(183, 183, 183);
 }
 .product_detail_info {
-    display: inline-flex;
-    flex-direction: column;
     font-size: 15px;
+    display: flex;
+    justify-content: space-between;
 }
-.product_detail_descr {
+.product_detail_info .added_to_cart button {
+    background-color: rgb(224, 224, 224);
+    font-size: 12px;
+    color: black;
+}
+.product_detail_info button {
     font-size: 15px;
     font-family: Montserrat;
-    margin-top: 30px;
-    justify-self: flex-end;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    background-color: black;
+    padding: 10px;
+    cursor: pointer;
+}
+.product_detail_info button:hover {
+    background-color: rgb(140, 140, 140);
+}
+.product_detail_name_btns {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.products_detail_name_like {
+    margin: 10px;
+}
+.product_bye {
+    margin-top: 10px;
+    padding-top: 5px;
+    border-top: solid gainsboro;
+    display: flex;
+    font-size: 12px;
+    color: rgb(113, 113, 113);
+}
+.product_bye_paper  {
+    display: inline-flex;
+}
+.product_bye_paper button {
+    border: none;
+    background: none;
+    font-family: Montserrat;
+    font-size: 14px;
+    color: gray;
+}
+.product_bye_paper button:hover {
+    background: gainsboro;
+    box-shadow: 0px 0px 3px;
+}
+.product_bye_paper span {
+    margin: 5px;
+    align-self: center;
+}
+.products_detail_name_like_btn,
+.products_detail_name_like_btn_selected {
+    cursor: pointer;
+    width: 20px;
+}
+.products_detail_name_like_btn:hover,
+.products_detail_name_like_btn_selected:hover {
+    fill: rgb(214, 138, 138);
+}
+.products_detail_name_like_btn {
+    fill: #dcdcdc;
+}
+.products_detail_name_like_btn_selected {
+    fill:#8e2626;
+}
+.product_detail_descr {
+    margin: 20px 0px 0px 50px;
+    font-family: Montserrat;
+    width: 587px;
+}
+.product_detail_descr .descr {
+    font-weight: 600;
+    font-size: 20px;
+}
+.product_detail_descr .body{
+    color: rgb(168, 168, 168);
 }
 .product_detail_comment {
+    width: 587px;
     font-size: 15px;
     font-family: Montserrat;
     margin: 30px 0px 0px 50px;
 }
-
+.product_detail_comment .count {
+    font-weight: 600;
+    font-size: 20px;
+}
+.product_detail_comment .comment_info {
+    margin-top: 20px;
+}
+.product_detail_comment .comment_info span {
+    font-size: 12px;
+    display: inline-flex;
+    border-bottom: rgb(226, 226, 226) solid;
+}
+.product_detail_comment .comment_info a {
+    text-decoration: none;
+    color: rgb(178, 178, 178);
+    font-size: 12px;
+    margin-left: 10px;
+}
+.product_detail_comment .comment_info .body {
+    font-size: 15px;
+}
+.product_detail_comment_form form {
+    display: flex;
+}
+.product_detail_comment_form form button {
+    cursor: pointer;
+    font-family: Montserrat;
+    border: none;
+}
+.product_detail_comment_form form button:hover {
+    background-color: rgb(154, 154, 154);
+}
+.product_detail_comment_form textarea {
+    resize: none;
+    outline: none;
+    border: solid rgb(231, 231, 231);
+    width: 570px;
+}
+.product_detail_comment_form textarea::placeholder {
+    font-family: Montserrat;
+    color: rgb(185, 185, 185);
+}
+.product_detail_comment_form textarea:-ms-input-placeholder {
+    font-family: Montserrat;
+    color: rgb(185, 185, 185);
+}
+.product_detail_comment_form textarea::-ms-input-placeholder {
+    font-family: Montserrat;
+    color: rgb(185, 185, 185);
+}
+.product_detail_comment_form textarea::-webkit-input-placeholder {
+    font-family: Montserrat;
+    color: rgb(185, 185, 185);
+}
+.product_detail_comment_form textarea:-moz-placeholder {
+    font-family: Montserrat;
+    color: rgb(185, 185, 185);
+}
+.product_detail_comment_form textarea::-moz-placeholder {
+    font-family: Montserrat;
+    color: rgb(185, 185, 185);
+}
+.product_d {
+    display: flex;
+    flex-wrap: wrap;
+}
+@media screen and (min-width: 1112px) {
+    .product_detail_descr {
+        align-self: center;
+        margin: 50px 0px 50px 100px;
+        width: 300px;
+    }
+    .product_detail_descr .body{
+        color: rgb(168, 168, 168);
+    }
+}
 
 /*---------------posts-list----------------*/
 .posts_list {

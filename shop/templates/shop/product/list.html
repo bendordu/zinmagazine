@@ -80,7 +80,7 @@
                 
                     {% if product in cart.value or product in cart_user.products %}
                         <a href="{% url "cart:cart_detail" %}">
-                            <button>перейти в корзину</button>
+                            <button>уже в корзине</button>
                         </a>
                     {% else %}
 
