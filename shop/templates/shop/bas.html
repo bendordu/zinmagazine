@@ -4,22 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}zinmagazine.com{% endblock %}</title>
+    <title>{% block title %}zinmagazine{% endblock %}</title>
     <script type="text/javascript" src="{% static "js/jquery-3.5.1.min.js" %}"></script>
     <link href="{% static "css/base.css" %}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="navbar">
-        <div class="navbar_frame">
-            <div class="navbar_frame_zinzinzin">
+    <div class="header">
+        <div class="navbar">
+            <div class="navbar_logo">
                 <svg viewBox="0 0 171 152">
                     <path d="M30.2604 26.464V34H0.164375V28.048L17.1084 7.936H0.596375V0.399998H29.5404V6.352L12.5964 26.464H30.2604ZM34.4225 0.399998H43.9265V34H34.4225V0.399998ZM82.6561 0.399998V34H74.8321L60.0001 16.096V34H50.6881V0.399998H58.5121L73.3441 18.304V0.399998H82.6561ZM117.776 26.464V34H87.68V28.048L104.624 7.936H88.112V0.399998H117.056V6.352L100.112 26.464H117.776ZM121.938 0.399998H131.442V34H121.938V0.399998ZM170.172 0.399998V34H162.348L147.516 16.096V34H138.204V0.399998H146.028L160.86 18.304V0.399998H170.172ZM30.2604 85.464V93H0.164375V87.048L17.1084 66.936H0.596375V59.4H29.5404V65.352L12.5964 85.464H30.2604ZM34.4225 59.4H43.9265V93H34.4225V59.4ZM82.6561 59.4V93H74.8321L60.0001 75.096V93H50.6881V59.4H58.5121L73.3441 77.304V59.4H82.6561ZM117.776 85.464V93H87.68V87.048L104.624 66.936H88.112V59.4H117.056V65.352L100.112 85.464H117.776ZM121.938 59.4H131.442V93H121.938V59.4ZM170.172 59.4V93H162.348L147.516 75.096V93H138.204V59.4H146.028L160.86 77.304V59.4H170.172ZM30.2604 144.464V152H0.164375V146.048L17.1084 125.936H0.596375V118.4H29.5404V124.352L12.5964 144.464H30.2604ZM34.4225 118.4H43.9265V152H34.4225V118.4ZM82.6561 118.4V152H74.8321L60.0001 134.096V152H50.6881V118.4H58.5121L73.3441 136.304V118.4H82.6561ZM117.776 144.464V152H87.68V146.048L104.624 125.936H88.112V118.4H117.056V124.352L100.112 144.464H117.776ZM121.938 118.4H131.442V152H121.938V118.4ZM170.172 118.4V152H162.348L147.516 134.096V152H138.204V118.4H146.028L160.86 136.304V118.4H170.172Z" fill="black"/>
                 </svg>  
             </div>
-            <div class="navbar_frame_btns">
+            <div class="navbar_btns">
                 {% if request.user.is_authenticated %}
-                    <a class="navbar_frame_btns_cart" href="{% url "cart:cart_detail_user" %}">
+                    <a class="navbar_btns_cart" href="{% url "cart:cart_detail_user" %}">
                         корзина
                         {% if cart_user|length > 0 %}
                             [<span>{{ cart_user|length }}</span>]
@@ -28,7 +28,7 @@
                         {% endif %}
                     </a>
                 {% else %}
-                    <a class="navbar_frame_btns_cart" href="{% url "cart:cart_detail" %}">    
+                    <a class="navbar_btns_cart" href="{% url "cart:cart_detail" %}">    
                         корзина
                         {% if cart|length > 0 %}
                             [<span>{{ cart|length }}</span>]
@@ -37,7 +37,7 @@
                         {% endif %}
                     </a>
                 {% endif %}
-                <a class="navbar_frame_btns_likes" href="{% url "likes:like_list" %}">
+                <a class="navbar_btns_likes" href="{% url "likes:like_list" %}">
                     лайки
                     {% if likes|length > 0 %}
                         [<span>{{ likes|length }}</span>]
@@ -45,40 +45,40 @@
                         <span hidden>{{ likes|length }}</span>
                     {% endif %}
                 </a>
-                <a class="navbar_frame_btns_chats" href="{% url "chats:chat_list" %}">
+                <a class="navbar_btns_chats" href="{% url "chats:chat_list" %}">
                     сообщения
                     {% if chats|length > 0 %}
                         [<span>{{ chats|length }}</span>]
                     {% endif %}
                 </a>
-                <a class="navbar_frame_btns_bookmarks" href="{% url "blog:bookmark_list" %}">
+                <a class="navbar_btns_bookmarks" href="{% url "blog:bookmark_list" %}">
                     закладки
                     {% if bookmark|length > 0 %}
                         [<span>{{ bookmark|length }}</span>]
                     {% endif %}
                 </a>
-                <a class="navbar_frame_btns_news" href="{% url "news" %}">
+                <a class="navbar_btns_news" href="{% url "news" %}">
                     новости
                 </a>
             </div>
-            <div class="navbar_frame_log">
+            <div class="navbar_log">
                 {% if request.user.is_authenticated %}
-                    <div class="navbar_frame_log_in">
-                        <a href="{% url "dashboard" %}">{{ request.user.username }}</a>
-                        <div class="navbar_frame_log_out">
+                    <div class="navbar_log_in">
+                        <a class="navbar_log_in_name" href="{% url "dashboard" %}">{{ request.user.username }}</a>
+                        <div class="navbar_log_out">
                             <a href="{% url "logout" %}">выйти</a>
                         </div>
                     </div>
                 {% else %}
-                    <a class="navbar_frame_log_in" href="{% url "login" %}">Вход</a>
+                    <a class="navbar_log_in" href="{% url "login" %}">Вход</a>
                 {% endif %}
             </div>
         </div>
-        <div class="navbar_menu">
-            <a class="navbar_menu_shop" href="{% url "shop:product_list" %}">магазин</a>
-            <a class="navbar_menu_magazine" href="{% url "blog:post_list" %}">журнал</a>
-            <a class="navbar_menu_authors" href="{% url "profile_list" %}">авторы</a>
-            <a class="navbar_menu_announcements" href="{% url "announcement:announcement_list" %}">объявления</a>
+        <div class="menu">
+            <a class="menu_shop" href="{% url "shop:product_list" %}">магазин</a>
+            <a class="menu_magazine" href="{% url "blog:post_list" %}">журнал</a>
+            <a class="menu_authors" href="{% url "profile_list" %}">авторы</a>
+            <a class="menu_announcements" href="{% url "announcement:announcement_list" %}">объявления</a>
         </div>
     </div>
     <div class="content">
@@ -99,25 +99,25 @@
     <div class="footer">
     </div>
 
-<script type="text/javascript" src="{% static "js/jquery-3.5.1.min.js" %}"></script>
-<script type="text/javascript" src="{% static "js/js.cookie.min.js" %}"></script>
-<script>
-    var csrftoken = Cookies.get('csrftoken');
-    function csrfSafeMethod(method){
-        // Для этих методов токен не будет подставляться в заголовок.
-        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-    $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
+    <script type="text/javascript" src="{% static "js/jquery-3.5.1.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/js.cookie.min.js" %}"></script>
+    <script>
+        var csrftoken = Cookies.get('csrftoken');
+        function csrfSafeMethod(method){
+            // Для этих методов токен не будет подставляться в заголовок.
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
         }
-    });
-    $(document).ready(function(){
-        {% block domready %}{% endblock %}
-    });
-</script>
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+        $(document).ready(function(){
+            {% block domready %}{% endblock %}
+        });
+    </script>
 
 </body>
 </html>

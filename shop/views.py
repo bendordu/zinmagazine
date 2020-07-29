@@ -122,8 +122,8 @@ def product_s(request):
     return JsonResponse({'status':'ok', 'products': products, 'authors': authors})
     
 
-def base(request):
-    return render(request,'shop/base.html')
+def bas(request):
+    return render(request,'shop/bas.html')
 
 
 

@@ -1,21 +1,21 @@
 {% extends "shop/bas.html" %}
 {% load static %}
-{% block title %}{% if category %}{{ category.name }}{% else %}Products{% endif %}{% endblock %}
+{% block title %}{% if category %}{{ category.name }}{% else %}zin-shop{% endif %}{% endblock %}
 {% block content %}   
 
-<div class="products_list">
+<div class="shop">
  
-    <div class="products_list_search">
-        <form class="products_list_search_form" method="post">
-            <textarea name="s" rows="1" placeholder="Поиск товара..." required></textarea>
+    <div class="shop_search">
+        <form class="shop_search_form" method="post">
+            <textarea name='s' rows="1" placeholder="Поиск товара..." required></textarea>
             {% csrf_token %}
             <button type="submit"><svg viewBox="0 0 512 512"><path d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg>
             </button>
         </form>
-        <div class="products_list_find"></div>
+        <div class="shop_find"></div>
     </div>
 
-    <div class="products_list_categories">
+    <div class="shop_categories">
         <span>Категории</span>
         <span {% if not category or price_type or type_pr %}class="selected"{% endif %}><a href="{% url "shop:product_list" %}">все</a></span>
         {% for c in categories %}
@@ -35,13 +35,12 @@
         {% endfor %}
     </div>
 
-
-    <div class="products_list_items">
+    <div class="shop_items">
 
         {% for product in products %}
 
-        <div class="products_list_items_item">
-            <div class="products_list_items_item_photo">
+        <div class="shop_items_item">
+            <div class="shop_items_item_photo">
                 <a href="{{ product.get_absolute_url }}">
                     {% if product.image %}
                         <img src="{{ product.image.url }}">
@@ -50,38 +49,44 @@
                     {% endif %}
                 </a>
             </div>
-            <div class="products_list_items_item_info">
+            <div class="shop_items_item_info">
 
-                <div class="name">
+                <div class="shop_items_item_info_name">
 
-                    <a class="products_list_items_item_info_name" href="{{ product.get_absolute_url }}" class="product_name">{{ product.name }}</a>
+                    <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
 
-                    <div class="products_list_items_item_info_like">
+                    <div class="shop_items_item_info_like">
                         [<span class={{ product.id }}>{{ product.users_like.count }}</span>]
                         {% if request.user not in product.users_like.all %}
                             {% if request.user.is_authenticated %}
-                                <svg class="products_list_items_item_info_like_btn" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like"  d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+                                <svg class="shop_items_item_info_like_btn" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like"  d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
                             {% else %}
-                                <svg class="products_list_items_item_info_like_btn" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+                                <svg class="shop_items_item_info_like_btn" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
                             {% endif %}
                         {% else %}
-                            <svg class="products_list_items_item_info_like_btn_selected" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+                            <svg class="shop_items_item_info_like_btn_selected" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
                         {% endif %}
                     </div>
 
                 </div>
 
-                <div class="info">
+                <div class="shop_items_item_info_info">
                     {% if product.price_type.id == 1 %}
                     {% if product.quantity_pr > 0 %}
 
-                    RUB {{ product.price }}
+                    {{ product.price }} RUB
                     Q{{ product.quantity_pr }}
                 
                     {% if product in cart.value or product in cart_user.products %}
-                        <a href="{% url "cart:cart_detail" %}">
-                            <button>уже в корзине</button>
+                        {% if request.user.is_authenticated %}
+                        <a href="{% url "cart:cart_detail_user" %}">
+                            <button class="selected">в корзине</button>
                         </a>
+                        {% else %}
+                        <a href="{% url "cart:cart_detail" %}">
+                            <button class="selected">в корзине</button>
+                        </a>
+                        {% endif %}
                     {% else %}
 
                     <button class="add" data-id="{{ product.id }}" data-action="{% if product in cart.value %}cart{% endif %}add">
@@ -93,8 +98,8 @@
                     {% endif %}
 
                     {% if product.price_type.id == 3 %}
-                    <span>от RUB {{ product.price }}</span>
-                    <a href=""><button>скачать</button></a>
+                    <span>от {{ product.price }} RUB</span>
+                    <a href="#"><button>скачать</button></a>
                     {% endif %}                    
                 </div>
             </div>
@@ -109,7 +114,7 @@
 
 {% block domready %}
 
-$('div.products_list_items_item_info_like path').click(function(e){
+$('div.shop_items_item_info_like path').click(function(e){
     e.preventDefault();
     var product_like = event.target;
     $.post('{% url "likes:product_like" %}',
@@ -129,9 +134,9 @@ $('div.products_list_items_item_info_like path').click(function(e){
                 var previous_likes = parseInt($('span.' + pr_id).text());
                 $('span.' + pr_id).text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
 
-                var previous_liked = parseInt($('a.navbar_frame_btns_likes span').text());
-                $('a.navbar_frame_btns_likes span').text(previous_action == 'like' ? previous_liked + 1 : previous_liked - 1);
-                $('a.navbar_frame_btns_likes span').removeAttr('hidden');
+                var previous_liked = parseInt($('a.navbar_btns_likes span').text());
+                $('a.navbar_btns_likes span').text(previous_action == 'like' ? previous_liked + 1 : previous_liked - 1);
+                $('a.navbar_btns_likes span').removeAttr('hidden');
             }
         });
     });
@@ -147,48 +152,61 @@ $('button.add').click(function(e){
         function(data){
             if (data['status'] == 'ok')
             {
-                $(product_add).replaceWith('<a href="{% url "cart:cart_detail" %}"><button disabled>Товар добавлен в корзину</button></a>');  
+                if ($('div.navbar_log a.navbar_log_in').text() == 'Вход') 
+                {
+                    $(product_add).replaceWith('<a href="{% url "cart:cart_detail" %}"><button class="selected">в корзине</button></a>');  
+                }
+                else {
+                    $(product_add).replaceWith('<a href="{% url "cart:cart_detail_user" %}"><button class="selected">в корзине</button></a>'); 
+                }
                  
-                var previous_add = parseInt($('a.navbar_frame_btns_cart span').text());
-                $('a.navbar_frame_btns_cart span').text(previous_add + 1);
-                $('a.navbar_frame_btns_cart span').removeAttr('hidden');
+                var previous_add = parseInt($('a.navbar_btns_cart span').text());
+                $('a.navbar_btns_cart span').text(previous_add + 1);
+                $('a.navbar_btns_cart span').removeAttr('hidden');
+                if (parseInt($('a.navbar_btns_cart span').text()) > 1) 
+                {
+                    $('a.navbar_btns_cart span').replaceWith('<span>' + $('a.navbar_btns_cart span').text() + '</span>');
+                }
+                else {
+                    $('a.navbar_btns_cart span').replaceWith('[<span>' + $('a.navbar_btns_cart span').text() + '</span>]');
+                }
             }
         });
     });
 
-$('form.products_list_search_form').on('input', (function() {
-    if ($('form.products_list_search_form textarea').val().length >= 1) {
+$('form.shop_search_form').on('input', (function() {
+    if ($('form.shop_search_form textarea').val().length >= 1) {
         $.post('{% url "shop:product_s" %}',
             {
-                s: $('form.products_list_search_form textarea').val(),
+                s: $('form.shop_search_form textarea').val(),
             },
             function(data){
                 if (data['status'] == 'ok')
                 {
-                    $('div.products_list_find').html('');
+                    $('div.shop_find').html('');
                     for (let value of data['products']) 
                     {
-                        $('div.products_list_find').append('<a href="#" class="f">'+value+'</a><br>');
+                        $('div.shop_find').append('<a href="#" class="f">'+value+'</a><br>');
                     }
                     for (let value of data['authors']) 
                     {
-                        $('div.products_list_find').append('<a href="#" class="f">'+value+'</a><br>');
+                        $('div.shop_find').append('<a href="#" class="f">'+value+'</a><br>');
                     }
                     $('a.f').click(function(){
-                        $('form.products_list_search_form textarea').val($(this).text());
-                        $('form.products_list_search_form').trigger("submit");
+                        $('form.shop_search_form textarea').val($(this).text());
+                        $('form.shop_search_form').trigger("submit");
                     });
                 }
             });
         }
-    else { $('div.products_list_find').text(''); }
+    else { $('div.shop_find').text(''); }
     }));
 
 
-$('form.products_list_search_form').on("submit", function(){
+$('form.shop_search_form').on("submit", function(){
     $.post('{% url "shop:product_list" %}',
         {
-        s: $('form.products_list_search_form textarea').val(),
+        s: $('form.shop_search_form textarea').val(),
         });
     });
 
