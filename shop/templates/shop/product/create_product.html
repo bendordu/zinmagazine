@@ -2,11 +2,60 @@
 {% load static %}
 {% block title %}create product{% endblock %}
 {% block content %}  
+<div class="create_product">
+    <span class="create_product_title">Добавьте свой товар на сайт:</span>
+    <form class="create_product_form" action="." method="post">
 
-<form action="." method="post">
-    {{ form }}
-    {% csrf_token %}
-    <input type="submit" value="Create product">
-</form>
-
-{% endblock %}   
+        
+        <label for="id_name" hidden>name</label>
+        <input class="create_product_form_name" placeholder="Название товара" type="text" name="name" maxlength="200" required="" id="id_name">
+    
+        <div class="create_product_form_category"> 
+            <label>Category:</label>
+            <ul id="id_category">
+                <li>
+                    <label for="id_category_0"><input type="checkbox" name="category" value="2" id="id_category_0">
+                        Zin
+                    </label>
+                </li>
+                <li>
+                    <label for="id_category_1"><input type="checkbox" name="category" value="1" id="id_category_1">
+                        Книга
+                    </label>
+                </li>
+                <li><label for="id_category_2"><input type="checkbox" name="category" value="3" id="id_category_2">
+                        сувенир
+                    </label>
+                </li>
+            </ul>
+        </div>
+    
+        <label for="id_description" hidden>Description:</label>
+        <textarea placeholder="Описание товара" name="description" id="id_description"></textarea><br>
+    
+        <label for="id_price">Price:</label>
+        <input type="number" name="price" value="0" required="" id="id_price"><br>
+    
+        <label for="id_available">Available:</label>
+        <input type="checkbox" name="available" id="id_available" checked=""><br>
+    
+        <label for="id_quantity_pr">Quantity pr:</label>
+        <input type="number" name="quantity_pr" value="0" required="" id="id_quantity_pr"><br>
+    
+        <label for="id_type_pr">Type pr:</label>
+        <select name="type_pr" id="id_type_pr">
+            <option value="2">бумажная версия</option>
+            <option value="1" selected="">электронная версия</option>
+        </select><br>
+    
+        <label for="id_price_type">Price type:</label>
+        <select name="price_type" id="id_price_type">
+            <option value="3">donate</option>
+            <option value="1" selected="">money</option>
+        </select><br>
+    
+        <input type="submit" value="Create product">
+        {% csrf_token %}
+    </form>
+</div>
+{% endblock %}  

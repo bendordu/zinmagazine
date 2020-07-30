@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from likes.decorators import ajax_required
 from .models import Category, Product, Comment, PriceType, TypePr
-from .forms import ProductCreateForm, SearchForm
+from .forms import ProductCreateForm
 from django.utils.text import slugify
 from django.db.models import Q
 from django.contrib.auth.models import User
@@ -58,6 +58,8 @@ def create_product(request):
             new_pr.slug = slugify(form.cleaned_data['name'])
             new_pr.save()
             new_pr.user.add(request.user)
+            for category in form.cleaned_data['category']:
+                new_pr.category.add(category)
             return redirect('shop:product_list')
     else:
         form = ProductCreateForm

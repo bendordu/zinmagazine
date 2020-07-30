@@ -11,47 +11,43 @@
             {% for item in cart %}
             {% with product=item.product %}
             <tr class='{{ product.id }}'>
-                <td>
+                <td class="cart_table_item">
                     <a href="{{ product.get_absolute_url }}">
                         <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
                     </a>
+                    <a class="cart_table_item_name" href="{{ product.get_absolute_url }}">{{ product.name }}</a>
                 </td>
-                <td class="cart_table_name">
-                    <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
-                </td>
-                <td>
-
-                    <button class="plus" data-id="{{ product.id }}" data-action="plus">
-                        +
-                    </button>
-                    <span id={{ product.id }}>{{ item.quantity }}</span>шт.
+                <td class="cart_table_btns">
                     <button class="minus" data-id="{{ product.id }}" data-action="minus">
                         -
                     </button> 
-
+                    <span id='{{ product.id }}'>{{ item.quantity }}</span>
+                    <button class="plus" data-id="{{ product.id }}" data-action="plus">
+                        +
+                    </button>
                 </td>
 
-                <td><button class="remove" data-id="{{ product.id }}" data-action="remove">удалить</button>
-                </td>
-
-                <td class={{ product.id }}>x [ <span class="item_price">{{ item.price }}</span> RUB ]</td>
-                <td class={{ product.id }}>= [ <span class="item_total_price">{{ item.total_price }}</span> RUB ]</td>
+                <td class='{{ product.id }}'><span class="item_price">{{ item.price }}</span> RUB/шт.</td>
+                <td class='{{ product.id }}'>= <span class="item_total_price">{{ item.total_price }}</span> RUB</td>
                 {% if product.quantity_pr > item.quantity %}
-                <td class="num">Q {{ product.quantity_pr }}</td>
+                <td class="num" hidden>Q {{ product.quantity_pr }}</td>
                 {% else %}
                 <td class="num"><div class="error_quantity">Q {{ product.quantity_pr }}</div></td>
                 <td><span>Вы добавили максимально доступное количество товара</span></td>
                 {% endif %}
+                <td class="cart_table_remove">
+                    <button class="remove" data-id="{{ product.id }}" data-action="remove">x</button>
+                </td>
             </tr>
                 {% endwith %}
                 {% endfor %}
-            <tr class="total">
+            <tr class="cart_table_total">
                 <td colspan="5"></td>
                 <td class="total">итого [ <span class="total_price">{{ cart.get_total_price }}</span> RUB ]</td>
             </tr>
             <tr>
                 <td colspan="5"></td>
-                <td><a href="{% url "orders:order_create" %}" class="button">оформить заказ</a></td>
+                <td class="cart_table_order"><a href="{% url "orders:order_create" %}"><button>оформить заказ</button></a></td>
             </tr>
         </tbody>
     </table>
@@ -60,7 +56,7 @@
 {% else %}
 <div class="cart">
     <span>Корзина пуста</span>
-    <a href="{% url "shop:product_list" %}" class="button light">продолжить покупки</a>
+    <a href="{% url "shop:product_list" %}">продолжить покупки</a>
 </div>
 {% endif %}
                 
@@ -80,8 +76,8 @@ $('button.plus').click(function(e){
         function(data){
             if (data['status'] == 'ok')
             { 
-                var previous_add = parseInt($('a.navbar_frame_btns_cart span').text());
-                $('a.navbar_frame_btns_cart span').text(previous_add + 1);
+                var previous_add = parseInt($('a.navbar_btns_cart span').text());
+                $('a.navbar_btns_cart span').text(previous_add + 1);
 
                 var pr_id = $(product_add).data('id');
 
@@ -108,10 +104,10 @@ $('button.minus').click(function(e){
             if (data['status'] == 'ok')
             {
                 var pr_id = $(product_add).data('id');
-                var previous_add = parseInt($('a.navbar_frame_btns_cart span').text());
+                var previous_add = parseInt($('a.navbar_btns_cart span').text());
                 if  (parseInt($('span#' + pr_id).text()) > 1){
 
-                    $('a.navbar_frame_btns_cart span').text(previous_add - 1);
+                    $('a.navbar_btns_cart span').text(previous_add - 1);
                     $('span#' + pr_id).text(parseInt($('span#' + pr_id).text()) - 1);
 
                     var item_price = parseInt($('td.' + pr_id + ' ' + 'span.item_price').text());
@@ -120,16 +116,16 @@ $('button.minus').click(function(e){
                     ($('span.total_price').text(total_price - item_price));
                     
                 }else{
-                    if (parseInt($('a.navbar_frame_btns_cart span').text()) > 1){
+                    if (parseInt($('a.navbar_btns_cart span').text()) > 1){
                         var item_price = parseInt($('td.' + pr_id + ' ' + 'span.item_price').text());
                         ($('span.total_price').text(parseInt($('span.total_price').text()) - item_price));
                         $('tr.' + pr_id).replaceWith(''); 
-                        $('a.navbar_frame_btns_cart span').text(previous_add - 1);   
+                        $('a.navbar_btns_cart span').text(previous_add - 1);   
                     }else{
-                        var previous_add = parseInt($('a.navbar_frame_btns_cart span').text());
+                        var previous_add = parseInt($('a.navbar_btns_cart span').text());
                         var previous_quantity = parseInt($('span#' + pr_id).text());
-                        $('a.navbar_frame_btns_cart span').text(previous_add - previous_quantity);
-                        $('div.cart').replaceWith('<div class="cart"><span>Теперь здесь пусто...</span><a href="{% url "shop:product_list" %}" class="button light">продолжить покупки</a></div>'); 
+                        $('a.navbar_btns_cart span').text(previous_add - previous_quantity);
+                        $('div.cart').replaceWith('<div class="cart"><span>Теперь здесь пусто...</span><a href="{% url "shop:product_list" %}">продолжить покупки</a></div>'); 
                     }                 
                 }
             }
@@ -147,22 +143,20 @@ $('button.remove').click(function(e){
         function(data){
             if (data['status'] == 'ok')
             {
-                if (parseInt($('a.navbar_frame_btns_cart span').text()) > 1){
-                    var pr_id = $(product_remove).data('id');
-                    var previous_add = parseInt($('a.navbar_frame_btns_cart span').text());
-                    var previous_quantity = parseInt($('span#' + pr_id).text());
+                var pr_id = $(product_remove).data('id');
+                var previous_add = parseInt($('a.navbar_btns_cart span').text());
+                var previous_quantity = parseInt($('span#' + pr_id).text());
+                $('a.navbar_btns_cart span').text(previous_add - previous_quantity);
+
+                if (parseInt($('a.navbar_btns_cart span').text()) > 0){
+
                     var item_total_price = parseInt($('td.' + pr_id + ' ' + 'span.item_total_price').text());
                     var total_price = parseInt($('span.total_price').text());
-
                     $('tr.' + pr_id).replaceWith(''); 
-                    $('a.navbar_frame_btns_cart span').text(previous_add - previous_quantity);
                     ($('span.total_price').text(total_price - item_total_price))
+
                 }else{
-                    var pr_id = $(product_remove).data('id');
-                    var previous_add = parseInt($('a.navbar_frame_btns_cart span').text());
-                    var previous_quantity = parseInt($('span#' + pr_id).text());
-                    $('a.navbar_frame_btns_cart span').text(previous_add - previous_quantity);
-                    $('div.cart').replaceWith('<div class="cart"><span>Теперь здесь пусто...</span><a href="{% url "shop:product_list" %}" class="button light">продолжить покупки</a></div>'); 
+                    $('div.cart').replaceWith('<div class="cart"><span>Теперь здесь пусто...</span><a href="{% url "shop:product_list" %}">продолжить покупки</a></div>'); 
                 }
             }
         });
