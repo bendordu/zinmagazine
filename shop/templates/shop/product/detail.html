@@ -1,17 +1,20 @@
 {% extends "shop/bas.html" %}
 {% load static %}
 {% block title %}{{ product.name }}{% endblock %}
-{% block content %}      						
+{% block content %} 
+
+<div class="product_photo" hidden>
+	<img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+</div>
 	
 <div class="product">
 
-	<div class="product_photo">
-		<img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
-	</div>
-
+	
+	
+	
 	<div class="product_detail">
 		<div class="product_detail_title">
-			<span class="product_detail_title_name">{{ product.name }}</span>
+			<p class="product_detail_title_name">{{ product.name }}</p>
 			<div class="product_detail_title_category">
 				{% for category in product.category.all %}
 					<a href="{{ category.get_absolute_url }}">{{ category }}</a>
@@ -69,7 +72,7 @@
 				
 			</div>
 			
-			{% if product.type_pr.id == 1 %}
+			<!--{% if product.type_pr.id == 1 %}
 			<div class="product_detail_btns_bye">
 				<span>
 					[<span class='bye_paper{{ product.id }}'>
@@ -97,17 +100,20 @@
 					</button>
 				</div> 
 			</div>
-			{% endif %} 
+			{% endif %} -->
 			
 		</div>
+		<div class="product_descr">
+			<span class="descr" hidden>Описание</span>
+			<span class="body">{{ product.description|linebreaks }}</span>
+		</div>	
 	</div>
+	
+
+
 	
 </div>
 
-<div class="product_descr">
-	<span class="descr">Описание</span>
-	<span class="body">{{ product.description|linebreaks }}</span>
-</div>	
 
 <div class="product_comment">
 	<span class="product_comment_count"><span class="product_comment_count_comments">{{ comments.count }}</span> comment{{ comments.count|pluralize }}</span>
@@ -150,6 +156,18 @@
 {% endblock %}       
 
 {% block domready %}
+
+$(function() {
+
+	$('div.half2').removeAttr('hidden');
+	$('div.half').css({"min-width":"600px","width":"600px"});
+	$('div.half2').css({"width":"100%"});
+	$('div.half2').html($('div.product_photo').html());
+	$('div.half2').css({"display":"flex", "align-items":"center", "justify-content":"center"});
+	$('div.half2 img').css({"max-width":"40%","width":"40%","border":"black solid 1px","padding":"50px"});
+
+}); 
+
 
 $('div.products_detail_btns_like path').click(function(e){
     e.preventDefault();
@@ -268,6 +286,7 @@ $('button.bye_paper').click(function(e){
 			}
 		});
 	});
+
 	
 
 {% endblock %}
