@@ -3,62 +3,53 @@
 {% block title %}{{ product.name }}{% endblock %}
 {% block content %} 
 
-<div class="product_photo" hidden>
-	<img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
-</div>
-	
-<div class="product">
-
-	
-	
-	
-	<div class="product_detail">
-		<div class="product_detail_title">
-			<p class="product_detail_title_name">{{ product.name }}</p>
-			<div class="product_detail_title_category">
-				{% for category in product.category.all %}
-					<a href="{{ category.get_absolute_url }}">{{ category }}</a>
-				{% endfor %}
-					<a href="{{ product.type_pr.get_absolute_url }}">{{ product.type_pr }}</a>
+<div class="pr">
+	<div class="product">
+		
+		<div class="product_detail">
+			<div class="product_detail_title">
+				<p class="product_detail_title_name">{{ product.name }}</p>
 			</div>
-		</div>
-		<div class="product_detail_info">
+			<div class="product_detail_info">
 
-			{% if product.price_type.id == 1 %}
-				{% if product.quantity_pr > 0 %}
+				{% if product.price_type.id == 1 %}
+					{% if product.quantity_pr > 0 %}
 
-					{{ product.price }} RUB
-					Q{{ product.quantity_pr }}
-					заказали {{ product.count_order }}
-						
-					{% if product in cart.value or product in cart_user.products %}
-					<a class="added_to_cart" href="{% url "cart:cart_detail" %}">
-						<button>
-							добавлено в корзину
-						</button>
-					</a>
+						<span>{{ product.price }} RUB</span> 
+						<!--Q{{ product.quantity_pr }}
+						заказали {{ product.count_order }}-->
+							
+						{% if product in cart.value or product in cart_user.products %}
+						<a class="added_to_cart" href="{% url "cart:cart_detail" %}">
+							<button>
+								добавлено в корзину
+							</button>
+						</a>
+						{% else %}
+
+							<button class="add" data-id="{{ product.id }}" data-action="{% if product in cart.value %}cart{% endif %}add">
+								в корзину
+							</button> 
+
+						{% endif %} 
 					{% else %}
 
-						<button class="add" data-id="{{ product.id }}" data-action="{% if product in cart.value %}cart{% endif %}add">
-							в корзину
-						</button> 
-
-					{% endif %} 
-				{% else %}
-
-					<span>Товара нет в наличии</span>
-					
+						<span>Товара нет в наличии</span>
+						
+					{% endif %}
 				{% endif %}
-			{% endif %}
 
-			{% if product.price_type.id == 3 %}
-				от  {{ product.price }} RUB
-				<a><button>Скачать</button></a>
-			{% endif %}
+				{% if product.price_type.id == 3 %}
+					<span>от {{ product.price }} RUB</span> 
+					<a><button>Скачать</button></a>
+				{% endif %}
+
+			</div>
 
 		</div>
-
-		<div class="product_detail_btns">
+			
+		<div class="product_photo">
+			<img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
 
 			<div class="products_detail_btns_like">
 
@@ -71,48 +62,59 @@
 				{% endif %}
 				
 			</div>
-			
-			<!--{% if product.type_pr.id == 1 %}
-			<div class="product_detail_btns_bye">
-				<span>
-					[<span class='bye_paper{{ product.id }}'>
-						{{ product.bye_paper.count }}
-					</span>]
-					человек хотят купить бумажную версию.
-					{% if request.user not in product.bye_paper.all %}
-					<span class="paper_want">А вы?</span>
-					{% else %}
-					<span class="paper_want">Мы оповестим, если она появится.</span>
-					{% endif %} 
-				</span>
-				
-				<div class="product_detail_btns_bye_paper">
-					<button data-id="{{ product.id }}" data-action="{% if request.user in product.bye_paper.all %}un{% endif %}bye_paper" class="bye_paper">
-						{% if request.user not in product.bye_paper.all %}
-							{% if request.user.is_authenticated %}
-								хочу!
-							{% else %}
-								хочу!
-							{% endif %}
-						{% else %}
-							отменить
-						{% endif %}
-					</button>
-				</div> 
-			</div>
-			{% endif %} -->
-			
 		</div>
-		<div class="product_descr">
-			<span class="descr" hidden>Описание</span>
-			<span class="body">{{ product.description|linebreaks }}</span>
-		</div>	
+
 	</div>
-	
-
 
 	
+
+	<div class="product_descr">
+		<span class="descr">Описание</span>
+		<span class="body">{{ product.description|linebreaks }}</span>	
+	</div>
+
 </div>
+
+	
+
+	<!--
+
+	<div class="product_detail_title_category">
+		{% for category in product.category.all %}
+			<a href="{{ category.get_absolute_url }}">{{ category }}</a>
+		{% endfor %}
+			<a href="{{ product.type_pr.get_absolute_url }}">{{ product.type_pr }}</a>
+	</div>
+
+{% if product.type_pr.id == 1 %}
+<div class="product_detail_btns_bye">
+	<span>
+		[<span class='bye_paper{{ product.id }}'>
+			{{ product.bye_paper.count }}
+		</span>]
+		человек хотят купить бумажную версию.
+		{% if request.user not in product.bye_paper.all %}
+		<span class="paper_want">А вы?</span>
+		{% else %}
+		<span class="paper_want">Мы оповестим, если она появится.</span>
+		{% endif %} 
+	</span>
+	
+	<div class="product_detail_btns_bye_paper">
+		<button data-id="{{ product.id }}" data-action="{% if request.user in product.bye_paper.all %}un{% endif %}bye_paper" class="bye_paper">
+			{% if request.user not in product.bye_paper.all %}
+				{% if request.user.is_authenticated %}
+					хочу!
+				{% else %}
+					хочу!
+				{% endif %}
+			{% else %}
+				отменить
+			{% endif %}
+		</button>
+	</div> 
+</div>
+{% endif %}-->
 
 
 <div class="product_comment">
@@ -156,17 +158,6 @@
 {% endblock %}       
 
 {% block domready %}
-
-$(function() {
-
-	$('div.half2').removeAttr('hidden');
-	$('div.half').css({"min-width":"600px","width":"600px"});
-	$('div.half2').css({"width":"100%"});
-	$('div.half2').html($('div.product_photo').html());
-	$('div.half2').css({"display":"flex", "align-items":"center", "justify-content":"center"});
-	$('div.half2 img').css({"max-width":"40%","width":"40%","border":"black solid 1px","padding":"50px"});
-
-}); 
 
 
 $('div.products_detail_btns_like path').click(function(e){
