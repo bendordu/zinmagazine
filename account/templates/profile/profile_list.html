@@ -21,7 +21,7 @@
                 <div class="profiles_list_profile">
                     
                     <div class="photo">
-                        <img src="{% if profile.photo %}{{ profile.photo.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+                        <a class="name" href="{{ profile.get_absolute_url }}"><img src="{% if profile.photo %}{{ profile.photo.url }}{% else %}{% static "img/no_image.png" %}{% endif %}"></a>
                     </div>
 
                     <a class="name" href="{{ profile.get_absolute_url }}">{{ profile.user.username }}</a><br> 
@@ -33,6 +33,7 @@
             {% endif %}
             
         {% endfor %}
+    </div>
         
 </div>					
 

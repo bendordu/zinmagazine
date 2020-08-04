@@ -6,113 +6,140 @@
 <div class="dashboard">
 
     <div class="dashboard_info">
-        <img src="{% if profile.photo %}{{ profile.photo.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+        <div class="dashboard_info_photo">
+            <img src="{% if profile.photo %}{{ profile.photo.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+        </div>
 
         <div class="dashboard_info_">
-            <div class="dashboard_info_name">
-                <div class="dashboard_info_name_">
+            <div class="dashboard_info_svg">
+                <svg viewBox="0 0 512 512"><path d="M487.4 315.7l-42.6-24.6c4.3-23.2 4.3-47 0-70.2l42.6-24.6c4.9-2.8 7.1-8.6 5.5-14-11.1-35.6-30-67.8-54.7-94.6-3.8-4.1-10-5.1-14.8-2.3L380.8 110c-17.9-15.4-38.5-27.3-60.8-35.1V25.8c0-5.6-3.9-10.5-9.4-11.7-36.7-8.2-74.3-7.8-109.2 0-5.5 1.2-9.4 6.1-9.4 11.7V75c-22.2 7.9-42.8 19.8-60.8 35.1L88.7 85.5c-4.9-2.8-11-1.9-14.8 2.3-24.7 26.7-43.6 58.9-54.7 94.6-1.7 5.4.6 11.2 5.5 14L67.3 221c-4.3 23.2-4.3 47 0 70.2l-42.6 24.6c-4.9 2.8-7.1 8.6-5.5 14 11.1 35.6 30 67.8 54.7 94.6 3.8 4.1 10 5.1 14.8 2.3l42.6-24.6c17.9 15.4 38.5 27.3 60.8 35.1v49.2c0 5.6 3.9 10.5 9.4 11.7 36.7 8.2 74.3 7.8 109.2 0 5.5-1.2 9.4-6.1 9.4-11.7v-49.2c22.2-7.9 42.8-19.8 60.8-35.1l42.6 24.6c4.9 2.8 11 1.9 14.8-2.3 24.7-26.7 43.6-58.9 54.7-94.6 1.5-5.5-.7-11.3-5.6-14.1zM256 336c-44.1 0-80-35.9-80-80s35.9-80 80-80 80 35.9 80 80-35.9 80-80 80z"/>
+                </svg>
+                
+                <div class="dashboard_menu">
+                    <a href="{% url "edit" %}">редактировать профиль</a>
+                    <a href="{% url "password_change" %}">изменить пароль</a>
+                </div>
+            </div>
+
+            <div class="dashboard_info_center">
+                <div class="dashboard_info_name">
                     <span class="dashboard_info_name_username">{{ profile.user.username }}</span>
-                    <svg viewBox="0 0 512 512"><path d="M487.4 315.7l-42.6-24.6c4.3-23.2 4.3-47 0-70.2l42.6-24.6c4.9-2.8 7.1-8.6 5.5-14-11.1-35.6-30-67.8-54.7-94.6-3.8-4.1-10-5.1-14.8-2.3L380.8 110c-17.9-15.4-38.5-27.3-60.8-35.1V25.8c0-5.6-3.9-10.5-9.4-11.7-36.7-8.2-74.3-7.8-109.2 0-5.5 1.2-9.4 6.1-9.4 11.7V75c-22.2 7.9-42.8 19.8-60.8 35.1L88.7 85.5c-4.9-2.8-11-1.9-14.8 2.3-24.7 26.7-43.6 58.9-54.7 94.6-1.7 5.4.6 11.2 5.5 14L67.3 221c-4.3 23.2-4.3 47 0 70.2l-42.6 24.6c-4.9 2.8-7.1 8.6-5.5 14 11.1 35.6 30 67.8 54.7 94.6 3.8 4.1 10 5.1 14.8 2.3l42.6-24.6c17.9 15.4 38.5 27.3 60.8 35.1v49.2c0 5.6 3.9 10.5 9.4 11.7 36.7 8.2 74.3 7.8 109.2 0 5.5-1.2 9.4-6.1 9.4-11.7v-49.2c22.2-7.9 42.8-19.8 60.8-35.1l42.6 24.6c4.9 2.8 11 1.9 14.8-2.3 24.7-26.7 43.6-58.9 54.7-94.6 1.5-5.5-.7-11.3-5.6-14.1zM256 336c-44.1 0-80-35.9-80-80s35.9-80 80-80 80 35.9 80 80-35.9 80-80 80z"/>
-                    </svg>
-                    <div hidden>
-                        {% if profile.user == request.user %}
-                        <a href="{% url "edit" %}">edit your profile</a>
-                        <a href="{% url "password_change" %}">change your password</a>
-                        {% endif %}
-                    </div>
+                    
+                    <span>{{ profile.user.first_name }} {{ profile.user.last_name }}</span>
                 </div>
-                <span>{{ profile.user.first_name }} {{ profile.user.last_name }}</span>
 
-                <div class="dashboard_info_categories">
-                    {% for category in profile.category.all %}
-                    <a href="{{ category.get_absolute_url }}">{{ category }}</a>
-                    {% endfor %}
-                </div>
-            </div>
-            
-            <div class="dashboard_info_descr">
-                <p>[{{ profile.about }}]</p>
-            </div>
-
-            <div class="dashboard_info_subs">
-                <div>
-                    подписки [<span>{{ subscribe.count }}</span>]
-                    <div class="subscribe" hidden>
-                        {% for subscribe in subscribe.all %}
-                        {{ subscribe.user }}
-                        {% endfor  %}
+                <div class="dashboard_info_subs">
+                    <div>
+                        <a href="#dasboard_zatemnenie">подписки [<span>{{ subscribe.count }}</span>]</a>
+                        <div id="dasboard_zatemnenie">
+                            <div class="subscribe">
+                                <a href="#" class="close">x</a>
+                                {% for subscribe in subscribe.all %}
+                                <span>{{ subscribe.user }}</span>
+                                {% endfor  %}
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div>
-                    подписчики [<span class="{{ profile.id }}">{{ profile.subscribers.count }}</span>]
-                    <div class="subscribers" hidden>
-                        {% for subscriber in profile.subscribers.all %}
-                        {{ subscriber }}
-                        {% endfor  %}
+                    <div>
+                        <a href="#dasboard_zatemnenie_subscribers">подписчики [<span class="{{ profile.id }}">{{ profile.subscribers.count }}</span>]</a>
+                        <div id="dasboard_zatemnenie_subscribers">
+                            <div class="subscribers">
+                                <a href="#" class="close">x</a>
+                                {% for subscriber in profile.subscribers.all %}
+                                <span>{{ subscriber }}</span>
+                                {% endfor  %}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
     </div>
-
-    <div class="dashboard_products">
-        <div class="dashboard_products_top">
-            <span>товары</span>
-            <a href="{% url "shop:create_product" %}"><button class="createproduct">+</button></a>
-        </div>
-
-        <div class="dashboard_products_items">
-            {% for product in products %}
-            <div class="dashboard_products_item">
-                <a href="{{ product.get_absolute_url }}">
-                    <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
-                </a>
-                <a href="{{ product.get_absolute_url }}">{{ product }}</a>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div class="dashboard_posts">
-        <div class="dashboard_posts_top">
-            <span>статьи</span>
-            <a href="{% url "blog:create_post" %}"><button class="createpost">+</button></a>
-        </div>
-
-        <div class="dashboard_posts_items">
-            {% for post in posts %}
-            <div class="dashboard_posts_item">
-                <a href="{{ post.get_absolute_url }}">{{ post }}</a>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div class="dashboard_ann">
-        <div class="dashboard_ann_top">
-            <span>объявления</span>
-            <a href="{% url "announcement:create_announcement" %}"><button class="createannouncement">+</button></a>
-        </div>
-
-        <div class="dashboard_ann_items">
-            {% for announcement in announcements %}
-            <div class="dashboard_ann_item">
-                <a href="{{ announcement.get_absolute_url }}">{{ announcement }}</a>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-
-
     
-    <a href='{% url "orders:order_list" %}'><p>заказы</p></a>
+    <div class="dashboard_info_descr">
+        <span>{{ profile.about }}</span>
+        
+                
+        <div class="dashboard_info_categories">
+            {% for category in profile.category.all %}
+            <a href="{{ category.get_absolute_url }}">{{ category }}</a>
+            {% endfor %}
+        </div>
+    </div>
+    
 
-    <p>проекты</p>
-    <button class="createproect"><a href="{% url "proect:create_proect" %}">+</a></button>
-    {% for proect in proects %}
-    <a href='{{ proect.get_absolute_url }}'>{{ proect }}</a>
-    {% endfor %}
+    <div class="dash">
+        <div>
+            <div class="dashboard_orders">
+                <a href='{% url "orders:order_list" %}'>заказы</a>
+            </div>
+        </div>
+
+        <div class="dashboard_proects">
+            <div class="dashboard_proects_top">
+                <span>проекты</span>
+                <a href="{% url "proect:create_proect" %}"><button class="createproect">+</button></a>
+            </div>
+            <div class="dashboard_proects_items">
+                {% for proect in proects %}
+                <div class="dashboard_proects_item">
+                    <a href='{{ proect.get_absolute_url }}'>{{ proect }}</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="dashboard_products">
+            <div class="dashboard_products_top">
+                <span>товары</span>
+                <a href="{% url "shop:create_product" %}"><button class="createproduct">+</button></a>
+            </div>
+
+            <div class="dashboard_products_items">
+                {% for product in products %}
+                <div class="dashboard_products_item">
+                    <div class="dashboard_products_item_photo">
+                        <a href="{{ product.get_absolute_url }}">
+                            <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+                        </a>
+                    </div>
+                    <a href="{{ product.get_absolute_url }}">{{ product|truncatechars:15 }}</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="dashboard_posts">
+            <div class="dashboard_posts_top">
+                <span>статьи</span>
+                <a href="{% url "blog:create_post" %}"><button class="createpost">+</button></a>
+            </div>
+
+            <div class="dashboard_posts_items">
+                {% for post in posts %}
+                <div class="dashboard_posts_item">
+                    <a href="{{ post.get_absolute_url }}">{{ post }}</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="dashboard_ann">
+            <div class="dashboard_ann_top">
+                <span>объявления</span>
+                <a href="{% url "announcement:create_announcement" %}"><button class="createannouncement">+</button></a>
+            </div>
+
+            <div class="dashboard_ann_items">
+                {% for announcement in announcements %}
+                <div class="dashboard_ann_item">
+                    <a href="{{ announcement.get_absolute_url }}">{{ announcement }}</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 
 </div>
 						

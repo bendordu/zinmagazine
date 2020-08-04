@@ -15,10 +15,9 @@
 				{% if product.price_type.id == 1 %}
 					{% if product.quantity_pr > 0 %}
 
-						<span>{{ product.price }} RUB</span> 
+						<span>{{ product.price }} RUB</span>
 						<!--Q{{ product.quantity_pr }}
 						заказали {{ product.count_order }}-->
-							
 						{% if product in cart.value or product in cart_user.products %}
 						<a class="added_to_cart" href="{% url "cart:cart_detail" %}">
 							<button>
