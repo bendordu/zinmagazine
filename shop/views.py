@@ -5,9 +5,12 @@ from django.views.decorators.http import require_POST
 from likes.decorators import ajax_required
 from .models import Category, Product, Comment, PriceType, TypePr
 from .forms import ProductCreateForm
-from django.utils.text import slugify
+from uuslug import slugify
 from django.db.models import Q
 from django.contrib.auth.models import User
+import os
+import shutil
+from django.conf import settings
 
 
 def product_list(request, category_slug=None, price_type_slug=None, type_pr_slug=None):
@@ -52,7 +55,7 @@ def product_detail(request, id, slug):
 
 def create_product(request):
     if request.method == 'POST':
-        form = ProductCreateForm(request.POST)
+        form = ProductCreateForm(request.POST, request.FILES)
         if form.is_valid():
             new_pr = form.save(commit=False)
             new_pr.slug = slugify(form.cleaned_data['name'])
@@ -60,11 +63,94 @@ def create_product(request):
             new_pr.user.add(request.user)
             for category in form.cleaned_data['category']:
                 new_pr.category.add(category)
+
+            if new_pr.image or new_pr.image_dop1 or new_pr.image_dop2 or new_pr.file_product:
+                try:
+                    directory = 'products/' + str(new_pr.name)
+                    parent_dir = settings.MEDIA_ROOT 
+                    path = os.path.join(parent_dir, directory)
+                    os.makedirs(path)
+                except OSError as error:
+                    pass
+
+                start_path = 'products/'+str(new_pr.name)+'/'+str(new_pr.name)
+                files = ["image", "image_dop1", "image_dop2", "file_product"]
+                for f in files:
+                    if eval(f"new_pr.{f}"):
+                        new_pr_file = eval(f"new_pr.{f}")
+                        initial_path = new_pr_file.path
+                        new_pr_file.name = start_path + f'_{f}.jpg'
+                        new_path = settings.MEDIA_ROOT + new_pr_file.name
+                        os.rename(initial_path, new_path)
+
+                new_pr.save()
             return redirect('shop:product_list')
     else:
         form = ProductCreateForm
     return render(request, 'shop/product/create_product.html', {'form': form})
-                            
+
+
+def delete_product(request, id):
+    product = Product.objects.get(id=id)
+    try:
+        path = settings.MEDIA_ROOT + 'products/' + str(product.name)
+        shutil.rmtree(path, ignore_errors=False, onerror=None)
+    except:
+        pass
+    product.delete()
+    return redirect('dashboard')
+
+
+def edit_product(request, id):
+    if request.method == 'POST':
+        product = Product.objects.get(id=id)
+        form = ProductCreateForm(instance=product, data=request.POST, files=request.FILES)
+        if form.is_valid():
+            form.save()
+            for category in form.cleaned_data['category']:
+                product.category.add(category)
+
+            if product.image or product.image_dop1 or product.image_dop2 or product.file_product:
+                try:
+                    directory = 'products/' + str(product.name)
+                    parent_dir = settings.MEDIA_ROOT 
+                    path = os.path.join(parent_dir, directory)
+                    os.makedirs(path)
+                except OSError as error:
+                    pass
+
+                start_path = 'products/'+str(product.name)+'/'+str(product.name)
+                files = ["image", "image_dop1", "image_dop2", "file_product"]
+                for f in files:
+                    if eval(f"product.{f}"):
+                        try:
+                            product_file = eval(f"product.{f}")
+                            initial_path = product_file.path
+                            product_file.name = start_path + f'_{f}.jpg'
+                            new_path = settings.MEDIA_ROOT + product_file.name
+                            os.rename(initial_path, new_path)
+                        except OSError as error:
+                            pass
+                product.save()
+            return redirect('shop:product_list')
+    else:
+        product = Product.objects.get(id=id)
+        form = ProductCreateForm(instance=product)
+    return render(request, 'shop/product/edit_product.html', {'form': form})
+
+
+@ajax_required
+@login_required
+@require_POST
+def hide_product(request):
+    product = Product.objects.get(id=request.POST.get('id'))
+    if request.POST.get('action') == 'hide':
+        product.available = False
+    else:
+        product.available = True
+    product.save()
+    return JsonResponse({'status':'ok'})
+
 
 @ajax_required
 @login_required
@@ -123,6 +209,18 @@ def product_s(request):
         products += [product]
     return JsonResponse({'status':'ok', 'products': products, 'authors': authors})
     
+
+@ajax_required
+@login_required
+@require_POST
+def product_comment_like(request):
+    comment_id = request.POST.get('id')
+    comment = Comment.objects.get(id=comment_id)
+    if request.POST.get('action') == 'like':
+        comment.comment_likes.add(request.user)
+    else:
+        comment.comment_likes.remove(request.user)
+    return JsonResponse({'status':'ok'})
 
 def bas(request):
     return render(request,'shop/bas.html')

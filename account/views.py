@@ -30,6 +30,13 @@ def dashboard(request):
                                                     'subscribe': subscribe,
                                                     'proects': proects})
 
+def delete_profile(request):
+    profile = Profile.objects.get(user=request.user)
+    profile.delete()
+    user = request.user
+    user.delete()
+    return render(request,'account/delete_profile.html')
+
 def user_login(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)

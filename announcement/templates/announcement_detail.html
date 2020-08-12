@@ -4,88 +4,113 @@
 {% block content %}   
 
 <div class="announcement">
-    <a href="{{ announcement.get_absolute_url }}"><img src="{% if announcement.image %}{{ announcement.image.url }}{%else %}{% static "img/no_image.png" %}{% endif %}"></a>
-    <h2>{{ announcement.title }}</h2>
-    <p class="date">{{ announcement.created }}
-        {% if announcement.author_ann != request.user %}
-        <a href="{{ profile.get_absolute_url }}">{{ announcement.author_ann }}</p></a>
-        {% else %}
-        <a href="{% url "dashboard" %}">{{ announcement.author_ann }}</p></a>
-        {% endif %}
-    {% for c in announcement.category.all %}
-    <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
+    <div class="announcement_info">
+
+        <div class="announcement_info_photo">
+            <img src="{% if announcement.image %}{{ announcement.image.url }}{%else %}{% static "img/no_image.png" %}{% endif %}">
+        </div>
+
+        <div class="announcement_info_text">
+            <div class="announcement_info_text_like">
+                [<span class='{{ announcement.id }}'>{{ announcement.likes.count }}</span>]
+                
+                {% if request.user not in announcement.likes.all %}
+                    {% if request.user.is_authenticated %}
+                        <svg class="announcement_info_text_like_star" viewBox="0 0 576 512"><path data-id="{{ announcement.id }}" data-action="{% if request.user in announcement.likes.all %}un{% endif %}like" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg>
+                    {% else %}
+                        <svg class="announcement_info_text_like_star" viewBox="0 0 576 512"><path data-id="{{ announcement.id }}" data-action="{% if request.user in announcement.likes.all %}un{% endif %}like" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg>
+                    {% endif %}
+                {% else %}
+                    <svg class="announcement_info_text_like_star_selected" viewBox="0 0 576 512"><path data-id="{{ announcement.id }}" data-action="{% if request.user in announcement.likes.all %}un{% endif %}like" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg>
+                {% endif %}
+                
+            </div> 
+
+            <div class="announcement_info_text_detail">
+                <span class="announcement_info_text_detal_title">{{ announcement.title }}</span>
+
+                
+                {% for c in announcement.category.all %}
+                <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
+                {% endfor %}
+
+                <div class="announcement_info_text_detal_message">
+                    {% if request.user != announcement.author_ann %}
+                    {% for chat in chatss %}
+                        {% if request.user in chat.members.all %}
+                        <a href="{{ chat.get_absolute_url }}">
+                            <button class="write_message_ready">откликнуться</button>
+                        </a>
+                        {% endif %}
+                    {% empty %}
+                    <button class="write_message">
+                        <a href="#">Написать сообщение</a>
+                    </button>
+                    <form class="message" hidden="true" method="post" data-name="{{ request.user.username }}-{{ profile.user.username }}" data-member='{{ profile.user.id }}'>
+                        <textarea name="body" cols="40" rows="10" required></textarea>
+                        <input class="message" type="file" title="Add image">
+                        <input type="submit" value="Send">
+                    </form>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+                
+                <span class="announcement_info_text_detal_date">
+                    {{ announcement.created|date:"d.m.Y H:i" }}
+                    {% if announcement.author_ann != request.user %}
+                        <a href="{{ profile.get_absolute_url }}">{{ announcement.author_ann }}</a>
+                    {% else %}
+                        <a href="{% url "dashboard" %}">{{ announcement.author_ann }}</a>
+                    {% endif %}
+                </span>
+
+            </div> 
+        </div>
+    </div>
+    <div class="announcement_body">
+        <p>{{ announcement.body }}</p>
+    </div>
+</div>
+  
+
+<div class="ann_comment">
+    <span class="ann_comment_count"><span class="ann_comment_count_comments">{{ comments.count }}</span> comment{{ comments.counts|pluralize }}</span>
+
+    {% for comment in comments %}
+    <div class="ann_comment_info">
+
+		<div>
+            <span>{{ comment.created|date:"d.m.Y H:i" }} {{ comment.author_comment_ann.username }}</span>
+			{% if comment.author_comment_ann == request.user %}
+			<a data-body="{{ comment.body }}" data-id="{{ announcement.id }}" data-action="remove" class="remove">удалить</a>
+			{% endif %}
+        </div>
+        
+        <p class="product_comment_info_body">{{ comment.body }}</p>
+
+    </div>
+    {% empty %}
+    
+    <p>There are no comments yet...</p>
+
     {% endfor %}
-    <p>{{ announcement.body }}</p>
+
+    <div class="new_comment"></div>
+
+
+    <div class="ann_comment_form"> 
+		<form class="comment" method="post" data-id="{{ announcement.id }}">
+			<textarea placeholder="Напишите комментарий здесь..." rows="3" required></textarea>
+			<button type="submit">отправить</button>
+		</form>
+	</div>
 </div>
-{% if request.user != announcement.author_ann %}
-{% for chat in chatss %}
-    {% if request.user in chat.members.all %}
-    <button class="write_message_ready">
-        <a href="{{ chat.get_absolute_url }}">Написать сообщение</a>
-    </button>
-    {% endif %}
-{% empty %}
-<button class="write_message">
-    <a href="#">Написать сообщение</a>
-</button>
-<form class="message" hidden="true" method="post" data-name="{{ request.user.username }}-{{ profile.user.username }}" data-member='{{ profile.user.id }}'>
-    <textarea name="body" cols="40" rows="10" required></textarea>
-    <input class="message" type="file" title="Add image">
-    <input type="submit" value="Send">
-</form>
-{% endfor %}
-{% endif %}
-
-<div class="announcement-like">
-    <span class='{{ announcement.id }}'>{{ announcement.likes.count }}</span>
-    <button data-id="{{ announcement.id }}" data-action="{% if request.user in announcement.likes.all %}un{% endif %}like" class="like">
-        {% if request.user not in announcement.likes.all %}
-            {% if request.user.is_authenticated %}
-                Like
-            {% else %}
-                Like
-            {% endif %}
-        {% else %}
-        Unlike
-        {% endif %}
-    </button>
-</div>   
-
-
-<span class="count_comments">{{ comments.count }}</span><span> comment{{ comments.counts|pluralize }}</span>
-
-{% for comment in comments %}
-<div class="comment">
-    <p class="info">
-        Comment by {{ comment.author_comment_ann.first_name }}
-        {{ comment.created }}
-    </p>
-    {{ comment.body|linebreaks }}
-	{{ comment.image }}
-	
-	{% if comment.author_comment_ann == request.user %}
-	<a href="" data-body="{{ comment.id }}" data-id="{{ announcement.id }}" data-action="remove" class="remove">удалить</a>
-	{% endif %}
-</div>
-
-{% empty %}
-<p>There are no comments yet...</p>
-
-{% endfor %}
-
-<div class="new_comment"></div>
-
-
-<form class="comment" method="post" data-id='{{ announcement.id }}'>
-    <textarea name="body" cols="40" rows="10" required=""></textarea>
-    <input type="submit" value="Add comment">
-</form>
 
 {% endblock %}
 
 {% block domready %}
 
-$('button.like').click(function(e){
+$('div.announcement_info_text_like path').click(function(e){
     e.preventDefault();
     var announcement_like = event.target;
     $.post('{% url "announcement:announcement_like" %}',
@@ -100,7 +125,7 @@ $('button.like').click(function(e){
                 var pr_id = $(announcement_like).data('id');
   
                 $(announcement_like).data('action', previous_action == 'like' ? 'unlike' : 'like');
-                $(announcement_like).text(previous_action == 'like' ? 'Unlike' : 'Like');
+                $(announcement_like).text(previous_action == 'like' ? $(announcement_like).css("fill", "#daa520") : $(announcement_like).css("fill", "#dcdcdc"));
                 
                 var previous_likes = parseInt($('span.' + pr_id).text());
                 $('span.' + pr_id).text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
@@ -118,17 +143,17 @@ $('form.comment').on("submit", function(e){
         function(data){
             if (data['status'] == 'ok')
             {
-                var name = $('a.name').text()
+                var name = $('a.navbar_log_in_name').text()
                 var myDate = new Date();
-                var fullDate = myDate.getDate() +" "+ myDate.getMonth() +" " + myDate.getFullYear();
-                $('div.new_comment').replaceWith('<div class="comment"><p class="info">Comment by'+' '+name+' '+fullDate+'</p><p>'+$('form.comment textarea').val()+'</p></div><div class="new_comment"></div>');
+                var fullDate = myDate.getDate() +"."+ myDate.getMonth() +"." + myDate.getFullYear();
+                $('div.new_comment').replaceWith('<div class="ann_comment_info"><span>'+fullDate+' '+name+'</span><span>'+$('form.comment textarea').val()+'</span></div><div class="new_comment"></div>');
                 $('form.comment textarea').val('')
-                $('span.count_comments').text(parseInt($('span.count_comments').text())+1)
+                $('span.ann_comment_count_comments').text(parseInt($('span.ann_comment_count_comments').text())+1)
             }
         });
     });
 
-$('div.comment').click(function(e){
+$('div.ann_comment_info a').click(function(e){
     e.preventDefault();
     var remove = event.target;
     $.post('{% url "announcement:announcement_add_comment" %}',
@@ -142,8 +167,9 @@ $('div.comment').click(function(e){
             {
                 var parent = $(remove).parent('.comment');
                 parent.replaceWith('<p>Ваш комментарий удален</p>');
-                $('span.count_comments').text(parseInt($('span.count_comments').text())-1)	
+                $('span.ann_comment_count_comments').text(parseInt($('span.ann_comment_count_comments').text())-1)	
             }
         });
     });
+
 {% endblock %}

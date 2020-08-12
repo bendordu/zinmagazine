@@ -4,20 +4,30 @@
 {% block content %}      						
 	
 <div class="dashboard">
+    <div id="dasboard_zatemnenie_delete">
+        <div class="dasboard_delete">
+            <a href="#" class="dasboard_delete_close">x</a>
+            <span>Вы действительно хотите удалить свою страницу?
+                Все данные буду безвозвратно удалены.
+                <a href="{% url "delete_profile" %}"><button>Удалить</button></a>
+            </span>
+        </div>
+    </div>
 
     <div class="dashboard_info">
         <div class="dashboard_info_photo">
             <img src="{% if profile.photo %}{{ profile.photo.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
         </div>
 
-        <div class="dashboard_info_">
-            <div class="dashboard_info_svg">
+        <div class="dashboard_info_detail">
+            <div class="dashboard_info_detail_svg">
                 <svg viewBox="0 0 512 512"><path d="M487.4 315.7l-42.6-24.6c4.3-23.2 4.3-47 0-70.2l42.6-24.6c4.9-2.8 7.1-8.6 5.5-14-11.1-35.6-30-67.8-54.7-94.6-3.8-4.1-10-5.1-14.8-2.3L380.8 110c-17.9-15.4-38.5-27.3-60.8-35.1V25.8c0-5.6-3.9-10.5-9.4-11.7-36.7-8.2-74.3-7.8-109.2 0-5.5 1.2-9.4 6.1-9.4 11.7V75c-22.2 7.9-42.8 19.8-60.8 35.1L88.7 85.5c-4.9-2.8-11-1.9-14.8 2.3-24.7 26.7-43.6 58.9-54.7 94.6-1.7 5.4.6 11.2 5.5 14L67.3 221c-4.3 23.2-4.3 47 0 70.2l-42.6 24.6c-4.9 2.8-7.1 8.6-5.5 14 11.1 35.6 30 67.8 54.7 94.6 3.8 4.1 10 5.1 14.8 2.3l42.6-24.6c17.9 15.4 38.5 27.3 60.8 35.1v49.2c0 5.6 3.9 10.5 9.4 11.7 36.7 8.2 74.3 7.8 109.2 0 5.5-1.2 9.4-6.1 9.4-11.7v-49.2c22.2-7.9 42.8-19.8 60.8-35.1l42.6 24.6c4.9 2.8 11 1.9 14.8-2.3 24.7-26.7 43.6-58.9 54.7-94.6 1.5-5.5-.7-11.3-5.6-14.1zM256 336c-44.1 0-80-35.9-80-80s35.9-80 80-80 80 35.9 80 80-35.9 80-80 80z"/>
                 </svg>
                 
-                <div class="dashboard_menu">
+                <div class="dashboard_info_detail_menu">
                     <a href="{% url "edit" %}">редактировать профиль</a>
                     <a href="{% url "password_change" %}">изменить пароль</a>
+                    <a href="#dasboard_zatemnenie_delete">удалить страницу</a>
                 </div>
             </div>
 
@@ -30,10 +40,10 @@
 
                 <div class="dashboard_info_subs">
                     <div>
-                        <a href="#dasboard_zatemnenie">подписки [<span>{{ subscribe.count }}</span>]</a>
-                        <div id="dasboard_zatemnenie">
-                            <div class="subscribe">
-                                <a href="#" class="close">x</a>
+                        <a href="#dasboard_zatemnenie_subscribe">подписки [{{ subscribe.count }}]</a>
+                        <div id="dasboard_zatemnenie_subscribe">
+                            <div class="dasboard_subscribe">
+                                <a href="#" class="dasboard_close">x</a>
                                 {% for subscribe in subscribe.all %}
                                 <span>{{ subscribe.user }}</span>
                                 {% endfor  %}
@@ -41,10 +51,10 @@
                         </div>
                     </div>
                     <div>
-                        <a href="#dasboard_zatemnenie_subscribers">подписчики [<span class="{{ profile.id }}">{{ profile.subscribers.count }}</span>]</a>
+                        <a href="#dasboard_zatemnenie_subscribers">подписчики [{{ profile.subscribers.count }}]</a>
                         <div id="dasboard_zatemnenie_subscribers">
-                            <div class="subscribers">
-                                <a href="#" class="close">x</a>
+                            <div class="dasboard_subscribers">
+                                <a href="#" class="dasboard_close">x</a>
                                 {% for subscriber in profile.subscribers.all %}
                                 <span>{{ subscriber }}</span>
                                 {% endfor  %}
@@ -57,11 +67,11 @@
 
     </div>
     
-    <div class="dashboard_info_descr">
+    <div class="dashboard_descr">
         <span>{{ profile.about }}</span>
         
                 
-        <div class="dashboard_info_categories">
+        <div class="dashboard_categories">
             {% for category in profile.category.all %}
             <a href="{{ category.get_absolute_url }}">{{ category }}</a>
             {% endfor %}
@@ -69,7 +79,7 @@
     </div>
     
 
-    <div class="dash">
+    <div class="dashboard_grid">
         <div>
             <div class="dashboard_orders">
                 <a href='{% url "orders:order_list" %}'>заказы</a>
@@ -104,7 +114,31 @@
                             <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
                         </a>
                     </div>
-                    <a href="{{ product.get_absolute_url }}">{{ product|truncatechars:15 }}</a>
+                    <a href="{{ product.get_absolute_url }}">{{ product.name|truncatechars:15 }}</a>
+                    <a href="{% url "shop:edit_product" product.id %}"><button class="createproduct">edit</button></a>
+                    <a href="{% url "shop:hide_product" %}">
+                        <button class="hide_product" data-id="{{ product.id }}" data-action="{% if product.available %}hide{% else %}show{% endif %}">
+                            {% if product.available %}
+                            hide
+                            {% else %}
+                            show
+                            {% endif %}
+                        </button>
+                    </a>
+
+                    <button data-id="{{ product.id }}" class="delete_product_open">del</button>
+                    <div class="dasboard_zatemnenie_delete_product" id="delete{{ product.id }}">
+                        <div class="dasboard_delete_product">
+                            <a href="#" class="dasboard_delete_product_close">x</a>
+                            <span>Вы уверены, что хотите удалить товар "{{ product.name }}"? Информация будет стерта безвозвратно.</span>
+                            <a href="{% url "shop:delete_product" product.id %}">
+                                <button class="delete_product">
+                                    delete
+                                </button>
+                            </a>
+                        </div>
+                    </div>
+
                 </div>
                 {% endfor %}
             </div>
@@ -120,6 +154,29 @@
                 {% for post in posts %}
                 <div class="dashboard_posts_item">
                     <a href="{{ post.get_absolute_url }}">{{ post }}</a>
+                    <a href="{% url "blog:edit_post" post.id %}"><button class="editpost">edit</button></a>
+                    <a href="{% url "blog:hide_post" %}">
+                        <button class="hide_post" data-id="{{ post.id }}" data-action="{% if post.status == 'published' %}hide{% else %}show{% endif %}">
+                            {% if post.status == 'published' %}
+                            hide
+                            {% else %}
+                            show
+                            {% endif %}
+                        </button>
+                    </a>
+
+                    <button data-id="{{ post.id }}" class="delete_post_open">del</button>
+                    <div class="dasboard_zatemnenie_delete_post" id="delete_post{{ post.id }}">
+                        <div class="dasboard_delete_post">
+                            <a class="dasboard_delete_post_close">x</a>
+                            <span>Вы уверены, что хотите удалить статью "{{ post }}"? Информация будет стерта безвозвратно.</span>
+                            <a href="{% url "blog:delete_post" post.id %}">
+                                <button class="delete_post">
+                                    delete
+                                </button>
+                            </a>
+                        </div>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
@@ -135,6 +192,28 @@
                 {% for announcement in announcements %}
                 <div class="dashboard_ann_item">
                     <a href="{{ announcement.get_absolute_url }}">{{ announcement }}</a>
+                    <a href="{% url "announcement:edit_announcement" announcement.id %}"><button class="editannouncement">edit</button></a>
+                    <a href="{% url "announcement:hide_announcement" %}">
+                        <button class="hide_announcement" data-id="{{ announcement.id }}" data-action="{% if announcement.active %}hide{% else %}show{% endif %}">
+                            {% if announcement.active %}
+                            hide
+                            {% else %}
+                            show
+                            {% endif %}
+                        </button>
+                    </a>
+
+                    <button data-id="{{ announcement.id }}" class="delete_announcement_open">del</button>
+                    <div class="dasboard_zatemnenie_delete_announcement" id="delete_announcement_{{ announcement.id }}">
+                        <div class="dasboard_delete_announcement">
+                            <a href="#" class="dasboard_delete_announcement_close">x</a>
+                            <span>Вы уверены, что хотите удалить объявление "{{ announcement }}"? Информация будет стерта безвозвратно.</span>
+                            <a href="{% url "announcement:delete_announcement" announcement.id %}">
+                                <button class="delete_announcement">
+                                    delete
+                                </button>
+                            </a>
+                        </div>
                 </div>
                 {% endfor %}
             </div>
@@ -149,4 +228,82 @@
 {% block domready %}
 
 
-{% endblock %}
+$('button.hide_product').click(function(e){
+    e.preventDefault();
+    var hide_product = event.target;
+    $.post('{% url "shop:hide_product" %}',
+        {
+        id: $(hide_product).data('id'),
+        action: $(hide_product).data('action')
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {
+                var previous_action = $(hide_product).data('action');  
+                $(hide_product).data('action', previous_action == 'hide' ? 'show' : 'hide');
+                $(hide_product).text(previous_action == 'hide' ? 'show' : 'hide');
+            }
+        });
+    });
+
+$('button.delete_product_open').click(function(e){
+    var id = $(this).data('id');
+    $('div#delete' +id).css('display', 'block');
+    $('a.dasboard_delete_product_close').click(function(e){
+        $('div#delete' +id).css('display', 'none');
+    });
+});
+
+$('button.hide_post').click(function(e){
+    e.preventDefault();
+    var hide_post = event.target;
+    $.post('{% url "blog:hide_post" %}',
+        {
+        id: $(hide_post).data('id'),
+        action: $(hide_post).data('action')
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {
+                var previous_action = $(hide_post).data('action');  
+                $(hide_post).data('action', previous_action == 'hide' ? 'show' : 'hide');
+                $(hide_post).text(previous_action == 'hide' ? 'show' : 'hide');
+            }
+        });
+    });
+
+$('button.delete_post_open').click(function(e){
+    var id = $(this).data('id');
+    $('div#delete_post' +id).css('display', 'block');
+    $('a.dasboard_delete_post_close').click(function(e){
+        $('div#delete_post' +id).css('display', 'none');
+    });
+});
+
+$('button.hide_announcement').click(function(e){
+    e.preventDefault();
+    var hide_announcement = event.target;
+    $.post('{% url "announcement:hide_announcement" %}',
+        {
+        id: $(hide_announcement).data('id'),
+        action: $(hide_announcement).data('action')
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {
+                var previous_action = $(hide_announcement).data('action');  
+                $(hide_announcement).data('action', previous_action == 'hide' ? 'show' : 'hide');
+                $(hide_announcement).text(previous_action == 'hide' ? 'show' : 'hide');
+            }
+        });
+    });
+
+$('button.delete_announcement_open').click(function(e){
+    var id = $(this).data('id');
+    $('div#delete_announcement_' +id).css('display', 'block');
+    $('a.dasboard_delete_announcement_close').click(function(e){
+        $('div#delete_announcement_' +id).css('display', 'none');
+    });
+});
+
+{% endblock %}  

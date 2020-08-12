@@ -18,36 +18,55 @@
         {% for announcement in announcements %}
 
         <div class="announcements_list_announcement">
-            <a href="{{ announcement.get_absolute_url }}"><img src="{% if announcement.image %}{{ announcement.image.url }}{%else %}{% static "img/no_image.png" %}{% endif %}"></a>
-            <a href="{{ announcement.get_absolute_url }}">{{ announcement.title }}</a><br>
-            
-            <span>{{ announcement.created }} </span>
-            {% for profile in profiles %}
-                {% if profile.user == announcement.author_ann %}
-                    {% if announcement.author_ann != request.user %}
-                        <a href="{{ profile.get_absolute_url }}">{{ announcement.author_ann }}</a>
-                    {% else %}
-                        <a href="{% url "dashboard" %}">{{ announcement.author_ann }}</a>
-                    {% endif %}
-                {% endif %}
-            {% endfor %}
-            <p>{{ announcement.body }}</p>
-            <span>{{ announcement.likes.count }} comments</span>
+            <div class="announcements_list_announcement_detail">
 
-            <div class="announcement-like">
-                <span class='{{ announcement.id }}'>{{ announcement.likes.count }}</span>
-                <button data-id="{{ announcement.id }}" data-action="{% if request.user in announcement.likes.all %}un{% endif %}like" class="like">
-                    {% if request.user not in announcement.likes.all %}
-                        {% if request.user.is_authenticated %}
-                            Like
+                <div class="announcements_list_announcement_photo">
+                    <a href="{{ announcement.get_absolute_url }}"><img src="{% if announcement.image %}{{ announcement.image.url }}{%else %}{% static "img/no_image.png" %}{% endif %}"></a>
+                </div>
+
+                <div class="announcements_list_announcement_name">
+                    <a class="announcements_list_announcement_title" href="{{ announcement.get_absolute_url }}">{{ announcement.title }}</a>
+                    
+                    <div class="announcements_list_announcement_info">
+                        <span>{{ announcement.created|date:"d.m.Y H:i" }}  </span>
+                        {% for profile in profiles %}
+                            {% if profile.user == announcement.author_ann %}
+                                {% if announcement.author_ann != request.user %}
+                                    <a href="{{ profile.get_absolute_url }}">{{ announcement.author_ann }}</a>
+                                {% else %}
+                                    <a href="{% url "dashboard" %}">{{ announcement.author_ann }}</a>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            
+            </div> 
+            <div >
+
+                <div class="announcements_list_announcement_body">
+                    <span>{{ announcement.body|truncatechars:60 }}</span>
+                </div>
+
+                <div class="announcements_list_announcement_btns">
+                    <span>{{ announcement.comments.count }} comments</span>
+
+                    <div class="announcement-like">
+                        [<span class='{{ announcement.id }}'>{{ announcement.likes.count }}</span>]
+                        
+                        {% if request.user not in announcement.likes.all %}
+                            {% if request.user.is_authenticated %}
+                                <svg class="announcements_list_announcement_star" viewBox="0 0 576 512"><path data-id="{{ announcement.id }}" data-action="{% if request.user in announcement.likes.all %}un{% endif %}like" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg>
+                            {% else %}
+                                <svg class="announcements_list_announcement_star" viewBox="0 0 576 512"><path data-id="{{ announcement.id }}" data-action="{% if request.user in announcement.likes.all %}un{% endif %}like" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg>
+                            {% endif %}
                         {% else %}
-                            Like
+                            <svg class="announcements_list_announcement_star_selected" viewBox="0 0 576 512"><path data-id="{{ announcement.id }}" data-action="{% if request.user in announcement.likes.all %}un{% endif %}like" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/></svg>
                         {% endif %}
-                    {% else %}
-                    Unlike
-                    {% endif %}
-                </button>
-            </div>  
+                        
+                    </div> 
+                </div>
+            </div>
         </div>            
 
         {% endfor%}
@@ -59,7 +78,7 @@
 
 {% block domready %}
 
-$('button.like').click(function(e){
+$('div.announcement-like path').click(function(e){
     e.preventDefault();
     var announcement_like = event.target;
     $.post('{% url "announcement:announcement_like" %}',
@@ -74,12 +93,13 @@ $('button.like').click(function(e){
                 var pr_id = $(announcement_like).data('id');
   
                 $(announcement_like).data('action', previous_action == 'like' ? 'unlike' : 'like');
-                $(announcement_like).text(previous_action == 'like' ? 'Unlike' : 'Like');
+                $(announcement_like).text(previous_action == 'like' ? $(announcement_like).css("fill", "#daa520") : $(announcement_like).css("fill", "#dcdcdc"));
                 
                 var previous_likes = parseInt($('span.' + pr_id).text());
                 $('span.' + pr_id).text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
             }
         });
     });
+
 
 {% endblock %}

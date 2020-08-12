@@ -1,40 +1,115 @@
 {% extends "shop/bas.html" %}
 {% load static %}
-{% block title %}articles{% endblock %}
+{% block title %}статьи{% endblock %}
 
 {% block content %} 
 
-<div class="posts_list">
-    <div class="posts_list_posts">
+<div class="posts">
+    <div class="posts_list">
         {% for post in posts %}
-            <div class="posts_list_posts_post">
-                <a class="title" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
-                <div class="info">
-                    <span>{{ post.publish }}</span>
-                    {% for profile in profiles %}
-                        {% if profile.user == post.author %}
-                            {% if post.author != request.user %}
-                                <a class="author" href="{{ profile.get_absolute_url }}">{{ post.author }}</a>
-                            {% else %}
-                                <a class="author" href="{% url "dashboard" %}">{{ post.author }}</a>
-                            {% endif %}
-                        {% endif %}
-                    {% endfor %}
+            <div class="posts_list_post" id="{% if post.id|divisibleby:"2" %}even{% else %}uneven{% endif %}">
+                
+                <div class="posts_list_post_photo" hidden>
+                    <a href="{{ post.get_absolute_url }}"><img src="{% if post.image %}{{ post.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}"></a>
                 </div>
-                <p class="body">{{ post.body }}</p>
+                <div class="posts_list_post_info">
+                    <a class="title" href="{{ post.get_absolute_url }}">{{ post.title }}</a>
 
-                <div class="details">
-                    <span class="{{ post.title }}">{{ post.users_like.count }} ♥</span>
-                    <span class="{{ post.title }}">{{ post.comments.count }} comment{{ post.comments.count|pluralize }}</span>
-                    <span class="{{ post.title }}">{{ post.bookmark.count }}
-                        <svg class="bi bi-bookmark" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M8 12l5 3V3a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12l5-3zm-4 1.234l4-2.4 4 2.4V3a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10.234z"></path>
-                        </svg>
-                    </span>
+                    <p class="body">{{ post.body|truncatechars:150 }}</p>
+
+                    <div class="details">
+                        <div class="info">
+                            {% for profile in profiles %}
+                                {% if profile.user == post.author %}
+                                    {% if post.author != request.user %}
+                                        <a class="author" href="{{ profile.get_absolute_url }}">{{ post.author }}</a>
+                                    {% else %}
+                                        <a class="author" href="{% url "dashboard" %}">{{ post.author }}</a>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <span class="{{ post.title }}">{{ post.comments.count }} comment{{ post.comments.count|pluralize }}</span>
+
+                        <div class="post-like">
+                            <span class="{{ post.id }}like">{{ post.users_like.count }}</span>
+                            <button data-id="{{ post.id }}" data-action="{% if request.user in post.users_like.all %}un{% endif %}like" class="like">
+                                    {% if request.user not in post.users_like.all %}
+                                        Like 
+                                        {% else %} 
+                                        Unlike
+                                    {% endif %}
+                            </button>
+                        </div>
+
+                        <div>
+                            <span class="{{ post.id }}">{{ post.bookmark.count }}</span>
+                            <button data-id="{{ post.id }}" data-action="{% if request.user in post.bookmark.all %}un{% endif %}bookmark" class="bookmarkbutton">
+                                {% if request.user not in post.bookmark.all %}
+                                    bookmark {% else %} unbookmark
+                                {% endif %}
+                            </button>
+                        </div>
+                    
+                    </div>
                 </div>
             </div>
         {% endfor %}
     </div>
 </div>
 
+{% endblock %}
+
+{% block domready %}
+
+$('button.like').click(function(e){
+	e.preventDefault();
+	var post_like = event.target;
+	$.post('{% url "blog:post_like" %}',
+		{
+		id: $(post_like).data('id'),
+		action: $(post_like).data('action')
+		},
+		function(data){
+			if (data['status'] == 'ok')
+			{
+				var previous_action = $(post_like).data('action');
+				var id = $(post_like).data('id');
+	
+				$(post_like).data('action', previous_action == 'like' ? 'unlike' : 'like');
+				$(post_like).text(previous_action == 'like' ? 'Unlike' : 'Like');
+				
+				var previous_likes = parseInt($('span.' + id + 'like').text());
+				$('span.' + id + 'like').text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
+			}
+		});
+	});
+
+$('button.bookmarkbutton').click(function(e){
+	e.preventDefault();
+	var bookmark = event.target;
+	$.post('{% url "blog:bookmark" %}',
+		{
+		id: $(bookmark).data('id'),
+		action: $(bookmark).data('action'),
+		},
+		function(data){
+			if (data['status'] == 'ok')
+			{
+				var previous_action = $(bookmark).data('action');
+				var id = $(bookmark).data('id');
+	
+				$(bookmark).data('action', previous_action == 'bookmark' ? 'unbookmark' : 'bookmark');
+				$(bookmark).text(previous_action == 'bookmark' ? 'unbookmark' : 'bookmark');
+				
+				var previous_bookmark = parseInt($('span.' + id).text());
+				$('span.' + id).text(previous_action == 'bookmark' ? previous_bookmark + 1 : previous_bookmark - 1);
+
+				var previous = parseInt($('a.navbar_btns_bookmarks span').text());
+                $('a.navbar_btns_bookmarks span').text(previous_action == 'bookmark' ? previous + 1 : previous - 1);
+			}
+		});
+    });
+    
 {% endblock %}

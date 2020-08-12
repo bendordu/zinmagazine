@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from likes.decorators import ajax_required
 from .forms import PostCreateForm
-from django.utils.text import slugify
+from uuslug import slugify
 from account.models import Profile
 
 def post_list(request):
@@ -45,6 +45,36 @@ def create_post(request):
         form = PostCreateForm
     return render(request, 'blog/create_post.html', {'form': form})
 
+def edit_post(request, id):
+    post = Post.objects.get(id=id)
+    if request.method == 'POST':
+        form = PostCreateForm(instance=post, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+    else:
+        form = PostCreateForm(instance=post)
+    return render(request, 'blog/edit_post.html', {'form': form})
+
+
+@ajax_required
+@login_required
+@require_POST
+def hide_post(request):
+    post = Post.objects.get(id=request.POST.get('id'))
+    if request.POST.get('action') == 'hide':
+        post.status = 'draft'
+    else:
+        post.status = 'published'
+    post.save()
+    return JsonResponse({'status':'ok'})
+
+
+def delete_post(request, id):
+    post = Post.objects.get(id=id)
+    post.delete()
+    return redirect('dashboard')
+
 @ajax_required
 @login_required
 @require_POST
@@ -74,9 +104,9 @@ def post_add_comment(request):
 @login_required
 @require_POST
 def post_like(request):
-    title = request.POST.get('title')
+    post_id = request.POST.get('id')
     action = request.POST.get('action')
-    post = get_object_or_404(Post, title=title)
+    post = get_object_or_404(Post, id=post_id)
     if action == 'like':
         post.users_like.add(request.user)
     else:
@@ -87,9 +117,9 @@ def post_like(request):
 @login_required
 @require_POST
 def bookmark(request):
-    title = request.POST.get('title')
+    post_id = request.POST.get('id')
     action = request.POST.get('action')
-    post = get_object_or_404(Post, title=title)
+    post = get_object_or_404(Post, id=post_id)
     if action == 'bookmark':
         post.bookmark.add(request.user)
     else:

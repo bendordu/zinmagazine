@@ -15,98 +15,100 @@
         <div class="shop_find"></div>
     </div>
 
-    <div class="shop_categories">
-        <span>Категории</span>
-        <span {% if not category or price_type or type_pr %}class="selected"{% endif %}><a href="{% url "shop:product_list" %}">все</a></span>
-        {% for c in categories %}
-            <span {% if category.slug == c.slug %}class="selected" {% endif %}>
-                <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
-            </span>
-        {% endfor %}
-        {% for p in price_types %}
-            <span {% if price_type.slug == p.slug %}class="selected" {% endif %}>
-                <a href="{{ p.get_absolute_url }}">{{ p.name }}</a>
-            </span>
-        {% endfor %}
-        {% for t in type_prs %}
-            <span {% if type_pr.slug == t.slug %}class="selected" {% endif %}>
-                <a href="{{ t.get_absolute_url }}">{{ t.name }}</a>
-            </span>
-        {% endfor %}
-    </div>
+    <div class="shop_">
+        <div class="shop_categories">
+            <span>Категории</span>
+            <span {% if not category or price_type or type_pr %}class="selected"{% endif %}><a href="{% url "shop:product_list" %}">все</a></span>
+            {% for c in categories %}
+                <span {% if category.slug == c.slug %}class="selected" {% endif %}>
+                    <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
+                </span>
+            {% endfor %}
+            {% for p in price_types %}
+                <span {% if price_type.slug == p.slug %}class="selected" {% endif %}>
+                    <a href="{{ p.get_absolute_url }}">{{ p.name }}</a>
+                </span>
+            {% endfor %}
+            {% for t in type_prs %}
+                <span {% if type_pr.slug == t.slug %}class="selected" {% endif %}>
+                    <a href="{{ t.get_absolute_url }}">{{ t.name }}</a>
+                </span>
+            {% endfor %}
+        </div>
 
-    <div class="shop_items">
+        <div class="shop_items">
 
-        {% for product in products %}
+            {% for product in products %}
 
-        <div class="shop_items_item">
-            <div class="shop_items_item_photo">
-                <a href="{{ product.get_absolute_url }}">
-                    {% if product.image %}
-                        <img src="{{ product.image.url }}">
-                    {% else %}
-                        <img src="{% static "img/no_image.png" %}">
-                    {% endif %}
-                </a>
-            </div>
-            <div class="shop_items_item_info">
-
-                <div class="shop_items_item_info_name">
-
-                    <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
-
-                    <div class="shop_items_item_info_like">
-                        [<span class={{ product.id }}>{{ product.users_like.count }}</span>]
-                        {% if request.user not in product.users_like.all %}
-                            {% if request.user.is_authenticated %}
-                                <svg class="shop_items_item_info_like_btn" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like"  d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
-                            {% else %}
-                                <svg class="shop_items_item_info_like_btn" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
-                            {% endif %}
+            <div class="shop_items_item">
+                <div class="shop_items_item_photo">
+                    <a href="{{ product.get_absolute_url }}">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}">
                         {% else %}
-                            <svg class="shop_items_item_info_like_btn_selected" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+                            <img src="{% static "img/no_image.png" %}">
                         {% endif %}
+                    </a>
+                </div>
+                <div class="shop_items_item_info">
+
+                    <div class="shop_items_item_info_name">
+
+                        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+
+                        <div class="shop_items_item_info_like">
+                            [<span class={{ product.id }}>{{ product.users_like.count }}</span>]
+                            {% if request.user not in product.users_like.all %}
+                                {% if request.user.is_authenticated %}
+                                    <svg class="shop_items_item_info_like_btn" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like"  d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+                                {% else %}
+                                    <svg class="shop_items_item_info_like_btn" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+                                {% endif %}
+                            {% else %}
+                                <svg class="shop_items_item_info_like_btn_selected" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+                            {% endif %}
+                        </div>
+
                     </div>
 
-                </div>
+                    <div class="shop_items_item_info_info">
+                        {% if product.price_type.id == 1 %}
+                        {% if product.quantity_pr > 0 %}
 
-                <div class="shop_items_item_info_info">
-                    {% if product.price_type.id == 1 %}
-                    {% if product.quantity_pr > 0 %}
-
-                    {{ product.price }} RUB
-                    Q{{ product.quantity_pr }}
-                
-                    {% if product in cart.value or product in cart_user.products %}
-                        {% if request.user.is_authenticated %}
-                        <a href="{% url "cart:cart_detail_user" %}">
-                            <button class="selected">в корзине</button>
-                        </a>
+                        {{ product.price }} RUB
+                        Q{{ product.quantity_pr }}
+                    
+                        {% if product in cart.value or product in cart_user.products %}
+                            {% if request.user.is_authenticated %}
+                            <a href="{% url "cart:cart_detail_user" %}">
+                                <button class="selected">в корзине</button>
+                            </a>
+                            {% else %}
+                            <a href="{% url "cart:cart_detail" %}">
+                                <button class="selected">в корзине</button>
+                            </a>
+                            {% endif %}
                         {% else %}
-                        <a href="{% url "cart:cart_detail" %}">
-                            <button class="selected">в корзине</button>
-                        </a>
+
+                        <button class="add" data-id="{{ product.id }}" data-action="{% if product in cart.value %}cart{% endif %}add">
+                            в корзину
+                        </button> 
+
                         {% endif %}
-                    {% else %}
+                        {% else %}<span>Товара нет в наличии</span> {% endif %}
+                        {% endif %}
 
-                    <button class="add" data-id="{{ product.id }}" data-action="{% if product in cart.value %}cart{% endif %}add">
-                        в корзину
-                    </button> 
-
-                    {% endif %}
-                    {% else %}<span>Товара нет в наличии</span> {% endif %}
-                    {% endif %}
-
-                    {% if product.price_type.id == 3 %}
-                    <span>от {{ product.price }} RUB</span>
-                    <a href="#"><button>скачать</button></a>
-                    {% endif %}                    
+                        {% if product.price_type.id == 3 %}
+                        <span>от {{ product.price }} RUB</span>
+                        <a href="#"><button>скачать</button></a>
+                        {% endif %}                    
+                    </div>
                 </div>
             </div>
-        </div>
-              
-        {% endfor%}
+                
+            {% endfor%}
 
+        </div>
     </div>
 </div>
 {% endblock %}

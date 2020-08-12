@@ -7,7 +7,7 @@ from django.views.decorators.http import require_POST
 from likes.decorators import ajax_required
 from chats.models import Chat
 from .forms import AnnouncementCreateForm
-from django.utils.text import slugify
+from uuslug import slugify
 
 def announcement_list(request, category_slug=None):
     category = None
@@ -43,18 +43,51 @@ def create_announcement(request):
             new_ann.author_ann = request.user
             new_ann.slug = slugify(form.cleaned_data['title'])
             new_ann.save()
+            for category in form.cleaned_data['category']:
+                new_ann.category.add(category)
             return redirect('announcement:announcement_list')
     else:
         form = AnnouncementCreateForm
     return render(request, 'create_announcement.html', {'form': form})
 
+
+def edit_announcement(request, id):
+    announcement = Announcement.objects.get(id=id)
+    if request.method == 'POST':
+        form = AnnouncementCreateForm(instance=announcement, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+    else:
+        form = AnnouncementCreateForm(instance=announcement)
+    return render(request, 'edit_announcement.html', {'form': form})
+
+
+@ajax_required
+@login_required
+@require_POST
+def hide_announcement(request):
+    announcement = Announcement.objects.get(id=request.POST.get('id'))
+    if request.POST.get('action') == 'hide':
+        announcement.active = False
+    else:
+        announcement.active = True
+    announcement.save()
+    return JsonResponse({'status':'ok'})
+
+
+def delete_announcement(request, id):
+    announcement = Announcement.objects.get(id=id)
+    announcement.delete()
+    return redirect('dashboard')
+
 @ajax_required
 @login_required
 @require_POST
 def announcement_like(request):
-    id = request.POST.get('id')
+    ann_id = request.POST.get('id')
     action = request.POST.get('action')
-    announcement = get_object_or_404(Announcement, id=id)
+    announcement = get_object_or_404(Announcement, id=ann_id)
     if action == 'like':
         announcement.likes.add(request.user)
     else:

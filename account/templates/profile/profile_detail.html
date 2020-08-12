@@ -3,79 +3,140 @@
 {% block title %}{{ profile.user.username }}{% endblock %}
 {% block content %}      						
 	
-<div class="profile_detail">
+<div class="profile">
 
-    <div class="profile_detail_photo">
-        <img src="{% if profile.photo %}{{ profile.photo.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+    <div class="profile_info">
+        <div class="profile_info_photo">
+            <img src="{% if profile.photo %}{{ profile.photo.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+        </div>
+
+        <div class="profile_info_center">
+
+            <div class="profile_info_center_name">
+                <span class="profile_info_name_username">{{ profile.user.username }}</span><br>
+                <span>{{ profile.user.first_name }} {{ profile.user.last_name }}</span>
+            </div>
+
+            <div class="profile_info_chat_button">
+                {% for chat in chatss %}
+                    {% if request.user in chat.members.all %}
+                    <a href="{{ chat.get_absolute_url }}">
+                        <button class="write_message_ready">
+                            Написать сообщение
+                        </button>
+                    </a>
+                    {% endif %}
+                {% empty %}
+                    <button class="write_message">
+                        Написать сообщение
+                    </button>
+                    <form class="message" hidden="true" method="post" data-name="{{ request.user.username }}-{{ profile.user.username }}" data-member='{{ profile.user.id }}'>
+                        <textarea name="body" cols="40" rows="10" required></textarea>
+                        <input class="message" type="file" title="Add image">
+                        <input type="submit" value="Send">
+                    </form>
+                {% endfor %}
+            </div>
+
+            <div class="profile_info_subs_button">
+                <button  class="subscribe" data-id="{{ profile.id }}" data-action="{% if request.user in profile.subscribers.all %}un{% endif %}subscribe">
+                        {% if request.user not in profile.subscribers.all %}
+                                подписаться
+                        {% else %}
+                                отписаться
+                        {% endif %}
+                </button>
+            </div>
+
+            <div class="profile_info_subs">
+                <div>
+                    <a href="#profile_zatemnenie_subscribe">подписки [{{ subscribe.count }}]</a>
+                    <div id="profile_zatemnenie_subscribe">
+                        <div class="profile_subscribe">
+                            <a href="#" class="profile_close">x</a>
+                            {% for subscribe in subscribe.all %}
+                            <span>{{ subscribe.user }}</span>
+                            {% endfor  %}
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <a href="#profile_zatemnenie_subscribers">подписчики [<span class="{{ profile.id }}">{{ profile.subscribers.count }}</span>]</a>
+                    <div id="profile_zatemnenie_subscribers">
+                        <div class="profile_subscribers">
+                            <a href="#" class="profile_close">x</a>
+                            {% for subscriber in profile.subscribers.all %}
+                            <span>{{ subscriber }}</span>
+                            {% endfor  %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+        
+    <div class="profile_descr">
+        <span>{{ profile.about }}</span>
+
+        <div class="dashboard_categories">
+            {% for category in profile.category.all %}
+            <a href="{{ category.get_absolute_url }}">{{ category }}</a>
+            {% endfor %}
+        </div>
     </div>
 
-    <span>{{ profile.username }}</span>
-    <span>{{ profile.user.first_name }}</span>
-    <span>{{ profile.user.last_name }}</span>
-    <span>{{ profile.date_of_birth }}</span>
+    
+    <div class="profile_grid">
 
-    подписки <span>{{ subscribe.count }}</span><button class="open_subscribe">▼</button>
-    <div class="subscribe" hidden='true'>
-        {% for subscribe in subscribe.all %}
-        {{ subscribe.user }}
-        {% endfor  %}
-    </div><br>
-    подписчики <span class="{{ profile.id }}">{{ profile.subscribers.count }}</span>
-    <button class="open_subscribers">▼</button>
-    <div class="subscribers" hidden='true'>
-        {% for subscriber in profile.subscribers.all %}
-        {{ subscriber }}
-        {% endfor  %}
+        <div class="profile_grid_products">
+            <div class="profile_grid_products_top">
+                <span >товары</span>
+            </div>
+
+            <div class="profile_grid_products_items">
+                {% for product in products %}
+                <div class="profile_grid_products_item">
+                    <div class="profile_grid_products_item_photo">
+                        <a href="{{ product.get_absolute_url }}">
+                            <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+                        </a>
+                    </div>
+                    <a href="{{ product.get_absolute_url }}">{{ product|truncatechars:15 }}</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="profile_grid_ann">
+            <div class="profile_grid_ann_top">
+                <span>объявления</span>
+            </div>
+
+            <div class="profile_grid_ann_items">
+                {% for announcement in announcements %}
+                <div class="profile_grid_ann_item">
+                    <a href="{{ announcement.get_absolute_url }}">{{ announcement }}</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="profile_grid_posts">
+            <div class="profile_grid_posts_top">
+                <span>статьи</span>
+            </div>
+
+            <div class="profile_grid_posts_items">
+                {% for post in posts %}
+                <div class="profile_grid_posts_item">
+                    <a href="{{ post.get_absolute_url }}">{{ post }}</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
     </div>
-	<button data-id="{{ profile.id }}" data-action="{% if request.user in profile.subscribers.all %}un{% endif %}subscribe" class="subscribe">
-			{% if request.user not in profile.subscribers.all %}
-					Subscribe
-			{% else %}
-					Unsubscribe
-			{% endif %}
-	</button><br>
-		
-    {% for category in profile.category.all %}
-    <a href="{{ category.get_absolute_url }}"><span>{{ category }}</span></a><br>
-    {% endfor %}
-
-    {% for chat in chatss %}
-    {% if request.user in chat.members.all %}
-    <button class="write_message_ready">
-        <a href="{{ chat.get_absolute_url }}">Написать сообщение</a>
-    </button>
-    {% endif %}
-    {% empty %}
-    <button class="write_message">
-        <a href="#">Написать сообщение</a>
-    </button>
-    <form class="message" hidden="true" method="post" data-name="{{ request.user.username }}-{{ profile.user.username }}" data-member='{{ profile.user.id }}'>
-        <textarea name="body" cols="40" rows="10" required></textarea>
-        <input class="message" type="file" title="Add image">
-        <input type="submit" value="Send">
-    </form>
-    {% endfor %}
-    
-    <p>{{ profile.about|linebreaks }}</p>
-
-    <p>статьи</p>
-    {% for post in posts %}
-    <a href="{{ post.get_absolute_url }}"><span>{{ post }}</span></a>
-    {% endfor %}
-
-    <p>товары</p>
-    {% for product in products %}
-    <a href="{{ product.get_absolute_url }}"><span>{{ product }}</span></a>
-    {% endfor %}
-
-    <p>объявления</p>
-    {% for announcement in announcements %}
-    <a href="{{ announcement.get_absolute_url }}"><span>{{ announcement }}</span></a>
-    {% endfor %}
-    
-    {% if profile.user == request.user %}
-    <a href='{% url "orders:order_list" %}'><p>заказы</p></a>
-    {% endif %}
 
 </div>
 						
@@ -120,7 +181,7 @@ $('button.subscribe').click(function(e){
                 var pr_id = $(subscribe).data('id');
   
                 $(subscribe).data('action', previous_action == 'subscribe' ? 'unsubscribe' : 'subscribe');
-                $(subscribe).text(previous_action == 'subscribe' ? 'Unsubscribe' : 'Subscribe');
+                $(subscribe).text(previous_action == 'subscribe' ? 'отписаться' : 'подписаться');
                 
                 var previous_subscribe = parseInt($('span.' + pr_id).text());
                 $('span.' + pr_id).text(previous_action == 'subscribe' ? previous_subscribe + 1 : previous_subscribe - 1);
@@ -128,12 +189,4 @@ $('button.subscribe').click(function(e){
         });
     });
 
-$('button.open_subscribers').click(function(e){
-    e.preventDefault();
-    $('div.subscribers').removeAttr("hidden");
-    });
-$('button.open_subscribe').click(function(e){
-    e.preventDefault();
-    $('div.subscribe').removeAttr("hidden");
-    });    
 {% endblock %}

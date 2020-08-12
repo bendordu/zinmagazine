@@ -1,0 +1,12 @@
+{% extends "shop/bas.html" %}
+{% load static %}
+{% block title %}edit post{% endblock %}
+{% block content %}  
+
+<form action="." method="post">
+    {{ form }}
+    {% csrf_token %}
+    <input type="submit" value="Edit post">
+</form>
+
+{% endblock %}   

@@ -9,6 +9,10 @@
 		<div class="product_detail">
 			<div class="product_detail_title">
 				<p class="product_detail_title_name">{{ product.name }}</p>
+				<div class="product_detail_title_inf">
+					<p class="product_detail_title_author">{{ product.author_product }}</p>
+					<p class="product_detail_title_publisher">{{ product.publisher }}{% if product.publisher and product.year %}, {% endif %}{{ product.year }}</p>
+				</div>
 			</div>
 			<div class="product_detail_info">
 
@@ -40,7 +44,7 @@
 
 				{% if product.price_type.id == 3 %}
 					<span>от {{ product.price }} RUB</span> 
-					<a><button>Скачать</button></a>
+					<a href='{% if product.file_product %}{{ product.file_product.url }}{% endif %}'><button>Скачать</button></a>
 				{% endif %}
 
 			</div>
@@ -48,18 +52,31 @@
 		</div>
 			
 		<div class="product_photo">
-			<img src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+			<img class="product_photo_main" src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
 
-			<div class="products_detail_btns_like">
-
-				[<span class="{{ product.id }}">{{ product.users_like.count }}</span>]
-
-				{% if request.user not in product.users_like.all %}
-					<svg class="products_detail_btns_like_btn" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like"  d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
-				{% else %}
-					<svg class="products_detail_btns_like_btn_selected" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+			<div class="product_photo_det">
+				{% if product.image_dop1 or product.image_dop2 %}
+				<div class="products_detail_btns_like_prev">
+					{% if product.image_dop1 %}
+					<img class="product_photo_dop" src="{% if product.image_dop1 %}{{ product.image_dop1.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+					{% endif %}
+					{% if product.image_dop2 %}
+					<img class="product_photo_dop" src="{% if product.image_dop2 %}{{ product.image_dop2.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+					{% endif %}
+				</div>
 				{% endif %}
-				
+			
+				<div class="products_detail_btns_like">
+
+					[<span class="{{ product.id }}">{{ product.users_like.count }}</span>]
+
+					{% if request.user not in product.users_like.all %}
+						<svg class="products_detail_btns_like_btn" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like"  d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+					{% else %}
+						<svg class="products_detail_btns_like_btn_selected" viewBox="0 0 512 512"><path data-id="{{ product.id }}" data-action="{% if request.user in product.users_like.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+					{% endif %}
+					
+				</div>
 			</div>
 		</div>
 
@@ -123,7 +140,17 @@
 	<div class="product_comment_info">
 
 		<div>
-			<span>{{ comment.author.username }} {{ comment.created }}</span>
+			<span>{{ comment.author.username }} {{ comment.created|date:"d.m.Y H:i" }}</span>
+
+			<div class="comment-like">
+				{% if request.user not in comment.comment_likes.all %}
+						<svg class="product_comment_svg" viewBox="0 0 512 512"><path data-id="{{ comment.id }}" data-action="{% if request.user in comment.comment_likes.all %}un{% endif %}like"  d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+					{% else %}
+						<svg class="product_comment_svg_selected" viewBox="0 0 512 512"><path data-id="{{ comment.id }}" data-action="{% if request.user in comment.comment_likes.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
+				{% endif %}
+				<span class="comment{{ comment.id }}">{{ comment.comment_likes.count }}</span> 
+			</div>
+
 			{% if comment.author == request.user %}
 			<a data-body="{{ comment.body }}" data-id="{{ product.id }}" data-action="remove" class="remove">удалить</a>
 			<a data-id="{{ product.id }}" data-action="edit" class="edit">редактировать</a>
@@ -277,6 +304,27 @@ $('button.bye_paper').click(function(e){
 		});
 	});
 
+$('div.comment-like path').click(function(e){
+	e.preventDefault();
+	var comment_like = event.target;
+	$.post('{% url "shop:product_comment_like" %}',
+		{
+		id: $(comment_like).data('id'),
+		action: $(comment_like).data('action')
+		},
+		function(data){
+			if (data['status'] == 'ok')
+			{
+				var previous_action = $(comment_like).data('action');
+				var id = $(comment_like).data('id');
 	
+				$(comment_like).data('action', previous_action == 'like' ? 'unlike' : 'like');
+				$(comment_like).text(previous_action == 'like' ? $(comment_like).css("fill", "#000") : $(comment_like).css("fill", "#a1a1a1"));
+				
+				var previous_likes = parseInt($('span.comment' + id).text());
+				$('span.comment' + id).text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
+			}
+		});
+	});
 
 {% endblock %}

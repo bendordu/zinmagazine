@@ -12,6 +12,7 @@ urlpatterns = [
     path('profiles/', profile.profile_list, name='profile_list'),
     path('subscribe/', profile.subscribe, name='subscribe'),
     path('news/', profile.news, name='news'),
+    path('delete_profile/', views.delete_profile, name='delete_profile'),
     
     path('social-auth/', include('social_django.urls', namespace='social')),
     path('password_change/', auth_views.PasswordChangeView.as_view(), name='password_change'),
