@@ -4,10 +4,13 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from likes.decorators import ajax_required
 from django.http import JsonResponse
+from proect.models import Proect
 
 
 def chat_list(request):
     chat_list = Chat.objects.filter(members=request.user)
+    # for chat in chat_list:
+    #     chat.chat_proect.chat
     return render(request, 'chat_list.html', {'chat_list': chat_list})
 
 def chat(request, slug):
@@ -18,7 +21,7 @@ def chat(request, slug):
             message.is_readed = True
             message.save()
     return render(request, 'chat.html', {'chat': chat,
-                                        'messages_text': messages_text})
+                                         'messages_text': messages_text})
 
 
 

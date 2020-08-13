@@ -38,7 +38,7 @@ def create_proect(request):
             chat.members.add(request.user)
             new_proect.chat = chat
             new_proect.save()
-        return redirect('proect:proect_detail')
+        return redirect('dashboard')
     else:
         form = ProectCreateForm
     return render(request, 'create_proect.html', {'form': form})

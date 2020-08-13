@@ -54,7 +54,10 @@
 
                     <div class="shop_items_item_info_name">
 
-                        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+                        <div>
+                            <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+                            <span>{{ product.author_product }}</span>
+                        </div>
 
                         <div class="shop_items_item_info_like">
                             [<span class={{ product.id }}>{{ product.users_like.count }}</span>]
