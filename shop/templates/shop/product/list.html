@@ -4,7 +4,6 @@
 {% block content %}   
 
 <div class="shop">
- 
     <div class="shop_search">
         <form class="shop_search_form" method="post">
             <textarea name='s' rows="1" placeholder="Поиск товара..." required></textarea>
@@ -38,6 +37,7 @@
 
         <div class="shop_items">
 
+            {% if products %}
             {% for product in products %}
 
             <div class="shop_items_item">
@@ -55,7 +55,7 @@
                     <div class="shop_items_item_info_name">
 
                         <div>
-                            <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+                            <a href="{{ product.get_absolute_url }}">{{ product.name }}</a><br>
                             <span>{{ product.author_product }}</span>
                         </div>
 
@@ -93,7 +93,7 @@
                             {% endif %}
                         {% else %}
 
-                        <button class="add" data-id="{{ product.id }}" data-action="{% if product in cart.value %}cart{% endif %}add">
+                        <button class="add" data-id="{{ product.id }}" data-action="{% if product in cart.value or product in cart_user.products %}cart{% endif %}add">
                             в корзину
                         </button> 
 
@@ -108,8 +108,10 @@
                     </div>
                 </div>
             </div>
-                
             {% endfor%}
+            {% else %}
+            <span>Товар не найден</span>
+            {% endif %}
 
         </div>
     </div>
@@ -215,4 +217,9 @@ $('form.shop_search_form').on("submit", function(){
         });
     });
 
+$('form.shop_search_form').keypress(function(e){
+    if(e.which == 13){
+        $('form.shop_search_form').trigger("submit");
+    }
+});
 {% endblock %}

@@ -21,10 +21,8 @@ def cart_add_product(request):
             if item.quantity == 1:
                 item.delete()
             else:
-                item.price -= product.price
                 item.quantity -= 1
                 item.save()
-            cart.get_total_price -= product.price 
             cart.save()
         else:
             cart = Cart(request)
@@ -34,7 +32,6 @@ def cart_add_product(request):
             cart = CartUser.objects.get(user=request.user)
             item = CartItem.objects.get(cart=cart, product=product)
             item.delete()
-            cart.get_total_price -= product.price * item.quantity
             cart.save()
         else:
             cart = Cart(request)
@@ -44,13 +41,11 @@ def cart_add_product(request):
             cart = CartUser.objects.get(user=request.user)
             try:
                 item = CartItem.objects.get(cart=cart, product=product)
-                item.price += product.price
                 item.quantity += 1
                 item.save()
             except: 
                 CartItem.objects.create(cart=cart, product=product, price=product.price, quantity=1)
             finally:
-                cart.get_total_price += product.price 
                 cart.save()
         else:
             cart = Cart(request)

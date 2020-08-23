@@ -152,8 +152,8 @@
 			</div>
 
 			{% if comment.author == request.user %}
-			<a data-body="{{ comment.body }}" data-id="{{ product.id }}" data-action="remove" class="remove">удалить</a>
-			<a data-id="{{ product.id }}" data-action="edit" class="edit">редактировать</a>
+			<a href="" data-id="{{ comment.id }}" data-action="remove" class="remove">удалить</a>
+			<a href="" data-id="{{ comment.id }}" data-action="edit" class="edit">редактировать</a>
 			{% endif %}
 		</div>
 
@@ -163,13 +163,11 @@
 		
 	</div>
 	
-	{% empty %}
-	<p>There are no comments yet...</p>
-
 	{% endfor %}
+	
+	<div class="new_comment"></div>
 
-	<div class="product_comment_form"> 
-		<div class="new_comment"></div>
+	<div class="product_comment_form">
 
 		<form class="comment" method="post" data-id="{{ product.id }}">
 			<textarea placeholder="Напишите комментарий здесь..." rows="3" required></textarea>
@@ -253,27 +251,26 @@ $('form.comment').on("submit", function(e){
 			{
 				var name = $('a.navbar_log_in_name').text()
 				var myDate = new Date();
-				var fullDate = myDate.getDate() +" "+ myDate.getMonth() +" " + myDate.getFullYear();
-				$('div.new_comment').replaceWith('<div class="comment"><span class="product_comment_info">Comment by'+' '+name+' '+fullDate+'</span><p>'+$('form.comment textarea').val()+'</p></div><div class="new_comment"></div>');
+				var fullDate = myDate.getDate() + "." + myDate.getMonth() + "." + myDate.getFullYear();
+				$('div.new_comment').replaceWith('<div class="product_comment_info"><span>'+name+' '+fullDate+'</span><div></div><p class="product_comment_info_body">'+$('form.comment textarea').val()+'</p></div><div class="new_comment"></div>');
 				$('form.comment textarea').val('');
 				$('span.product_comment_count_comments').text(parseInt($('span.product_comment_count_comments').text())+1)
 			}
 		});
 	});
 
-$('div.comment').click(function(e){
+$('.remove').click(function(e){
 	e.preventDefault();
-	var remove = event.target;
-	$.post('{% url "shop:product_add_comment" %}',
+	var remove = e.target;
+	$.post('{% url "shop:product_remove_comment" %}',
 		{
 		id: $(remove).data('id'),
 		action: $(remove).data('action'),
-		body: $(remove).data('body'),
 		},
 		function(data){
 			if (data['status'] == 'ok')
 			{
-				var parent = $(remove).parent('.comment');
+				var parent = $(remove).parent('div').parent('.product_comment_info');
 				parent.replaceWith('<p>Ваш комментарий удален</p>');
 				$('span.product_comment_count_comments').text(parseInt($('span.product_comment_count_comments').text())-1)	
 			}

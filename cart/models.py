@@ -6,7 +6,6 @@ from django.core.validators import MinValueValidator
 class CartUser(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='user', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
-    get_total_price = models.IntegerField(validators=[MinValueValidator(0)], default=0)
  
     class Meta:
         ordering = ('created',)

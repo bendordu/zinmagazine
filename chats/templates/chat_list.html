@@ -5,60 +5,34 @@
 
 <div class="chats">
 
-    {% for chat in chat_list.all %}
-
     <div class="chats_chat">
-        
+        {% for chat in chat_list.all %}
         {% if chat != chat.chat_proect.chat %}
-        <a href="{{ chat.get_absolute_url }}">{{ chat }}</a>
-        {% endif %}
-        {{ chat.chat_proect.chat }}
-    </div>
+        <a href="{{ chat.get_absolute_url }}">
+            
+            {% for member in chat.members.all %}
+            {% if member != request.user %}
+            {% for profile in profiles.all %}
+            {% if profile.user == member %}
 
-    {% endfor %}
-    
-</div>
-<div>
-    {% for chat in chat_list.all %}
-    {% if chat != chat.chat_proect.chat %}
-
-    <div class="chats_chat">
-        <span>{{ chat }}</span>
-    </div>
-
-    <div class="messages">
-
-        {% for message_text in chat.chat.all %}
-
-        <div class="message">
-    
-            <div class="info">
-                <span>{{ message_text.author }} {{ message_text.pub_date|date:"d.m.Y H:i" }}</span>
-            </div>
-            {% if message_text.author == request.user %}
-            <div class="change">
-                <a href="" data-body="{{ message_text.id }}" data-name="{{ chat.name }}" data-action="remove" class="remove">удалить</a>
-                <a href="" data-name="{{ chat.name }}" data-action="edit" class="edit">редактировать</a>
-            </div>
+            <img src="{% if profile.photo %}{{ profile.photo.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
             {% endif %}
-            <span class="body">{{ message_text.message }}</span>
-    
-        </div>
-      
+            {% endfor %}
+
+            {{ member }}
+
+            {% endif %}
+            {% endfor %}
+        </a>
+
+        {{ chat.chat.last.message }}  {{ chat.chat.last.pub_date|date:"d.m.Y H:i" }}
+
+        {% endif %}
         {% endfor %}
-        
-    
-        <div class="new_message"></div>
-        
-        <form class="message" method="post" data-name="{{ chat.name }}">
-            <textarea name="body" cols="40" rows="2" required></textarea>
-            <input class="message" type="file" title="Add image">
-            <input type="submit" value="Send">
-        </form>
-    
+
     </div>
-    {% endif %}
-    {% endfor %}
+        
 </div>
+
 
 {% endblock %} 

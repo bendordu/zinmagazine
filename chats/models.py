@@ -30,4 +30,4 @@ class Message(models.Model):
         ordering = ('pub_date',)
 
     def __str__(self):
-        return '{} {}'.format(self.author.first_name, self.pub_date)
+        return '{} {}'.format(self.author.username, self.pub_date)

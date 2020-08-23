@@ -4,14 +4,14 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from likes.decorators import ajax_required
 from django.http import JsonResponse
-from proect.models import Proect
+from account.models import Profile
 
 
 def chat_list(request):
     chat_list = Chat.objects.filter(members=request.user)
-    # for chat in chat_list:
-    #     chat.chat_proect.chat
-    return render(request, 'chat_list.html', {'chat_list': chat_list})
+    profiles = Profile.objects.all()
+    return render(request, 'chat_list.html', {'chat_list': chat_list,
+                                              'profiles': profiles})
 
 def chat(request, slug):
     chat = get_object_or_404(Chat, slug=slug)
@@ -31,16 +31,23 @@ def chat(request, slug):
 def message_add(request):
     chat_name = request.POST.get('name')
     chat = Chat.objects.get(name=chat_name)
-    if request.POST.get('action'):
-        body = request.POST.get('body')
-        message = get_object_or_404(Message, id=body, author=request.user, chat=chat)
-        if request.POST.get('action') == 'remove':
-            message.delete()
-    else:
-        data = request.POST.get('data')
-        message = Message(message=data, author=request.user, chat=chat)
-        message.save()
+    data = request.POST.get('data')
+    message = Message(message=data, author=request.user, chat=chat)
+    message.save()
     return JsonResponse({'status':'ok'})
+
+@ajax_required
+@login_required
+@require_POST
+def message_remove(request): 
+    message_id = request.POST.get('id')
+    message = get_object_or_404(Message, id=message_id)
+    if request.POST.get('action') == 'remove':
+        message.delete()
+        if  message.chat.chat.all().count() == 0:
+            message.chat.delete()
+    return JsonResponse({'status':'ok'})
+
 
 @ajax_required
 @login_required

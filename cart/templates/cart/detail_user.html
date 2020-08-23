@@ -17,23 +17,32 @@
                     </a>
                     <a class="cart_table_item_name" href="{{ product.get_absolute_url }}">{{ product.name }}</a>
                 </td>
+                {% if product.available %}
                 <td class="cart_table_btns">
                     <button class="minus" data-id="{{ product.id }}" data-action="minus">
                         -
                     </button> 
                     <span id='{{ product.id }}'>{{ item.quantity }}</span>
-                    <button class="plus" data-id="{{ product.id }}" data-action="plus">
+                    {% if product.quantity_pr > item.quantity %}
+                    <button class="plus" id="plus__{{ product.id }}" data-id="{{ product.id }}" data-action="plus">
                         +
                     </button>
+                    {% else %}
+                    <div class="error_quantity__{{ product.id }}">{{ product.quantity_pr }} шт. в наличии</div>
+                    {% endif %}
+                    <button hidden class="plus" id="plus_{{ product.id }}" data-id="{{ product.id }}" data-action="plus">
+                        +
+                    </button>
+                    <div hidden class="error_quantity_{{ product.id }}">{{ product.quantity_pr }} шт. в наличии</div>
+                    <div hidden>
+                        <span class="item_quantity_{{ product.id }}">{{ item.quantity }}</span>
+                        <span class="product_quantity_pr_{{ product.id }}">{{ product.quantity_pr }}</span>
+                    </div>
                 </td>
-
                 <td class='{{ product.id }}'><span class="item_price">{{ item.price }}</span> RUB/шт.</td>
                 <td class='{{ product.id }}'>= <span class="item_total_price">{{ item.total_price }}</span> RUB</td>
-                {% if product.quantity_pr > item.quantity %}
-                <td class="num" hidden>Q {{ product.quantity_pr }}</td>
                 {% else %}
-                <td class="num"><div class="error_quantity">Q {{ product.quantity_pr }}</div></td>
-                <td><span>Вы добавили максимально доступное количество товара</span></td>
+                <td><span>Товар больше недоступен</span></td>
                 {% endif %}
                 <td class="cart_table_remove">
                     <button class="remove" data-id="{{ product.id }}" data-action="remove">x</button>
@@ -81,13 +90,23 @@ $('button.plus').click(function(e){
 
                 var pr_id = $(product_add).data('id');
 
-                var previous_add_quatity = parseInt($('span#' + pr_id).text());
-                $('span#' + pr_id).text(previous_add_quatity + 1);
+                var previous_add_quantity = parseInt($('span#' + pr_id).text());
+                $('span#' + pr_id).text(previous_add_quantity + 1);
 
                 var item_price = parseInt($('td.' + pr_id + ' ' + 'span.item_price').text());
                 var total_price = parseInt($('span.total_price').text());
                 ($('td.' + pr_id + ' ' + 'span.item_total_price').text(item_price +  parseInt($('td.' + pr_id + ' ' + 'span.item_total_price').text())));
                 ($('span.total_price').text(total_price + item_price));
+
+                var product_quantity_pr = parseInt($('span.product_quantity_pr_' + pr_id).text());
+                $('span.item_quantity_' + pr_id).text( parseInt($('span.item_quantity_' + pr_id).text()) + 1);
+                
+                if (product_quantity_pr == parseInt($('span.item_quantity_' + pr_id).text())) {
+                    $('button#plus_' + pr_id).hide();
+                    $('button#plus__' + pr_id).hide();
+                    $('div.error_quantity_' + pr_id).show();
+                    $('div.error_quantity__' + pr_id).hide();
+                }
             }
         });
     });
@@ -105,6 +124,16 @@ $('button.minus').click(function(e){
             {
                 var pr_id = $(product_add).data('id');
                 var previous_add = parseInt($('a.navbar_btns_cart span').text());
+
+                var product_quantity_pr = parseInt($('span.product_quantity_pr_' + pr_id).text());
+                if (product_quantity_pr == parseInt($('span.item_quantity_' + pr_id).text())) {
+                    $('button#plus_' + pr_id).show();
+                    $('button#plus__' + pr_id).hide();
+                    $('div.error_quantity_' + pr_id).hide();
+                    $('div.error_quantity__' + pr_id).hide();
+                }
+                $('span.item_quantity_' + pr_id).text( parseInt($('span.item_quantity_' + pr_id).text()) - 1);
+
                 if  (parseInt($('span#' + pr_id).text()) > 1){
 
                     $('a.navbar_btns_cart span').text(previous_add - 1);

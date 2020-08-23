@@ -4,15 +4,16 @@ class Chats(object):
     def __init__(self, request):
         if request.user.is_active:
             chats = Chat.objects.filter(members=request.user)
+            messages = 0
+            for chat in chats:
+                messages += Message.objects.filter(chat=chat, is_readed=False).exclude(author=request.user).count()
         else:
             chats = None 
-        self.chats = chats 
+            messages = None
+        self.messages = messages
 
     def __len__(self):
-        messages = []
-        for chat in self.chats:
-            messages += Message.objects.filter(chat=chat, is_readed=False)
-        return len(messages)
+        return self.messages
 
 
 def chats(request):

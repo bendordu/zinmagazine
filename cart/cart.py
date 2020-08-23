@@ -1,5 +1,6 @@
 from django.conf import settings
 from shop.models import Product
+from cart.models import CartUser, CartItem
 
 class Cart(object):
     def __init__(self, request):
@@ -8,6 +9,13 @@ class Cart(object):
         if not cart:
             cart = self.session[settings.CART_SESSION_ID] = {}
         self.cart = cart
+        if request.user.is_active:
+            cart_user = CartUser.objects.get(user=request.user)
+            for product in self.value():
+                CartItem.objects.get_or_create(cart=cart_user, product=product, price=product.price, quantity=1)
+                cart_user.save()
+            del self.session[settings.CART_SESSION_ID]
+            self.save()
     
     def add(self, product):
         product_id = str(product.id)

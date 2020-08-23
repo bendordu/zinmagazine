@@ -9,11 +9,11 @@
     <div class="message">
 
         <div class="info">
-            <span>{{ message_text.author }} {{ message_text.pub_date }}</span>
+            <span>{{ message_text.author }} {{ message_text.pub_date|date:"d.m.Y H:i" }}</span>
         </div>
         {% if message_text.author == request.user %}
         <div class="change">
-            <a href="" data-body="{{ message_text.id }}" data-name="{{ chat.name }}" data-action="remove" class="remove">удалить</a>
+            <a href="" data-id="{{ message_text.id }}" data-action="remove" class="remove">удалить</a>
             <a href="" data-name="{{ chat.name }}" data-action="edit" class="edit">редактировать</a>
         </div>
         {% endif %}
@@ -55,19 +55,18 @@ $('form.message').on("submit", function(e){
 		});
     });
 
-$('div.message').click(function(e){
+$('div.change a.remove').click(function(e){
     e.preventDefault();
     var remove = event.target;
-    $.post('{% url "chats:message_add" %}',
+    $.post('{% url "chats:message_remove" %}',
         {
-        name: $(remove).data('name'),
+        id: $(remove).data('id'),
         action: $(remove).data('action'),
-        body: $(remove).data('body'),
         },
         function(data){
             if (data['status'] == 'ok')
             {
-                var parent = $(remove).parent('.message');
+                var parent = $(remove).parent('.change').parent('.message');
                 parent.replaceWith('<p>Ваше сообщение удалено</p>');
             }
         });

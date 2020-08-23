@@ -1,16 +1,31 @@
+import os
+import shutil
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from likes.decorators import ajax_required
-from .models import Category, Product, Comment, PriceType, TypePr
-from .forms import ProductCreateForm
-from uuslug import slugify
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.contrib.auth.models import User
-import os
-import shutil
 from django.conf import settings
+from uuslug import slugify
+from cart.models import CartItem
+from .models import Category, Product, Comment, PriceType, TypePr
+from .forms import ProductCreateForm
+from likes.decorators import ajax_required
+
+
+def change_product_path(product, file_name, start_path):
+    """Перемещает файл товара после создания или изменения экземпляра модели продукта.
+    product это экземпляр модели продукта,
+    file_name это название файла продукта, 
+    start_path это общее начало пути"""
+    product_file = eval(f"product.{file_name}")
+    initial_path = product_file.path
+    product_file.name = start_path + f'_{file_name}.jpg'
+    new_path = settings.MEDIA_ROOT + product_file.name
+    os.rename(initial_path, new_path)
+
 
 
 def product_list(request, category_slug=None, price_type_slug=None, type_pr_slug=None):
@@ -27,7 +42,7 @@ def product_list(request, category_slug=None, price_type_slug=None, type_pr_slug
         try:
             user = User.objects.get(username=search)
             products = Product.objects.filter(user=user, available=True)
-        except:
+        except ObjectDoesNotExist:
             pass
     if category_slug:
         category = get_object_or_404(Category, slug=category_slug)
@@ -53,6 +68,7 @@ def product_detail(request, id, slug):
     return render(request, 'shop/product/detail.html', {'product': product,
                                                         'comments': comments}) 
 
+
 def create_product(request):
     if request.method == 'POST':
         form = ProductCreateForm(request.POST, request.FILES)
@@ -66,22 +82,19 @@ def create_product(request):
 
             if new_pr.image or new_pr.image_dop1 or new_pr.image_dop2 or new_pr.file_product:
                 try:
-                    directory = 'products/' + str(new_pr.name)
+                    directory = f'products/{new_pr.name}'
                     parent_dir = settings.MEDIA_ROOT 
                     path = os.path.join(parent_dir, directory)
                     os.makedirs(path)
                 except OSError as error:
                     pass
 
-                start_path = 'products/'+str(new_pr.name)+'/'+str(new_pr.name)
+                start_path = f'products/{new_pr.name}/{new_pr.name}'
                 files = ["image", "image_dop1", "image_dop2", "file_product"]
                 for f in files:
                     if eval(f"new_pr.{f}"):
-                        new_pr_file = eval(f"new_pr.{f}")
-                        initial_path = new_pr_file.path
-                        new_pr_file.name = start_path + f'_{f}.jpg'
-                        new_path = settings.MEDIA_ROOT + new_pr_file.name
-                        os.rename(initial_path, new_path)
+                        change_product_path(product=new_pr, file_name=f, start_path=start_path)
+
 
                 new_pr.save()
             return redirect('shop:product_list')
@@ -91,9 +104,9 @@ def create_product(request):
 
 
 def delete_product(request, id):
-    product = Product.objects.get(id=id)
+    product = Product.objects.get(id=id)  
     try:
-        path = settings.MEDIA_ROOT + 'products/' + str(product.name)
+        path = settings.MEDIA_ROOT + f'products/{product.name}'
         shutil.rmtree(path, ignore_errors=False, onerror=None)
     except:
         pass
@@ -112,23 +125,19 @@ def edit_product(request, id):
 
             if product.image or product.image_dop1 or product.image_dop2 or product.file_product:
                 try:
-                    directory = 'products/' + str(product.name)
+                    directory = f'products/{product.name}'
                     parent_dir = settings.MEDIA_ROOT 
                     path = os.path.join(parent_dir, directory)
                     os.makedirs(path)
                 except OSError as error:
                     pass
 
-                start_path = 'products/'+str(product.name)+'/'+str(product.name)
+                start_path = f'products/{product.name}/{product.name}'
                 files = ["image", "image_dop1", "image_dop2", "file_product"]
                 for f in files:
                     if eval(f"product.{f}"):
                         try:
-                            product_file = eval(f"product.{f}")
-                            initial_path = product_file.path
-                            product_file.name = start_path + f'_{f}.jpg'
-                            new_path = settings.MEDIA_ROOT + product_file.name
-                            os.rename(initial_path, new_path)
+                            change_product_path(product=product, file_name=f, start_path=start_path)
                         except OSError as error:
                             pass
                 product.save()
@@ -159,24 +168,21 @@ def product_add_comment(request):
     product_id = request.POST.get('id')
     author = request.user
     product = Product.objects.get(id=product_id)
-    if request.POST.get('action'):
-        body = request.POST.get('body')
-        comment = get_object_or_404(Comment, body=body, author=author, product=product)
-        if request.POST.get('action') == 'remove':
-            comment.delete()
-        if request.POST.get('action') == 'edit':
-            new_body = request.POST.get('new_body')
-            comment.body = new_body
-            comment.author = author
-            comment.product = product
-            comment.save()
-    else:
-        image = request.POST.get('image')
-        data = request.POST.get('data')
-        comment = Comment(body=data, author = author, product=product, image=image)
-        comment.save()
+    image = request.POST.get('image')
+    data = request.POST.get('data')
+    comment = Comment(body=data, author = author, product=product, image=image)
+    comment.save()
     return JsonResponse({'status':'ok'})
 
+@ajax_required
+@login_required
+@require_POST
+def product_remove_comment(request):
+    comment_id = request.POST.get('id')
+    comment = get_object_or_404(Comment, id=comment_id)
+    if request.POST.get('action') == 'remove':
+        comment.delete()
+    return JsonResponse({'status':'ok'})
 
 @ajax_required
 @login_required
