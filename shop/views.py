@@ -8,6 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.core.files.images import ImageFile
 from uuslug import slugify
 from cart.models import CartItem
 from .models import Category, Product, Comment, PriceType, TypePr
@@ -168,13 +169,26 @@ def product_add_comment(request):
     product_id = request.POST.get('id')
     author = request.user
     product = Product.objects.get(id=product_id)
-    image = request.POST.get('image')
     data = request.POST.get('data')
-    comment = Comment(body=data, author = author, product=product, image=image)
+
+    try:
+        image = request.FILES['image0'] 
+    except:
+        image = None 
+    try:
+        image_dop1 = request.FILES['image1']
+    except:
+        image_dop1 = None 
+    try:
+        image_dop = request.FILES['image2']
+    except:
+        image_dop2 = None 
+
+    comment = Comment(body=data, author = author, product=product, image=image, image_dop1=image_dop1, image_dop2=image_dop2)
     comment.save()
     return JsonResponse({'status':'ok'})
 
-@ajax_required
+@ajax_required 
 @login_required
 @require_POST
 def product_remove_comment(request):

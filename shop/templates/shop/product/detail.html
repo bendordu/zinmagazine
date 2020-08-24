@@ -159,7 +159,7 @@
 
 		<p class="product_comment_info_body">{{ comment.body }}</p>
 
-		{{ comment.image }}
+		<img src="{% if comment.image %}{{ comment.image.url }}{% endif %}">
 		
 	</div>
 	
@@ -170,6 +170,7 @@
 	<div class="product_comment_form">
 
 		<form class="comment" method="post" data-id="{{ product.id }}">
+			<input multiple type="file" name="image[]" accept="image/*" id="id_image" enctype="multipart/form-data">
 			<textarea placeholder="Напишите комментарий здесь..." rows="3" required></textarea>
 			<button type="submit">отправить</button>
 		</form>
@@ -238,15 +239,30 @@ $('button.add').click(function(e){
 		});
 	});
 
+
+
 $('form.comment').on("submit", function(e){
-	e.preventDefault();
-	$.post('{% url "shop:product_add_comment" %}',
-		{
-		id: $(this).data('id'),
-		data: $('form.comment textarea').val(),
-		image: $('form.comment input.comment').val(),
-		},
-		function(data){
+	e.preventDefault();	
+
+	var my_form = new FormData();
+	my_form.append('id', $(this).data('id'));
+	my_form.append('data', $('form.comment textarea').val());
+
+	var files = $('input#id_image')[0].files;
+	for (var i = 0; i < files.length ; i++) {
+		console.log(files[i])
+		my_form.append('image'+i, files[i]);
+	}
+
+
+	$.ajax({
+        type: 'POST',
+        url: "{% url "shop:product_add_comment" %}",
+		data: my_form,
+		enctype: 'multipart/form-data',
+        processData: false, 
+        contentType: false, 
+        success: function(data) {
 			if (data['status'] == 'ok')
 			{
 				var name = $('a.navbar_log_in_name').text()
@@ -256,6 +272,7 @@ $('form.comment').on("submit", function(e){
 				$('form.comment textarea').val('');
 				$('span.product_comment_count_comments').text(parseInt($('span.product_comment_count_comments').text())+1)
 			}
+		}
 		});
 	});
 
