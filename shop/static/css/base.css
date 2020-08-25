@@ -515,6 +515,9 @@
 .product_comment_info {
     margin-top: 20px;
 }
+.product_comment_info_dop {
+    display: flex;
+}
 .product_comment_info span {
     font-size: 12px;
     display: inline-flex;
@@ -585,6 +588,15 @@
 .product_comment_svg:hover,
 .product_comment_selected_svg:hover {
     fill: #808080;
+}
+.product_comment_ims {
+    max-width: 300px;
+}
+.product_photo_comment {
+    max-width: 100px;
+}
+.comment-like {
+    margin-left: 10px;
 }
 
 /*----------------------------------------------------------posts-list--------------------------------------------------------------------------------*/

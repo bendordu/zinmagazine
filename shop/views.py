@@ -8,7 +8,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.conf import settings
-from django.core.files.images import ImageFile
+from django.utils.dateformat import DateFormat
+from django.utils.datastructures import MultiValueDictKeyError
 from uuslug import slugify
 from cart.models import CartItem
 from .models import Category, Product, Comment, PriceType, TypePr
@@ -65,7 +66,7 @@ def product_list(request, category_slug=None, price_type_slug=None, type_pr_slug
 
 def product_detail(request, id, slug):
     product = get_object_or_404(Product, id=id, slug=slug, available=True)
-    comments = product.comments.filter(active=True)
+    comments = product.comments.filter(active=True).order_by('-comment_likes', '-image0')
     return render(request, 'shop/product/detail.html', {'product': product,
                                                         'comments': comments}) 
 
@@ -169,23 +170,38 @@ def product_add_comment(request):
     product_id = request.POST.get('id')
     author = request.user
     product = Product.objects.get(id=product_id)
-    data = request.POST.get('data')
-
-    try:
-        image = request.FILES['image0'] 
-    except:
-        image = None 
-    try:
-        image_dop1 = request.FILES['image1']
-    except:
-        image_dop1 = None 
-    try:
-        image_dop = request.FILES['image2']
-    except:
-        image_dop2 = None 
-
-    comment = Comment(body=data, author = author, product=product, image=image, image_dop1=image_dop1, image_dop2=image_dop2)
+    body = request.POST.get('data')
+    d = {'image0':None, 'image1':None, 'image2':None}
+    for i in d.keys():
+        try:
+            d[i] = request.FILES[i]
+        except MultiValueDictKeyError:
+            continue
+    comment = Comment(body=body, author = author, product=product, **d)
     comment.save()
+
+    if comment.image0 or comment.image1 or comment.image2:
+        parent_dir = settings.MEDIA_ROOT 
+        try:
+            directory = f'products/{product.name}'
+            path = os.path.join(parent_dir, directory)
+            os.makedirs(path)
+        except OSError as error:
+            pass
+
+        files = ["image0", "image1", "image2"]
+        for f in files:
+            if eval(f"comment.{f}"):
+                try:
+                    comment_file = eval(f"comment.{f}")
+                    initial_path = comment_file.path
+                    created = DateFormat(comment.created).format('d-m-Y-H-i')
+                    comment_file.name = f'products/{product.name}/{product.name}_comment_{comment.id}_{comment.author}_{created}_{f}.jpg'
+                    new_path = os.path.normpath(os.path.join(parent_dir, comment_file.name))
+                    os.rename(initial_path, new_path) 
+                    comment.save()
+                except OSError:
+                    pass
     return JsonResponse({'status':'ok'})
 
 @ajax_required 
@@ -195,7 +211,13 @@ def product_remove_comment(request):
     comment_id = request.POST.get('id')
     comment = get_object_or_404(Comment, id=comment_id)
     if request.POST.get('action') == 'remove':
+        for image in [comment.image0, comment.image1, comment.image2]:
+            image.delete()
         comment.delete()
+    if request.POST.get('action') == 'edit':
+        body = request.POST.get('body')
+        comment.body = body
+        comment.save()
     return JsonResponse({'status':'ok'})
 
 @ajax_required
