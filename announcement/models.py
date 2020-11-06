@@ -51,5 +51,4 @@ class Comment(models.Model):
     class Meta:
         ordering = ('created',)
 
-    def __str__(self):
-        return 'Comment by {} on {}'.format(self.author_comment.first_name, self.post)
+    

@@ -209,17 +209,19 @@ $('form.shop_search_form').on('input', (function() {
     else { $('div.shop_find').text(''); }
     }));
 
-
-$('form.shop_search_form').on("submit", function(){
-    $.post('{% url "shop:product_list" %}',
-        {
-        s: $('form.shop_search_form textarea').val(),
-        });
-    });
-
-$('form.shop_search_form').keypress(function(e){
-    if(e.which == 13){
+$('form.shop_search_form').keypress(function(e) {
+    if(e.which == 13) {
+        e.preventDefault();
         $('form.shop_search_form').trigger("submit");
     }
 });
+
+$('form.shop_search_form').on("submit", function() {
+    $.post('{% url "shop:product_list" %}',
+        {
+        s: $('form.shop_search_form textarea').val(),
+        }
+    );
+});
+
 {% endblock %}

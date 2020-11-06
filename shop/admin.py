@@ -31,6 +31,6 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('author', 'product', 'created', 'active')
+    list_display = ('author', 'product', 'created', 'updated', 'active')
     list_filter = ('active', 'created', 'updated')
     search_fields = ('author', 'body')

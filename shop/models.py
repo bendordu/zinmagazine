@@ -97,8 +97,6 @@ class Comment(models.Model):
     class Meta:
         ordering = ('created',)
 
-    def __str__(self):
-        return 'Comment by {} on {}'.format(self.author.first_name, self.product)
 
 
 

@@ -11,49 +11,72 @@
         <div class="info">
             <span>{{ message_text.author }} {{ message_text.pub_date|date:"d.m.Y H:i" }}</span>
         </div>
-        {% if message_text.author == request.user %}
+        {% if message_text.author == request.user and not message_text.is_readed %}
         <div class="change">
             <a href="" data-id="{{ message_text.id }}" data-action="remove" class="remove">удалить</a>
-            <a href="" data-name="{{ chat.name }}" data-action="edit" class="edit">редактировать</a>
+            <a href="" data-id="{{ message_text.id }}" data-action="edit" class="edit">редактировать</a>
         </div>
         {% endif %}
-        <span class="body">{{ message_text.message }}</span>
+
+        <p class="message_body_{{ message_text.id }}">{{ message_text.message }}</p>
+        <button class="ok" hidden>ok</button>
+        <button class="cancel" hidden>отмена</button>
+        
+		<div class="message_comment_ims">
+			{% if message_text.image0 %}
+			<div class="message_comment_im">
+				<button hidden id="close_{{ message_text.id }}" data-image="image0"></button>
+				<img class="message_photo_comment" src="{{ message_text.image0.url }}">
+			</div>
+            {% endif %}
+            {% if message_text.image1 %}
+			<div class="message_comment_im">
+				<button hidden id="close_{{ message_text.id }}" data-image="image1"></button>
+				<img class="message_photo_comment" src="{{ message_text.image1.url }}">
+			</div>
+            {% endif %}
+            {% if message_text.image2 %}
+			<div class="message_comment_im">
+				<button hidden id="close_{{ message_text.id }}" data-image="image2"></button>
+				<img class="message_photo_comment" src="{{ message_text.image2.url }}">
+			</div>
+            {% endif %}
+            {% if message_text.image3 %}
+			<div class="message_comment_im">
+				<button hidden id="close_{{ message_text.id }}" data-image="image3"></button>
+				<img class="message_photo_comment" src="{{ message_text.image3.url }}">
+			</div>
+            {% endif %}
+            {% if message_text.image4 %}
+			<div class="message_comment_im">
+				<button hidden id="close_{{ message_text.id }}" data-image="image4"></button>
+				<img class="message_photo_comment" src="{{ message_text.image4.url }}">
+			</div>
+			{% endif %}
+		</div>
 
     </div>
     {% endfor %}
 
     <div class="new_message"></div>
     
-    <form class="message" method="post" data-name="{{ chat.name }}">
+    <form class="message" method="post" data-id="{{ chat.id }}">
         <textarea name="body" cols="40" rows="2" required></textarea>
-        <input class="message" type="file" title="Add image">
+        <input multiple type="file" name="image[]" accept="image/*" id="id_image" enctype="multipart/form-data">
         <input type="submit" value="Send">
     </form>
+
+    <div class="form_add_image">
+		<div id="prev" hidden>
+            <span id="images_count"></span>
+		</div>
+	</div>
 
 </div>
 
 {% endblock %} 
 
 {% block domready %}
-
-$('form.message').on("submit", function(e){
-	e.preventDefault();
-	$.post('{% url "chats:message_add" %}',
-		{
-		name: $(this).data('name'),
-		data: $('form.message textarea').val(),
-		},
-		function(data){
-			if (data['status'] == 'ok')
-			{
-				var name = $('a.name').text();
-				var myDate = new Date();
-				var fullDate = myDate.getDate() +" "+ myDate.getMonth() +" " + myDate.getFullYear();
-				$('div.new_message').replaceWith('<div class="message"><div class="info">'+name+' '+fullDate+'</div><div>'+$('form.message textarea').val()+'</div></div><div class="new_message"></div>');
-				$('form.message textarea').val('')
-			}
-		});
-    });
 
 $('div.change a.remove').click(function(e){
     e.preventDefault();
@@ -70,6 +93,157 @@ $('div.change a.remove').click(function(e){
                 parent.replaceWith('<p>Ваше сообщение удалено</p>');
             }
         });
+    });
+
+var images = new Set();	
+
+function showFile(e) {
+    let files = e.target.files;
+    if (files.length <= 5) {
+        for (var i = 0, f; f = files[i]; i++) {
+
+            var fr = new FileReader();
+            if (images.size < 5) {
+                images.add(f);
+            
+                fr.onload = (function(theFile) {
+
+                    return function(e) {
+
+                        var div = document.createElement('div');
+                        div.innerHTML = "<img src='" + e.target.result + "' />";
+                        div.setAttribute("id", "image");
+                        button = document.createElement('button');
+                        button.setAttribute("id", "close");
+                        button.innerHTML = "x";
+                        div.insertBefore(button, null);
+                        document.getElementById('prev').insertBefore(div, null);
+                        document.getElementById('prev').hidden = false;
+                        document.getElementById('images_count').innerHTML = "выбрано [" + images.size + "/5]";
+
+                        $(button).click(function(e) {
+                            $(this).parent('div#image').detach();
+                            images.delete(theFile); 
+                            document.getElementById('images_count').innerHTML = "выбрано [" + images.size + "/5 max]";
+                        });
+                    };
+                })(f);
+                fr.readAsDataURL(f);
+
+            } else {
+                document.getElementById('images_count').innerHTML = "максимально [" + images.size + "]";
+                console.log(images.size);
+            };
+        };
+    } else {
+        document.getElementById('prev').hidden = false;
+        document.getElementById('prev').innerHTML = "<span>максимальное количество изображений: 5</span>";
+    };
+}
+document.getElementById('id_image').addEventListener('change', showFile, true);
+
+$('form.message').on("submit", function(e) {
+    e.preventDefault();	
+    document.getElementById('prev').hidden = true;
+
+    var my_form = new FormData();
+    my_form.append('id', $(this).data('id'));
+    my_form.append('data', $('form.message textarea').val());
+
+    var files = Array.from(images);
+    for (var i = 0; i < files.length; i++) {
+        my_form.append('image'+i, files[i]);
+    }
+    images.clear();
+
+    $.ajax({
+        type: 'POST',
+        url: '{% url "chats:message_add" %}',
+        data: my_form,
+        enctype: 'multipart/form-data',
+        processData: false, 
+        contentType: false, 
+        success: function(data) {
+            if (data['status'] == 'ok')
+            {
+                var name = $('a.name').text();
+				var myDate = new Date();
+				var fullDate = myDate.getDate() +" "+ myDate.getMonth() +" " + myDate.getFullYear();
+				$('div.new_message').replaceWith('<div class="message"><div class="info">'+name+' '+fullDate+'</div><div>'+$('form.message textarea').val()+'</div></div><div class="new_message"></div>');
+				$('form.message textarea').val('')
+            }
+        }
+        });
+    });
+
+$('form.message').keypress(function(e) {
+    if(e.which == 13) {
+        e.preventDefault();
+        $('form.message').trigger("submit");
+    }
+});
+
+$('.edit').click(function(e){
+    e.preventDefault();
+    var edit = e.target;
+    $('.edit').hide();
+    
+    var body = $('.message_body_'+ $(edit).data('id'));
+    var text = body.text();
+    console.log(body);
+    
+    var ok = body.next('button.ok').show();
+	$(ok).next('button.cancel').show();
+
+    var textarea = document.createElement('textarea');
+    textarea.innerHTML = text;
+    $(body).replaceWith(textarea);
+
+    $('button#close_' + $(edit).data('id')).show();
+
+    $('button#close_' + $(edit).data('id')).click(function(e) {
+        var close = e.target;
+        $.post('{% url "chats:message_remove" %}',
+        {
+            image: $(close).data('image'),
+            id: $(edit).data('id'),
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {
+                $(close).parent('div.message_comment_im').detach();
+            }
+        });
+    });
+
+    $('button.cancel').click(function(e) {
+		$(textarea).replaceWith('<p class="message_body_' + $(edit).data('id') + '">' + text + '</p>');
+		$('.product_comment_ims #prev').hide();
+		$('button.ok').hide();
+		$('button#close_' + $(edit).data('id')).hide();
+		$('button.cancel').hide();
+		$('.edit').show();
+	});
+
+    $('button.ok').click(function(e) {
+        $.post('{% url "chats:message_remove" %}',
+        {
+        id: $(edit).data('id'),
+        action: $(edit).data('action'),
+        body: $(textarea).val(),
+        },
+        function(data){
+            if (data['status'] == 'ok')
+            {
+                $(textarea).replaceWith('<p class="message_body_' + $(edit).data('id') + '">' + $(textarea).val() + '</p>');
+                $('.message_comment_ims #prev').hide();
+                $('button.ok').hide();
+                $('button#close_' + $(edit).data('id')).hide();
+                $('button.cancel').hide();
+                $('.edit').show();
+            }
+        });
+    });
     });
     
 {% endblock %}

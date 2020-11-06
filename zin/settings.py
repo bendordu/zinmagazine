@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'chats.apps.ChatsConfig',
     'announcement.apps.AnnouncementConfig',
     'proect.apps.ProectConfig',
+    'complaint.apps.ComplaintConfig',
     
 ]
 

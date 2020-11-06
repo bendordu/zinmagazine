@@ -67,8 +67,10 @@ def product_list(request, category_slug=None, price_type_slug=None, type_pr_slug
 def product_detail(request, id, slug):
     product = get_object_or_404(Product, id=id, slug=slug, available=True)
     comments = product.comments.filter(active=True).order_by('-comment_likes', '-image0')
+    images = [product.image, product.image_dop1, product.image_dop2]
     return render(request, 'shop/product/detail.html', {'product': product,
-                                                        'comments': comments}) 
+                                                        'comments': comments,
+                                                        'images': images}) 
 
 
 def create_product(request):
@@ -215,9 +217,12 @@ def product_remove_comment(request):
             image.delete()
         comment.delete()
     if request.POST.get('action') == 'edit':
-        body = request.POST.get('body')
-        comment.body = body
+        text = request.POST.get('body')
+        comment.body = text
         comment.save()
+    if request.POST.get('image'):
+        image = request.POST.get('image')
+        eval(f"comment.{image}.delete()")
     return JsonResponse({'status':'ok'})
 
 @ajax_required
@@ -264,8 +269,20 @@ def product_comment_like(request):
         comment.comment_likes.remove(request.user)
     return JsonResponse({'status':'ok'})
 
+
+@ajax_required
+@login_required
+@require_POST
+def download_product(request):
+    product = Product.objects.get(id=request.POST.get('id'))
+    product.buyers.add(request.user)
+    return JsonResponse({'status':'ok'})
+
+
 def bas(request):
     return render(request,'shop/bas.html')
+
+
 
 
 

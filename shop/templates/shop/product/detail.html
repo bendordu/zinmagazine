@@ -44,7 +44,9 @@
 
 				{% if product.price_type.id == 3 %}
 					<span>от {{ product.price }} RUB</span> 
-					<a href='{% if product.file_product %}{{ product.file_product.url }}{% endif %}'><button>Скачать</button></a>
+					<a href='{% if product.file_product %}{{ product.file_product.url }}{% endif %}'>
+						<button class="download" data-id="{{ product.id }}">Скачать</button>
+					</a>
 				{% endif %}
 
 			</div>
@@ -52,10 +54,21 @@
 		</div>
 			
 		<div class="product_photo">
-			<img class="product_photo_main" src="{% if product.image %}{{ product.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+			{% if product.image %}
+			<a href="#zatemnenie_image">
+				<img class="product_photo_main" src="{{ product.image.url }}">
+			</a>
+			<div id="zatemnenie_image">
+				<div class="image">
+					<a href="#" class="dasboard_image_main_close">x</a>
+					<img class="product_photo" src="{{ product.image.url }}">
+				</div>
+			</div>
+			{% else %}
+			<img class="product_photo_main" src="{% static "img/no_image.png" %}">
+			{% endif %}
 
 			<div class="product_photo_det">
-				{% if product.image_dop1 or product.image_dop2 %}
 				<div class="products_detail_btns_like_prev">
 					{% if product.image_dop1 %}
 					<img class="product_photo_dop" src="{% if product.image_dop1 %}{{ product.image_dop1.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
@@ -64,7 +77,6 @@
 					<img class="product_photo_dop" src="{% if product.image_dop2 %}{{ product.image_dop2.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
 					{% endif %}
 				</div>
-				{% endif %}
 			
 				<div class="products_detail_btns_like">
 
@@ -148,7 +160,7 @@
 					{% else %}
 						<svg class="product_comment_svg_selected" viewBox="0 0 512 512"><path data-id="{{ comment.id }}" data-action="{% if request.user in comment.comment_likes.all %}un{% endif %}like" d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"/></svg>
 				{% endif %}
-				<span class="comment{{ comment.id }}">{{ comment.comment_likes.count }}</span> 
+				<span class="comment{{ comment.id }}">{{ comment.comment_likes.count }}</span>
 			</div>
 
 			{% if comment.author == request.user %}
@@ -159,19 +171,28 @@
 			{% endif %}
 		</div>
 
-		<p class="product_comment_info_body">{{ comment.body }}</p>
+		<p class="product_comment_info_body_{{ comment.id }}">{{ comment.body }}</p>
 		<button class="ok" hidden>ok</button>
+		<button class="cancel" hidden>отмена</button>
 		<div class="product_comment_ims">
-			<div id="prev" hidden>
-				<svg id="close" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-					<circle cx="12" cy="12" r="12" fill="#E5E5E5"/>
-					<line x1="16.9498" y1="7.05025" x2="7.05029" y2="16.9497" stroke="white" stroke-width="2"/>
-					<line x1="16.9496" y1="16.9497" x2="7.05014" y2="7.05023" stroke="white" stroke-width="2"/>
-				</svg>   
+			{% if comment.image0 %}
+			<div class="product_comment_im">
+				<button hidden id="close_{{ comment.id }}" data-image="image0"></button>
+				<img class="product_photo_comment" src="{{ comment.image0.url }}">
 			</div>
-			{% if comment.image0 %}<img class="product_photo_comment" src="{{ comment.image0.url }}">{% endif %}
-			{% if comment.image1 %}<img class="product_photo_comment" src="{{ comment.image1.url }}">{% endif %}
-			{% if comment.image2 %}<img class="product_photo_comment" src="{{ comment.image2.url }}">{% endif %}
+			{% endif %}
+			{% if comment.image1 %}
+			<div class="product_comment_im">
+				<button hidden id="close_{{ comment.id }}" data-image="image1"></button>
+				<img class="product_photo_comment" src="{{ comment.image1.url }}">
+			</div>
+			{% endif %}
+			{% if comment.image2 %}
+			<div class="product_comment_im">
+				<button hidden id="close_{{ comment.id }}" data-image="image2"></button>
+				<img class="product_photo_comment" src="{{ comment.image2.url }}">
+			</div>
+			{% endif %}
 		</div>
 		
 	</div>
@@ -185,25 +206,22 @@
 		<form class="comment" method="post" data-id="{{ product.id }}">
 			<textarea placeholder="Напишите комментарий здесь..." rows="3" required></textarea>
 			<input multiple type="file" name="image[]" accept="image/*" id="id_image" enctype="multipart/form-data">
+			<div id="preview">
+				<label class="form_add_image_btn" for="id_image"><span>Файл</span></label>
+			</div>
 			<button type="submit">отправить</button>
 		</form>
 	</div>
 
 	<div class="form_add_image">
 		<div id="prev" hidden>
-			<svg id="close" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-				<circle cx="12" cy="12" r="12" fill="#E5E5E5"/>
-				<line x1="16.9498" y1="7.05025" x2="7.05029" y2="16.9497" stroke="white" stroke-width="2"/>
-				<line x1="16.9496" y1="16.9497" x2="7.05014" y2="7.05023" stroke="white" stroke-width="2"/>
-			</svg>   
-		</div>
-		<div id="preview">
-			<label class="form_add_image_btn" for="id_image"><span>Файл</span></label>
+			<span id="images_count"></span>
 		</div>
 	</div>
 
 </div>
 {% endblock %}  
+
 {% block domready %}
 
 $('div.products_detail_btns_like path').click(function(e){
@@ -259,42 +277,66 @@ $('button.add').click(function(e){
 			}
 		});
 	});
-	
+
+var images = new Set();	
+
 function showFile(e) {
-var files = e.target.files;
-for (var i = 0, f; f = files[i]; i++) {
-	var fr = new FileReader();
-	fr.onload = (function(theFile) {
-	return function(e) {
-		var div = document.createElement('div');
-		div.innerHTML = "<img src='" + e.target.result + "' />";
-		div.setAttribute("id", "image");
-		document.getElementById('prev').insertBefore(div, null);
-		document.getElementById('prev').hidden=false;
-		document.getElementById('preview').hidden=true;
+	let files = e.target.files;
+	if (files.length <= 3) {
+		for (var i = 0, f; f = files[i]; i++) {
+
+			var fr = new FileReader();
+			if (images.size < 3) {
+				images.add(f);
+				
+				fr.onload = (function(theFile) {
+
+					return function(e) {
+
+						var div = document.createElement('div');
+						div.innerHTML = "<img src='" + e.target.result + "' />";
+						div.setAttribute("id", "image");
+						button = document.createElement('button');
+						button.setAttribute("id", "close");
+						button.innerHTML = "x";
+						div.insertBefore(button, null);
+						document.getElementById('prev').insertBefore(div, null);
+						document.getElementById('prev').hidden=false;
+						document.getElementById('images_count').innerHTML = "выбрано [" + images.size + "/3]";
+
+						$(button).click(function(e) {
+							$(this).parent('div#image').detach();
+							images.delete(theFile); 
+							document.getElementById('images_count').innerHTML = "выбрано [" + images.size + "/3]";
+						});
+					};
+				})(f);
+				fr.readAsDataURL(f);
+			} else {
+                document.getElementById('images_count').innerHTML = "максимально [" + images.size + "]";
+                console.log(images.size);
+            };
 		};
-	})(f);
-	fr.readAsDataURL(f);
+	} else {
+        document.getElementById('prev').hidden = false;
+        document.getElementById('prev').innerHTML = "<span>максимальное количество изображений: 3</span>";
+    };
 }
-}
-document.getElementById('id_image').addEventListener('change', showFile, false);
-document.getElementById('close').onclick = function() {
-	document.getElementById('image').innerHTML = "";
-	document.getElementById('prev').hidden = true;
-	document.getElementById('preview').hidden = false;
-	}
+document.getElementById('id_image').addEventListener('change', showFile, true);
 
 $('form.comment').on("submit", function(e){
 	e.preventDefault();	
+	document.getElementById('prev').hidden=true;
 
 	var my_form = new FormData();
 	my_form.append('id', $(this).data('id'));
 	my_form.append('data', $('form.comment textarea').val());
 
-	var files = $('input#id_image')[0].files;
-	for (var i = 0; i < files.length ; i++) {
+	var files = Array.from(images);
+	for (var i = 0; i < files.length; i++) {
 		my_form.append('image'+i, files[i]);
 	}
+	images.clear();
 
 	$.ajax({
         type: 'POST',
@@ -317,6 +359,13 @@ $('form.comment').on("submit", function(e){
 		});
 	});
 
+$('form.comment').keypress(function(e) {
+	if(e.which == 13) {
+		e.preventDefault();
+		$('form.comment').trigger("submit");
+	}
+});
+
 $('.remove').click(function(e){
 	e.preventDefault();
 	var remove = e.target;
@@ -338,17 +387,46 @@ $('.remove').click(function(e){
 $('.edit').click(function(e){
 	e.preventDefault();
 	var edit = e.target;
-	var body = $('p.product_comment_info_body');
+
+	$('.edit').hide();
+	
+	var body = $('.product_comment_info_body_' + $(edit).data('id'));
 	var text = body.text();
-	$('.product_comment_ims #prev').show();
-	$('button.ok').show();
+	
+	var ok = body.next('button.ok').show();
+	$(ok).next('button.cancel').show();
 
 	var textarea = document.createElement('textarea');
 	textarea.innerHTML = text;
 	body.replaceWith(textarea);
 
-	$('button.ok').click(function(e){
-		console.log($(textarea).val());
+	$('button#close_' + $(edit).data('id')).show();
+
+	$('button#close_' + $(edit).data('id')).click(function(e) {
+		var close = e.target;
+		$.post('{% url "shop:product_remove_comment" %}',
+		{
+			image: $(close).data('image'),
+			id: $(edit).data('id'),
+		},
+		function(data){
+			if (data['status'] == 'ok')
+			{
+				$(close).parent('div.product_comment_im').detach();
+			}
+		});
+	});
+
+	$('button.cancel').click(function(e) {
+		$(textarea).replaceWith('<p class="product_comment_info_body_' + $(edit).data('id') + '">' + text + '</p>');
+		$('.product_comment_ims #prev').hide();
+		$('button.ok').hide();
+		$('button#close_' + $(edit).data('id')).hide();
+		$('button.cancel').hide();
+		$('.edit').show();
+	});
+
+	$('button.ok').click(function(e) {
 		$.post('{% url "shop:product_remove_comment" %}',
 		{
 		id: $(edit).data('id'),
@@ -358,9 +436,12 @@ $('.edit').click(function(e){
 		function(data){
 			if (data['status'] == 'ok')
 			{
-				$(textarea).replaceWith('<p class="product_comment_info_body">'+$(textarea).val()+'</p>');
+				$(textarea).replaceWith('<p class="product_comment_info_body_' + $(edit).data('id') + '">' + $(textarea).val() + '</p>');
 				$('.product_comment_ims #prev').hide();
 				$('button.ok').hide();
+				$('button#close_' + $(edit).data('id')).hide();
+				$('button.cancel').hide();
+				$('.edit').show();
 			}
 		});
 	});
@@ -410,6 +491,14 @@ $('div.comment-like path').click(function(e){
 				var previous_likes = parseInt($('span.comment' + id).text());
 				$('span.comment' + id).text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
 			}
+		});
+	});
+
+$('button.download').click(function(e){
+	e.preventDefault();
+	$.post('{% url "shop:download_product" %}',
+		{
+		id: $(this).data('id'),
 		});
 	});
 

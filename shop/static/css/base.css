@@ -1,6 +1,5 @@
 /*@media screen and (min-width: 1100px) {
 }*/
-
 /*---------------------------------------------header--------------------------------------------------------------*/
 .navbar {
     display: flex;
@@ -537,6 +536,7 @@
 }
 .product_comment_form form {
     display: flex;
+    flex-direction: column;
 }
 .product_comment_form form button {
     cursor: pointer;
@@ -597,6 +597,50 @@
 }
 .comment-like {
     margin-left: 10px;
+}
+
+.image {
+    position: absolute;
+    display: inline-flex;
+    width: 90%;
+    height: 80%;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 15px;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+}
+#zatemnenie_image_dop1,
+#zatemnenie_image_dop2,
+#zatemnenie_image {
+    background: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    display: none;
+}
+#zatemnenie_image:target{
+    display: block;
+}
+.dasboard_image_main_close {
+    display: inline-flex;
+    padding: 5px;
+    background: #f2f2f2;
+    font-size: 15px;
+    align-self: flex-end;
+    cursor: pointer;
+}
+.product_photo {
+    max-width: 100%;
+    max-height: 100%;
 }
 
 /*----------------------------------------------------------posts-list--------------------------------------------------------------------------------*/
@@ -1701,6 +1745,12 @@
 .message .change a {
     font-size: 12px;
     color: gray;
+}
+.message_comment_ims {
+    max-width: 300px;
+}
+.message_photo_comment {
+    max-width: 100px;
 }
 
 /*--------------------------------------------------------------likes------------------------------------------------------------------------------------*/

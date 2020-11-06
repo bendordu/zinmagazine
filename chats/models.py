@@ -23,8 +23,12 @@ class Message(models.Model):
     pub_date = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     is_readed = models.BooleanField(default=False)
-    image = models.ImageField(upload_to='messages/image/%Y/%m/%d', blank=True)
-    file_message = models.FileField(upload_to='messages/file/%Y/%m/%d', blank=True)
+    image0 = models.ImageField(upload_to='messages/image', blank=True)
+    image1 = models.ImageField(upload_to='messages/image', blank=True)
+    image2 = models.ImageField(upload_to='messages/image', blank=True)
+    image3 = models.ImageField(upload_to='messages/image', blank=True)
+    image4 = models.ImageField(upload_to='messages/image', blank=True)
+    file_message = models.FileField(upload_to='messages/file', blank=True)
     
     class Meta:
         ordering = ('pub_date',)
